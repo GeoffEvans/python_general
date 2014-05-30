@@ -1,5 +1,5 @@
-from teo2_optical import *
-from numpy import pi, arange
+from teo2 import *
+from numpy import pi, arange, allclose
 
 def test_ord_less_than_ext():
     angles = arange(0,pi/2,pi/10)
@@ -15,16 +15,15 @@ def test_extreme_ref_vals():
     n_e_vals = [2.2598,principal_refractive_indices[0]]
     n_o_vals = [2.2596,principal_refractive_indices[1]]
     
-    n_e_eq = equal_within_tol(refractive_indices[0], n_e_vals, 0.0001)
-    n_o_eq = equal_within_tol(refractive_indices[1], n_o_vals, 0.0001)
+    n_e_eq = allclose(refractive_indices[0], n_e_vals, atol=1e-4)
+    n_o_eq = allclose(refractive_indices[1], n_o_vals, atol=1e-4)
     
-    return n_o_eq & n_e_eq
+    return n_o_eq and n_e_eq
     
 def test_symmetry():
    
     def all_elements_same(lst):
-        same = lst[1:] == lst[:-1]
-        return same.all()
+        return allclose(lst, lst[0], atol=1e-15)
    
     angles = array([0.3,-0.3,0.3+pi,-0.3+pi])
     refractive_indices = calc_refractive_indices(angles)
@@ -32,18 +31,20 @@ def test_symmetry():
     ext_same = all_elements_same(refractive_indices[0])
     ord_same = all_elements_same(refractive_indices[1])
     
-    assert ext_same & ord_same 
+    assert ext_same and ord_same 
 
 def test_polarisation_extremes():
-    
-    def check_pols(pair):
-        return pair[0].real == 0.0 & pair[1].imag == 0.0
-        
     angles = array([0,pi/2])
     pols = calc_polarisations(angles)
-    assert check_pols(pols[0]) & check_pols(pols[1])
-
-def equal_within_tol(x,val,tol):
-    diff = abs(x-val)
-    eq = diff < tol
-    return eq.all()
+    
+    ext = pols[0]
+    on_axis_is_circular = allclose(ext[0].real, 0.0, atol=1e-15) and allclose(ext[0].imag, 1.0, atol=1e-15) 
+    off_axis_is_linear = abs(ext[1]) > 903
+    ext_pass = on_axis_is_circular and off_axis_is_linear
+    
+    ordin = pols[1]
+    on_axis_is_circular = allclose(ordin[0].real, 0.0, atol=1e-15) and allclose(ordin[0].imag, -1.0, atol=1e-15) 
+    off_axis_is_linear = abs(ext[1]) > 1/903
+    ord_pass = on_axis_is_circular and off_axis_is_linear
+        
+    assert ord_pass and ext_pass
