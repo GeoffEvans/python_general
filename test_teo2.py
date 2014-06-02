@@ -1,5 +1,5 @@
-from teo2 import *
-from numpy import pi, arange, allclose
+from teo2 import calc_refractive_indices, calc_polarisations, principal_refractive_indices
+from numpy import pi, arange, allclose, array
 
 def test_ord_less_than_ext():
     angles = arange(0,pi/2,pi/10)
