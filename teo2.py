@@ -1,12 +1,12 @@
 from numpy import array, diag, cos, sin, transpose, dot, sqrt
 
 # Follow the calculation in Xu&St Section 1.3
-# z axis is taken as direction of light propagation
+# z axis is taken as direction of the optical wavevector
 
 principal_refractive_indices = array([2.2597 , 2.2597, 2.4119]) 
 relative_impermeability_eigenvals = principal_refractive_indices**-2
 activity_vector = 2.65e-05; #See Warner White Bonner, 87deg/mm
- 
+
 def calc_refractive_indices(angles):
     transverse_imperm_eigvals = find_transverse_imperm_eigvals(angles)
     eigenval1 = transverse_imperm_eigvals[:,0]
