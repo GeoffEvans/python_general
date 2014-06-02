@@ -1,6 +1,6 @@
 from teo2 import calc_refractive_indices
 from convert_cartesian_spherical import normalise, perpendicular_component
-from numpy import array, dot, arccos, arcsin, sin, cos, sqrt
+from numpy import array, dot, arccos, arcsin, sin, cos, sqrt, cross
 from numpy.linalg import norm
 
 class Aod:
@@ -83,5 +83,19 @@ class Aod:
         
         return (v0 / 2)**2 * (sin(sigma) / sigma)**2 # Xu&St (2.134)
     
-    def get_ray_direction(self, ray):
-        return ray.wavevector_unit # TODO 
+    def get_ray_direction_ord(self, ray):      
+        
+        def n_ord_vector(unit_dir):
+            ang = arccos(dot(unit_dir, self.optic_axis))
+            return unit_dir * calc_refractive_indices(ang)[1]
+            
+        w0 = ray.wavevector_unit
+        w1 = ray.wavevector_unit
+        w1[0,:] += 1e-9
+        w2 = ray.wavevector_unit
+        w2[1,:] += 1e-9
+        
+        d1 = n_ord_vector(w1) - n_ord_vector(w0)
+        d2 = n_ord_vector(w2) - n_ord_vector(w0)
+        
+        return normalise(cross(d1,d2))
