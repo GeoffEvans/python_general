@@ -1,6 +1,6 @@
 from numpy import pi
 
-class Acoustics:
+class Acoustics(object):
     velocity = 612.8
     frequency = 0
     amplitude = 0
@@ -15,4 +15,4 @@ class Acoustics:
         self.amplitude = power
     
     def wavevector(self, aod):
-        return self.wavevector_vac_mag * aod.acoustic_direction
+        return self.wavevector_mag * aod.acoustic_direction
