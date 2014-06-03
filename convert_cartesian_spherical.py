@@ -7,8 +7,8 @@ def cartesian_to_spherical(xyz):
     z = xyz[2,:]
     r = norm(xyz,axis=0) 
     theta = arccos(z/r)
-    phi = arctan2(y/x)
-    return vstack(r, theta, phi)
+    phi = arctan2(y, x)
+    return vstack( (r, theta, phi) )
 
 def spherical_to_cartesian(sph):
     r = sph[0,:]
@@ -17,7 +17,7 @@ def spherical_to_cartesian(sph):
     x = r * sin(theta) * cos(phi)
     y = r * sin(theta) * sin(phi)
     z = r * cos(theta)
-    return vstack(x, y, z)
+    return vstack( (x, y, z) )
 
 def normalise(vectors):
     return vectors/norm(vectors, axis=0)

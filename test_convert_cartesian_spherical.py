@@ -1,20 +1,19 @@
-from numpy import zeros, arccos, arctan2, vstack, sin, cos
-from numpy.linalg import norm
+from convert_cartesian_spherical import *
+from numpy import allclose, pi, array
+from scipy import rand
 
-def cartesian_to_spherical(xyz):
-    x = xyz[0,:]
-    y = xyz[1,:]
-    z = xyz[2,:]
-    r = norm(xyz,axis=0) 
-    theta = arccos(z/r)
-    phi = arctan2(y/x)
-    return vstack(r, theta, phi)
+def test_cart_to_sph_and_back():
+    xyz = rand(3,100)
+    sph = cartesian_to_spherical(xyz)
+    xyz_new = spherical_to_cartesian(sph)
+    assert allclose(xyz, xyz_new)
 
-def spherical_to_cartesian(sph):
-    r = sph[0,:]
-    theta = sph[1,:]
-    phi = sph[2,:]
-    x = r * sin(theta) * cos(phi)
-    y = r * sin(theta) * sin(phi)
-    z = r * cos(theta)
-    return vstack(x, y, z)
+def test_spherical_to_cartesian_special():
+    r = array([1,2,3])
+    theta = array([0,pi/2,pi/2])
+    phi = array([0,0,pi/2])
+    sph = vstack( (r, theta, phi) )
+    xyz = spherical_to_cartesian(sph)
+    expected = array([[0,2,0],[0,0,3],[1,0,0]])
+    assert allclose(xyz,expected)
+    

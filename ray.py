@@ -1,7 +1,7 @@
 from numpy import pi, array, dot
 from testutils import check_is_unit_vector
 
-class Ray:
+class Ray(object):
     position = [0,0,0]
     _wavevector_unit = [0,0,0]
     energy = 0
@@ -13,6 +13,7 @@ class Ray:
     @wavevector_unit.setter
     def wavevector_unit(self,v):
         check_is_unit_vector(v)
+        print "hit me"
         self._wavevector_unit = v
         
     @property

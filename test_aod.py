@@ -1,9 +1,12 @@
 from aod import *
+from ray import Ray
 from numpy import pi, arange, allclose
 
-def test_ord_less_than_ext():
-    angles = arange(0,pi/2,pi/10)
-    refractive_indices = calc_refractive_indices_ray(angles)
+def create_ray():
+    return Ray([0,0,0],[1,0,0],800e-9,1)
     
-    ord_less_than_ext = refractive_indices[1] < refractive_indices[0]
-    assert ord_less_than_ext.all()
+def create_many_rays():
+    assert True
+    
+def create_aod():
+    #aod = Aod([1,0,0], [], aperture_width, transducer_width, crystal_width, order)
