@@ -1,5 +1,5 @@
-from aol_model.aod import *
-from aol_model.ray import Ray
+from aod import *
+from ray import Ray
 from numpy import pi, arange, allclose
 
 r = Ray([0,0,0],[0,0,1],800e-9,1)

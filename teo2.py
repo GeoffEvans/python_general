@@ -8,15 +8,10 @@ relative_impermeability_eigenvals = principal_refractive_indices**-2
 activity_vector = 2.65e-05; #See Warner White Bonner, 87deg/mm
 
 def calc_refractive_indices(angles):
-    transverse_imperm_eigvals = find_transverse_imperm_eigvals(angles)
-    eigenval1 = transverse_imperm_eigvals[:,0]
-    eigenval2 = transverse_imperm_eigvals[:,1]     
+    (sqrt_term,eigensum,_) = get_imperm_properties(angles)
     
-    sqr_term = (eigenval1 - eigenval2)**2 + 4 * activity_vector**2
-    eigensum = eigenval1 + eigenval2
-    
-    ext_recip_sqr = 0.5 * ( eigensum - sqr_term**0.5 ) # Xu&St (1.62)
-    ord_recip_sqr = 0.5 * ( eigensum + sqr_term**0.5 )
+    ext_recip_sqr = 0.5 * ( eigensum - sqrt_term ) # Xu&St (1.62)
+    ord_recip_sqr = 0.5 * ( eigensum + sqrt_term )
 
     n_e = ext_recip_sqr ** (-0.5)
     n_o = ord_recip_sqr ** (-0.5)
@@ -24,18 +19,28 @@ def calc_refractive_indices(angles):
     return (n_e,n_o)
     
 def calc_polarisations(angles):
+    (sqrt_term,_,eigendiff) = get_imperm_properties(angles)
+    
+    p_e =  0.5j / activity_vector * ( sqrt_term - eigendiff ) # Xu&St (1.62)
+    p_o = -0.5j / activity_vector * ( sqrt_term + eigendiff )
+    
+    return (p_e,p_o)
+    
+def get_imperm_properties(angles_raw):
+    angles = array(angles_raw)
+    if angles.shape == (): # want a 1d array
+        angles = array([angles_raw])
+    
     transverse_imperm_eigvals = find_transverse_imperm_eigvals(angles)
     eigenval1 = transverse_imperm_eigvals[:,0]
     eigenval2 = transverse_imperm_eigvals[:,1]     
     
-    sqr_term = sqrt((eigenval1 - eigenval2)**2 + 4 * activity_vector**2)
+    sqrt_term = sqrt((eigenval1 - eigenval2)**2 + 4 * activity_vector**2)
+    eigensum = eigenval1 + eigenval2
     eigendiff = eigenval2 - eigenval1
     
-    p_e =  0.5j / activity_vector * ( sqr_term - eigendiff ) # Xu&St (1.62)
-    p_o = -0.5j / activity_vector * ( sqr_term + eigendiff )
-    
-    return (p_e,p_o)
-    
+    return (sqrt_term,eigensum,eigendiff)
+
 def find_transverse_imperm_eigvals(angles):
     from numpy.linalg import eig
     relative_impermeability_matrix = find_relative_impermeability_matrix(angles) # Xu&St (1.59)

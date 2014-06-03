@@ -83,8 +83,8 @@ class Aod(object):
         return calc_refractive_indices(get_angle_to_axis)
 
     def calc_refractive_indices_ray(self, ray):
-        get_angle_to_axis = arccos(dot(ray.wavevector_unit, self.optic_axis))
-        return calc_refractive_indices(get_angle_to_axis)
+        angle_to_axis = arccos(dot(ray.wavevector_unit, self.optic_axis))
+        return calc_refractive_indices(angle_to_axis)
         
     def refract_in(self, ray):
         # get vectors perpendicular and parallel to normal

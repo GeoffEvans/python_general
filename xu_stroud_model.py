@@ -6,7 +6,7 @@ from scipy.constants import c, pi
 from copy import copy
 
 def diffract_acousto_optically(aod, ray, local_acoustics):
-    (wavevector_mismatch_mag, original_ray) = diffract_by_wavevector_triangle(aod, ray)
+    (wavevector_mismatch_mag, original_ray) = diffract_by_wavevector_triangle(aod, ray, local_acoustics)
     ray.energy *= get_aod_efficiency(aod, ray, wavevector_mismatch_mag, original_ray, ray, local_acoustics)
 
 def diffract_by_wavevector_triangle(aod, ray, local_acoustics):

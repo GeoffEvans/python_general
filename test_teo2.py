@@ -1,10 +1,10 @@
-from aol_model.teo2 import calc_refractive_indices, calc_polarisations, principal_refractive_indices
+from teo2 import calc_refractive_indices, calc_polarisations, principal_refractive_indices
 from numpy import pi, arange, allclose, array
 
 def test_ord_less_than_ext():
     angles = arange(0,pi/2,pi/10)
     refractive_indices = calc_refractive_indices(angles)
-    
+
     ord_less_than_ext = refractive_indices[1] < refractive_indices[0]
     assert ord_less_than_ext.all()
 
@@ -48,3 +48,8 @@ def test_polarisation_extremes():
     ord_pass = on_axis_is_circular and off_axis_is_linear
         
     assert ord_pass and ext_pass
+    
+def test_single_angle():
+    angles = 0.1
+    calc_refractive_indices(angles) # don't want this to throw
+    return True
