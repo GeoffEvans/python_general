@@ -13,7 +13,7 @@ def diffract_by_wavevector_triangle(aod, ray, local_acoustics):
     n_ext = aod.calc_refractive_indices_ray(ray)[0]
     
     wavevector_in = n_ext * ray.wavevector_vac
-    wavevector_ac = local_acoustics.wavevector_vac(aod.sound_direction)
+    wavevector_ac = local_acoustics.wavevector(aod)
     resultant = wavevector_in + aod.order * wavevector_ac 
     
     wavevector_vac_mag_out = ray.wavevector_vac + (2 * pi / c) * local_acoustics.frequency # from w_out = w_in + w_ac

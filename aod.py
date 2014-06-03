@@ -8,7 +8,7 @@ from scipy.optimize import fsolve
 
 class Aod(object):
     normal = [0,0,1]
-    sound_direction = [1,0,0] # as viewed in a frame with normal aligned with z
+    relative_acoustic_direction = [1,0,0] # as viewed in a frame with normal aligned with z
     aperture_width = 0 
     transducer_width = 0
     crystal_width = 0
@@ -17,10 +17,29 @@ class Aod(object):
     @property
     def optic_axis(self):
         return self.normal
+    @property
+    def acoustic_direction(self):
+        # three basis vectors
+        z = array([0,0,1])
+        invariant = normalise( cross(self.relative_acoustic_direction, z) )
+        t = cross(z,invariant)
+        
+        # how z transforms
+        cosine = dot(z, self.normal) 
+        sine = dot(t, self.normal)
+        
+        # components: s = s1 inv + s2 z + s3 t
+        s1 = dot(invariant,self.relative_acoustic_direction)
+        s2 = dot(z,self.relative_acoustic_direction)
+        s3 = dot(t,self.relative_acoustic_direction)
+        
+        sound_vector = s1 * invariant + (cosine * s2 - sine * s3) * z + (cosine * s3 + sine * s2) * t
+        
+        return sound_vector 
     
     def __init__(self, normal, sound_direction, aperture_width, transducer_width, crystal_width, order):
         self.normal = array(normal)
-        self.sound_direction = array(sound_direction)
+        self.relative_acoustic_direction = array(sound_direction)
         self.aperture_width = aperture_width
         self.crystal_width = crystal_width
         self.transducer_width = transducer_width    
@@ -33,11 +52,11 @@ class Aod(object):
 
     def propagate_ray(self, ray, local_acoustics):
         self.refract_in(ray)
-        diffract_acousto_optically(self, ray)
-        self.update_ray_location(ray)
+        diffract_acousto_optically(self, ray, local_acoustics)
+        self.move_ray_through_aod(ray)
         self.refract_out(ray)
         
-        def update_ray_location(self, ray):
+    def move_ray_through_aod(self, ray):
             direction = self.get_ray_direction_ord(ray)
             distance = self.crystal_width / dot(direction, self.normal)
             ray.position += distance * direction
@@ -58,26 +77,7 @@ class Aod(object):
         d2 = n_ord_vector(w2) - n_ord_vector(w0)
         
         return normalise(cross(d1,d2))
-
-    def get_sound_vector(self):
-        # three basis vectors
-        z = array([0,0,1])
-        invariant = normalise( cross(self.sound_direction, z) )
-        t = cross(z,invariant)
-        
-        # how z transforms
-        cosine = dot(z, self.normal) 
-        sine = dot(t, self.normal)
-        
-        # components: s = s1 inv + s2 z + s3 t
-        s1 = dot(invariant,self.sound_direction)
-        s2 = dot(z,self.sound_direction)
-        s3 = dot(t,self.sound_direction)
-        
-        sound_vector = s1 * invariant + (cosine * s2 - sine * s3) * z + (cosine * s3 + sine * s2) * t
-        
-        return sound_vector 
-
+    
     def calc_refractive_indices_vector(self, vector):
         get_angle_to_axis = arccos(dot(normalise(vector), self.optic_axis))
         return calc_refractive_indices(get_angle_to_axis)

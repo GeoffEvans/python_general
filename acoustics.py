@@ -6,7 +6,7 @@ class Acoustics:
     amplitude = 0
     
     @property
-    def wavevector_vac_mag(self):
+    def wavevector_mag(self):
         return 2 * pi * self.frequency / self.velocity
     
     def __init__(self, frequency, velocity, power):
@@ -14,5 +14,5 @@ class Acoustics:
         self.velocity = velocity
         self.amplitude = power
     
-    def wavevector_vac(self, direction):
-        return self.wavevector_vac_mag * direction
+    def wavevector(self, aod):
+        return self.wavevector_vac_mag * aod.acoustic_direction

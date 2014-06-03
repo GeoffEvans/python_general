@@ -13,7 +13,6 @@ class Ray(object):
     @wavevector_unit.setter
     def wavevector_unit(self,v):
         check_is_unit_vector(v)
-        print "hit me"
         self._wavevector_unit = v
         
     @property
