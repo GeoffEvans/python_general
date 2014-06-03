@@ -1,16 +1,26 @@
 from numpy import pi, array, dot
+from testutils import check_is_unit_vector
 
 class Ray:
     position = [0,0,0]
-    wavevector_unit = [0,0,0]
+    _wavevector_unit = [0,0,0]
     energy = 0
     wavelength_vac = 0
     
     @property
-    def wavevector(self):
-        return self.wavevector_mag * self.wavevector_unit
+    def wavevector_unit(self):
+        return self._wavevector_unit
+    @wavevector_unit.setter
+    def wavevector_unit(self,v):
+        check_is_unit_vector(v)
+        self._wavevector_unit = v
+        
     @property
-    def wavevector_mag(self):
+    def wavevector_vac(self):
+        return self.wavevector_vac_mag * self.wavevector_unit
+
+    @property
+    def wavevector_vac_mag(self):
         return 2*pi/self.wavelength_vac
         
     def __init__(self, position, wavevector_unit, wavelength, energy):
