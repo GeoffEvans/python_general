@@ -1,4 +1,4 @@
-from convert_cartesian_spherical import *
+from aol_model.convert_cartesian_spherical import *
 from numpy import allclose, pi, array
 from scipy import rand
 

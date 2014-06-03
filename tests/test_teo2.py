@@ -1,4 +1,4 @@
-from teo2 import calc_refractive_indices, calc_polarisations, principal_refractive_indices
+from aol_model.teo2 import calc_refractive_indices, calc_polarisations, principal_refractive_indices
 from numpy import pi, arange, allclose, array
 
 def test_ord_less_than_ext():

@@ -1,4 +1,4 @@
-from ray import *
+from aol_model.ray import *
 from numpy import allclose, array
 import pytest
 
