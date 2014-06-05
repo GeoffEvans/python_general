@@ -2,25 +2,32 @@ from teo2 import calc_refractive_indices
 from xu_stroud_model import diffract_acousto_optically
 from convert_cartesian_spherical import perpendicular_component, normalise
 from testutils import check_is_unit_vector
-from numpy import array, sqrt, arccos, arcsin, sin, cos, cross, dot
+from numpy import array, sqrt, arccos, arcsin, sin, cos, cross, dot, dtype
 from numpy.linalg import norm
-from scipy.optimize import fsolve
+from scipy.optimize import newton
 
 class Aod(object):
-    normal = [0,0,1]
-    relative_acoustic_direction = [1,0,0] # as viewed in a frame with normal aligned with z
-    aperture_width = 0 
-    transducer_width = 0
-    crystal_width = 0
-    order = 1
-    
+       
+    def __init__(self, normal, sound_direction, aperture_width, transducer_width, crystal_width, order):
+        self.normal = array(normal, dtype=dtype(float))
+        self.relative_acoustic_direction = array(sound_direction, dtype=dtype(float))
+        self.aperture_width = aperture_width
+        self.crystal_width = crystal_width
+        self.transducer_width = transducer_width    
+        self.order = order
+        
+        if order > 1:
+            raise ValueError("Order only supports +1, -1 and 0")
+        check_is_unit_vector(normal)
+        check_is_unit_vector(sound_direction)
+
     @property
     def optic_axis(self):
         return self.normal
     @property
     def acoustic_direction(self):
         # three basis vectors
-        z = array([0,0,1])
+        z = array([0,0,1.])
         invariant = normalise( cross(self.relative_acoustic_direction, z) )
         t = cross(z,invariant)
         
@@ -36,19 +43,6 @@ class Aod(object):
         sound_vector = s1 * invariant + (cosine * s2 - sine * s3) * z + (cosine * s3 + sine * s2) * t
         
         return sound_vector 
-    
-    def __init__(self, normal, sound_direction, aperture_width, transducer_width, crystal_width, order):
-        self.normal = array(normal)
-        self.relative_acoustic_direction = array(sound_direction)
-        self.aperture_width = aperture_width
-        self.crystal_width = crystal_width
-        self.transducer_width = transducer_width    
-        self.order= order
-        
-        if order > 1:
-            raise ValueError("Order only supports +1, -1 and 0")
-        check_is_unit_vector(normal)
-        check_is_unit_vector(sound_direction)
 
     def propagate_ray(self, ray, local_acoustics):
         self.refract_in(ray)
@@ -57,9 +51,9 @@ class Aod(object):
         self.refract_out(ray)
         
     def move_ray_through_aod(self, ray):
-            direction = self.get_ray_direction_ord(ray)
-            distance = self.crystal_width / dot(direction, self.normal)
-            ray.position += distance * direction
+        direction = self.get_ray_direction_ord(ray)
+        distance = self.crystal_width / dot(direction, self.normal)
+        ray.position += distance * direction
 
     def get_ray_direction_ord(self, ray):      
         
@@ -67,11 +61,13 @@ class Aod(object):
             ang = arccos(dot(unit_dir, self.optic_axis))
             return unit_dir * calc_refractive_indices(ang)[1]
             
-        w0 = ray.wavevector_unit
-        w1 = ray.wavevector_unit
-        w1[0,:] += 1e-9
-        w2 = ray.wavevector_unit
-        w2[1,:] += 1e-9
+        w0 = ray.wavevector_unit.copy()
+        w1 = ray.wavevector_unit.copy()
+        w1[0] += 1e-9
+        w1 = normalise(w1)
+        w2 = ray.wavevector_unit.copy()
+        w2[1] += 1e-9
+        w2 = normalise(w2)
         
         d1 = n_ord_vector(w1) - n_ord_vector(w0)
         d2 = n_ord_vector(w2) - n_ord_vector(w0)
@@ -99,12 +95,12 @@ class Aod(object):
             n_ext = self.calc_refractive_indices_vector(wavevector_unit)[0]
             return (n_ext * sin(angle_out)) - sin_angle_in 
         
-        (ang, _) = fsolve(zero_func, angle_guess)
+        ang = newton(zero_func, angle_guess)
                 
         ray.wavevector_unit = cos(ang) * self.normal + sin(ang) * unit_perpendicular 
          
     def refract_out(self, ray):
         n_ord = self.calc_refractive_indices_ray(ray)[1]
-        perpendicular_comp = n_ord * perpendicular_component(ray.wavevector_unit, self.normal)
-        parallel_component = self.normal * ( 1 - norm(perpendicular_comp, axis=0) )
+        perpendicular_comp = perpendicular_component(n_ord * ray.wavevector_unit, self.normal)
+        parallel_component = self.normal * sqrt( 1 - norm(perpendicular_comp, axis=0)**2 )
         ray.wavevector_unit = parallel_component + perpendicular_comp 

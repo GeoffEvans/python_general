@@ -8,7 +8,7 @@ from numpy import allclose, all
 from random import random
 from scipy import less_equal, greater_equal
 
-acoustics = Acoustics(40e6, 613, 2)
+acoustics = Acoustics(40e6, 2)
 aod = Aod([0,0,1], [1,0,0], 1e-3, 1e-3, 1e-3, 1)
 
 def test_efficiency_range():

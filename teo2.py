@@ -1,4 +1,4 @@
-from numpy import array, diag, cos, sin, transpose, dot, sqrt
+from numpy import array, diag, cos, sin, transpose, dot, sqrt, atleast_1d
 
 # Follow the calculation in Xu&St Section 1.3
 # z axis is taken as direction of the optical wavevector
@@ -27,9 +27,7 @@ def calc_polarisations(angles):
     return (p_e,p_o)
     
 def get_imperm_properties(angles_raw):
-    angles = array(angles_raw)
-    if angles.shape == (): # want a 1d array
-        angles = array([angles_raw])
+    angles = atleast_1d(angles_raw)
     
     transverse_imperm_eigvals = find_transverse_imperm_eigvals(angles)
     eigenval1 = transverse_imperm_eigvals[:,0]

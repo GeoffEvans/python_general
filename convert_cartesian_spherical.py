@@ -22,5 +22,5 @@ def spherical_to_cartesian(sph):
 def normalise(vectors):
     return vectors/norm(vectors, axis=0)
 
-def perpendicular_component(self, vector, unit_normal):
+def perpendicular_component(vector, unit_normal):
     return vector - dot(vector, unit_normal) * unit_normal
