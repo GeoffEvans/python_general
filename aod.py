@@ -8,11 +8,11 @@ from scipy.optimize import newton
 
 class Aod(object):
        
-    def __init__(self, normal, sound_direction, aperture_width, transducer_width, crystal_width, order):
+    def __init__(self, normal, sound_direction, aperture_width, transducer_width, crystal_thickness, order):
         self.normal = array(normal, dtype=dtype(float))
         self.relative_acoustic_direction = array(sound_direction, dtype=dtype(float))
         self.aperture_width = aperture_width
-        self.crystal_width = crystal_width
+        self.crystal_thickness = crystal_thickness
         self.transducer_width = transducer_width    
         self.order = order
         
@@ -52,7 +52,7 @@ class Aod(object):
         
     def move_ray_through_aod(self, ray):
         direction = self.get_ray_direction_ord(ray)
-        distance = self.crystal_width / dot(direction, self.normal)
+        distance = self.crystal_thickness / dot(direction, self.normal)
         ray.position += distance * direction
 
     def get_ray_direction_ord(self, ray):      
