@@ -28,5 +28,11 @@ def test_propagating_angle_to_plane():
     r = Ray(position, [3./5,4./5,0], wavelength, energy)
     r.propagate_to_plane([12,0,0], [1,0,0])
     assert allclose(r.position, position + array([12,16,0]))
-    
+
+def test_setting_wavevector_property():
+    r = Ray(position, [3./5,4./5,0], wavelength, energy)
+    r.wavevector_vac = [144,0,17]
+    mag_correct = allclose(r.wavevector_vac_mag, 145)
+    dir_correct = allclose(r.wavevector_unit, [144./145, 0, 17./145])
+    assert mag_correct and dir_correct
 
