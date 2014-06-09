@@ -1,5 +1,6 @@
 from aol_drive import calculate_drive_freq_4, find_constant, find_linear
 from acoustics import Acoustics
+from ray import Ray
 from numpy import array, dtype, allclose
 
 order = -1
@@ -35,5 +36,7 @@ def test_ray_passes_through_focus():
     focus_velocity = array([5,7,11], dtype=dtype(float))
     
     (const, linear, quad) = calculate_drive_freq_4(order, op_wavelength, ac_velocity, aod_spacing, crystal_depth, base_freq, pair_deflection_ratio, focus_position, focus_velocity)
+    
+    # create simple_aol and propagate to focal length. check this gives correct xy position. 
     
     assert False # waiting to finish aol_simple before this can be tested... 
