@@ -6,7 +6,7 @@ class Acoustics(object):
     def wavevector_mag(self):
         return 2 * pi * self.frequency / self.velocity
     
-    def __init__(self, frequency, power=1, velocity=612.8):
+    def __init__(self, frequency, power=1, velocity=612.8834):
         self.frequency = frequency
         self.velocity = velocity
         self.power = power
