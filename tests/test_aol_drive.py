@@ -1,6 +1,7 @@
 from aol_drive import calculate_drive_freq_4, find_constant, find_linear
 from acoustics import Acoustics
 from ray import Ray
+from aol_simple import Aol
 from numpy import array, dtype, allclose
 
 order = -1
@@ -22,9 +23,7 @@ def test_constant_pdr_zero():
     
 def test_linear_acoustic_vel():
     
-    xy_focus_velocity = array([0,0], dtype=dtype(float))
-    
-    xy_ac_vel = array([ac_velocity,ac_velocity])
+    xy_ac_vel = array([ac_velocity,ac_velocity], dtype=dtype(float))
     linear_pos = find_linear(order, op_wavelength, ac_velocity, spacing, base_freq, pair_deflection_ratio,  xy_ac_vel)
     linear_neg = find_linear(order, op_wavelength, ac_velocity, spacing, base_freq, pair_deflection_ratio, -xy_ac_vel) 
     
@@ -32,11 +31,42 @@ def test_linear_acoustic_vel():
 
 def test_ray_passes_through_focus():
     
-    focus_position = array([1,2,3], dtype=dtype(float))
-    focus_velocity = array([5,7,11], dtype=dtype(float))
+    focus_position = array([.1,.2,3], dtype=dtype(float))
+    focus_velocity = array([0,0,0], dtype=dtype(float))
     
-    (const, linear, quad) = calculate_drive_freq_4(order, op_wavelength, ac_velocity, aod_spacing, crystal_depth, base_freq, pair_deflection_ratio, focus_position, focus_velocity)
+    (const, linear, _) = calculate_drive_freq_4(order, op_wavelength, ac_velocity, aod_spacing, crystal_depth, \
+                                                base_freq, pair_deflection_ratio, focus_position, focus_velocity)
     
-    # create simple_aol and propagate to focal length. check this gives correct xy position. 
+    ray1 = Ray([1,0,0], [0,0,1], op_wavelength)
+    aol1 = Aol(order, aod_spacing, const, linear)
+    aol1.propagate_to_distance_from_aol(ray1, 0, focus_position[2]) # t = 0
     
-    assert False # waiting to finish aol_simple before this can be tested... 
+    ray2 = Ray([0,0,0], [0,0,1], op_wavelength)
+    aol2 = Aol(order, aod_spacing, const, linear)
+    aol2.propagate_to_distance_from_aol(ray2, 11, focus_position[2]) # t != 0
+        
+    expected_position = focus_position + [0,0,sum(aod_spacing)]
+    assert allclose(ray1.position, expected_position) and allclose(ray2.position, expected_position)
+    
+test_ray_passes_through_focus()
+    
+# def test_focus_scans_right_dir():
+# 
+#     focus_position = array([.1,.2,3], dtype=dtype(float))
+#     focus_velocity = array([5,7,0], dtype=dtype(float))
+#     time = 10 
+#     
+#     ray1 = Ray([0,0,0], [0,0,1], op_wavelength)
+#     (const1, linear1, _) = calculate_drive_freq_4(1, op_wavelength, ac_velocity, aod_spacing, crystal_depth, \
+#                                                   base_freq, pair_deflection_ratio, focus_position, focus_velocity)
+#     aol1 = Aol(1, aod_spacing, const1, linear1) # +1
+#     aol1.propagate_to_distance_from_aol(ray1, time, focus_position[2])
+#     
+#     ray2 = Ray([0,0,0], [0,0,1], op_wavelength)
+#     (const2, linear2, _) = calculate_drive_freq_4(-1, op_wavelength, ac_velocity, aod_spacing, crystal_depth, \
+#                                                   base_freq, pair_deflection_ratio, focus_position, focus_velocity)
+#     aol2 = Aol(-1, aod_spacing, const2, linear2)# -1
+#     aol2.propagate_to_distance_from_aol(ray2, time, focus_position[2])
+#         
+#     expected_position = focus_position + [0,0,sum(aod_spacing)] + time * focus_velocity
+#     assert allclose(ray1.position, expected_position, rtol=1e-2) and allclose(ray2.position, expected_position, rtol=1e-2) 

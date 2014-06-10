@@ -1,7 +1,4 @@
-from testutils import check_is_unit_vector
-from convert_cartesian_spherical import normalise
-from numpy import pi, array, dot, dtype
-from numpy.linalg import norm
+from numpy import pi, array, dtype
 
 class Ray(object):
         
@@ -16,7 +13,7 @@ class Ray(object):
         return self._wavevector_unit
     @wavevector_unit.setter
     def wavevector_unit(self, v):
-        check_is_unit_vector(v)
+        assert v[2] == 1
         self._wavevector_unit = array(v, dtype=dtype(float))
     
     @property
@@ -31,16 +28,7 @@ class Ray(object):
         return self.wavevector_vac_mag * self.wavevector_unit
     @wavevector_vac.setter
     def wavevector_vac(self, v):
-        self.wavevector_unit = array(normalise(v), dtype=dtype(float))
-        self.wavevector_vac_mag = norm(v)
-    
-    def propagate_free_space(self, distance):
-        self.position += self.wavevector_unit * distance
-        
-    def propagate_to_plane(self, point_on_plane, normal_to_plane):
-        from_ray_to_point = point_on_plane - self.position
-        distance = dot(from_ray_to_point, normal_to_plane) / dot(self.wavevector_unit, normal_to_plane)
-        self.propagate_free_space(distance)
+        self.wavevector_unit[0:2] = v[0:2] / self.wavevector_vac_mag 
         
     def propagate_free_space_z(self, distance):
-        self.propagate_to_plane(self.position + [0,0,distance], [0,0,1])
+        self.position += self.wavevector_unit * distance    
