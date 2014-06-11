@@ -1,4 +1,4 @@
-from convert_cartesian_spherical import normalise
+from vector_utils import normalise
 from numpy import dot, sin, sqrt
 from numpy.linalg import norm
 from scipy.optimize import fsolve

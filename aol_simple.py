@@ -1,10 +1,19 @@
-from numpy import array, dtype, pi, zeros, atleast_2d, concatenate, dot, zeros
+from numpy import array, dtype, pi, atleast_2d, concatenate, dot, zeros
 from acoustics import Acoustics
-from testutils import check_is_unit_vector, check_is_of_length
+from error_utils import check_is_unit_vector, check_is_of_length
 import copy
 
 class Aol(object):
 # Can work with ray or ray_paraxial
+
+    @staticmethod
+    def create_aol(order, op_wavelength, ac_velocity, aod_spacing, base_freq, pair_deflection_ratio, focus_position, focus_velocity):
+        from aol_drive import calculate_drive_freq_4
+        (const, linear, _) = calculate_drive_freq_4(order, op_wavelength, ac_velocity, aod_spacing, 0, \
+                                                base_freq, pair_deflection_ratio, focus_position, focus_velocity)
+        aol = Aol(order, aod_spacing, const, linear)
+        aol.set_centres_for_wavelengh(op_wavelength)
+        return aol
 
     def __init__(self, order, aod_spacing, freq_const, freq_linear, aod_centres=zeros((4,2)), aod_directions=[[1,0,0],[0,1,0],[-1,0,0],[0,-1,0]]):
         self.order = order
@@ -23,10 +32,10 @@ class Aol(object):
         check_is_of_length(4, self.aod_centres)
     
     def set_centres_for_wavelengh(self, op_wavelength):
-        from ray_paraxial import Ray
-        tracer_ray = Ray([0,0,0], [0,0,1], op_wavelength)
+        from ray_paraxial import RayParaxial
+        tracer_ray = RayParaxial([0,0,0], [0,0,1], op_wavelength)
         path = self.propagate_through_aol(tracer_ray, 0)
-        self.aod_centres = path[1:,0:2] # TODO QQ CHECK THIS
+        self.aod_centres = path[1:,0:2]
     
     def plot_ray_through_aol(self, ray, time, distance):
         import matplotlib as mpl
@@ -35,7 +44,7 @@ class Aol(object):
         from numpy import meshgrid
         
         new_ray = copy.deepcopy(ray)
-        path = self.propagate_to_distance_from_aol(new_ray, time, distance)
+        path = self.propagate_to_distance_from_aol(new_ray, time, distance, self.aod_spacing.sum())
 
         fig = plt.figure()
         ax = fig.gca(projection='3d')
@@ -54,12 +63,12 @@ class Aol(object):
         plt.show()
         return plt
     
-    def propagate_to_distance_from_aol(self, ray, time, distance):
-        path = self.propagate_through_aol(ray, time)
-        ray.propagate_free_space_z(distance)
+    def propagate_to_distance_from_aol(self, ray, time, distance_after_aol, distance_before_aol=0):
+        path = self.propagate_through_aol(ray, time, distance_before_aol)
+        ray.propagate_free_space_z(distance_after_aol)
         return concatenate( (path, atleast_2d(ray.position)) )
         
-    def propagate_through_aol(self, ray, time):
+    def propagate_through_aol(self, ray, time, distance_before_aol=0):
 
         positions = zeros( (5,3) )
         positions[0,:] = ray.position
@@ -69,7 +78,7 @@ class Aol(object):
             positions[aod_number,:] = ray.position
             self.deflect_at_aod(ray, time, aod_number)
 
-        propagate_and_deflect(1, self.aod_spacing[0]*2)
+        propagate_and_deflect(1, distance_before_aol)
         propagate_and_deflect(2, self.aod_spacing[0])
         propagate_and_deflect(3, self.aod_spacing[1])
         propagate_and_deflect(4, self.aod_spacing[2])
@@ -79,7 +88,7 @@ class Aol(object):
     def deflect_at_aod(self, ray, time, aod_number):
         acoustics = Acoustics(0)
         
-        distance = dot(ray.position[0:2] - self.aod_centres[aod_number-1], self.aod_directions[aod_number-1][0:2]) # QQ DEAL WITH THIS TODO
+        distance = dot(ray.position[0:2] - self.aod_centres[aod_number-1], self.aod_directions[aod_number-1][0:2])
         frequency = self.freq_const[aod_number-1] + self.freq_linear[aod_number-1] * (time - distance/acoustics.velocity)
         acoustics.frequency = frequency
         

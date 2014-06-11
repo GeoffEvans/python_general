@@ -1,6 +1,7 @@
 from numpy import pi, array, dtype
+from error_utils import check_is_val
 
-class Ray(object):
+class RayParaxial(object):
         
     def __init__(self, position, wavevector_unit, wavelength, energy=1):
         self.position = array(position, dtype=dtype(float))
@@ -13,7 +14,7 @@ class Ray(object):
         return self._wavevector_unit
     @wavevector_unit.setter
     def wavevector_unit(self, v):
-        assert v[2] == 1
+        check_is_val(v[2], 1)
         self._wavevector_unit = array(v, dtype=dtype(float))
     
     @property
@@ -28,7 +29,7 @@ class Ray(object):
         return self.wavevector_vac_mag * self.wavevector_unit
     @wavevector_vac.setter
     def wavevector_vac(self, v):
-        self.wavevector_unit[0:2] = v[0:2] / self.wavevector_vac_mag 
+        self.wavevector_unit[0:2] = array(v[0:2]) / self.wavevector_vac_mag 
         
     def propagate_free_space_z(self, distance):
         self.position += self.wavevector_unit * distance    

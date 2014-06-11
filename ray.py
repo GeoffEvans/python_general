@@ -1,5 +1,5 @@
-from testutils import check_is_unit_vector
-from convert_cartesian_spherical import normalise
+from error_utils import check_is_unit_vector
+from vector_utils import normalise
 from numpy import pi, array, dot, dtype
 from numpy.linalg import norm
 

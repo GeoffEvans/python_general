@@ -2,7 +2,7 @@ from aod import Aod
 from ray import Ray
 from acoustics import Acoustics
 from xu_stroud_model import diffract_acousto_optically,diffract_by_wavevector_triangle,get_aod_efficiency
-from convert_cartesian_spherical import normalise
+from vector_utils import normalise
 import pytest
 from numpy import allclose, all
 from random import random

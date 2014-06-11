@@ -9,4 +9,8 @@ def check_is_unit_vector(vector):
 def check_is_of_length(desired, arr):
     length = arr.shape[0]
     if not length == desired:
-        raise ValueError("wrong size!")
+        raise ValueError("array has wrong size")
+    
+def check_is_val(var,val):
+    if not var == val:
+        raise ValueError("variable has wrong value")

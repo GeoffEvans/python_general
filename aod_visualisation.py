@@ -1,5 +1,5 @@
 from aod import Aod
-from ray import Ray
+from ray import RayParaxial
 from acoustics import Acoustics
 from numpy import linspace, pi, sin, cos, zeros, shape, arange, abs, sqrt, arcsin
 
@@ -44,7 +44,7 @@ def plot_mismatch_angle_freq():
     
         ang = deg * pi/180
         wavevector_unit = [sin(ang), 0, cos(ang)]
-        ray = Ray([0,0,0], wavevector_unit, 800e-9)
+        ray = RayParaxial([0,0,0], wavevector_unit, 800e-9)
         acoustics = Acoustics(mhz*1e6, 1)
         
         (mismatch,_) = diffract_by_wavevector_triangle(aod, ray, acoustics)
@@ -60,7 +60,7 @@ def plot_efficiency_xangle_freq():
     
         ang = deg * pi/180
         wavevector_unit = [sin(ang), 0, cos(ang)]
-        ray = Ray([0,0,0], wavevector_unit, 800e-9)
+        ray = RayParaxial([0,0,0], wavevector_unit, 800e-9)
         acoustics = Acoustics(mhz*1e6, 1)
         
         diffract_acousto_optically(aod, ray, acoustics)
@@ -78,7 +78,7 @@ def plot_efficiency_xangle_yangle():
         ang_trans = deg_trans * pi/180
         wavevector_unit = [sin(ang), sin(ang_trans), sqrt(1 - sin(ang)**2 - sin(ang_trans)**2)]
         import pdb; pdb.set_trace
-        ray = Ray([0,0,0], wavevector_unit, 800e-9)
+        ray = RayParaxial([0,0,0], wavevector_unit, 800e-9)
         acoustics = Acoustics(35e6, 1)        
         
         diffract_acousto_optically(aod, ray, acoustics)
@@ -94,7 +94,7 @@ def plot_xangleout_xangle_freq():
     
         ang = deg * pi/180
         wavevector_unit = [sin(ang), 0, cos(ang)]
-        ray = Ray([0,0,0], wavevector_unit, 800e-9)
+        ray = RayParaxial([0,0,0], wavevector_unit, 800e-9)
         acoustics = Acoustics(mhz*1e6, 1)
         
         diffract_acousto_optically(aod, ray, acoustics)
@@ -111,7 +111,7 @@ def plot_xangleout_xangle_yangle():
         ang = deg * pi/180
         ang_trans = deg_trans * pi/180
         wavevector_unit = [sin(ang), sin(ang_trans), sqrt(1 - sin(ang)**2 - sin(ang_trans)**2)]
-        ray = Ray([0,0,0], wavevector_unit, 800e-9)
+        ray = RayParaxial([0,0,0], wavevector_unit, 800e-9)
         acoustics = Acoustics(35e6, 1)        
         
         diffract_acousto_optically(aod, ray, acoustics)

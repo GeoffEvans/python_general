@@ -1,4 +1,4 @@
-from ray import *
+from ray import Ray
 from numpy import allclose, array
 import pytest
 

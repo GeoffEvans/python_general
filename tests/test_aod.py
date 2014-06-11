@@ -1,6 +1,6 @@
-from aod import *
+from aod import Aod
 from ray import Ray
-from numpy import sqrt, allclose
+from numpy import sqrt, allclose, cross, dot
 
 aod = Aod([0,0,1], [1,0,0], 1, 1, 1, 1)
 

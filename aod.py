@@ -1,7 +1,7 @@
 from teo2 import calc_refractive_indices
 from xu_stroud_model import diffract_acousto_optically
-from convert_cartesian_spherical import perpendicular_component, normalise
-from testutils import check_is_unit_vector
+from vector_utils import perpendicular_component, normalise
+from error_utils import check_is_unit_vector
 from numpy import array, sqrt, arccos, arcsin, sin, cos, cross, dot, dtype
 from numpy.linalg import norm
 from scipy.optimize import newton
