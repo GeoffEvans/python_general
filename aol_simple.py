@@ -1,41 +1,42 @@
-from numpy import array, dtype, pi, atleast_2d, concatenate, dot, zeros
-from acoustics import Acoustics
+from numpy import array, dtype, pi, atleast_2d, concatenate, zeros
+from acoustics import AcousticDrive
 from error_utils import check_is_unit_vector, check_is_of_length
 import copy
 
-class Aol(object):
+class AolSimple(object):
 # Can work with ray or ray_paraxial
 
     @staticmethod
     def create_aol(order, op_wavelength, ac_velocity, aod_spacing, base_freq, pair_deflection_ratio, focus_position, focus_velocity):
         from aol_drive import calculate_drive_freq_4
+        
         (const, linear, _) = calculate_drive_freq_4(order, op_wavelength, ac_velocity, aod_spacing, 0, \
                                                 base_freq, pair_deflection_ratio, focus_position, focus_velocity)
-        aol = Aol(order, aod_spacing, const, linear)
-        aol.set_centres_for_wavelengh(op_wavelength)
+        acoustic_drives = AcousticDrive.make_acoustic_drives(const, linear)
+
+        aol = AolSimple(order, aod_spacing, acoustic_drives)
+        aol.set_base_ray_positions(op_wavelength)
         return aol
 
-    def __init__(self, order, aod_spacing, freq_const, freq_linear, aod_centres=zeros((4,2)), aod_directions=[[1,0,0],[0,1,0],[-1,0,0],[0,-1,0]]):
+    def __init__(self, order, aod_spacing, acoustic_drives, base_ray_positions=zeros((4,2)), aod_directions=[[1,0,0],[0,1,0],[-1,0,0],[0,-1,0]]):
         self.order = order
         self.aod_spacing = array(aod_spacing, dtype=dtype(float))
-        self.freq_const = array(freq_const, dtype=dtype(float))
-        self.freq_linear = array(freq_linear, dtype=dtype(float))
+        self.acoustic_drives = acoustic_drives
         self.aod_directions = array(aod_directions, dtype=dtype(float))
-        self.aod_centres = array(aod_centres, dtype=dtype(float))
+        self.base_ray_positions = array(base_ray_positions, dtype=dtype(float))
         
         for d in self.aod_directions:
             check_is_unit_vector(d)
         check_is_of_length(3, self.aod_spacing)
-        check_is_of_length(4, self.freq_const)
-        check_is_of_length(4, self.freq_linear)
+        check_is_of_length(4, self.acoustic_drives)
         check_is_of_length(4, self.aod_directions)
-        check_is_of_length(4, self.aod_centres)
+        check_is_of_length(4, self.base_ray_positions)
     
-    def set_centres_for_wavelengh(self, op_wavelength):
+    def set_base_ray_positions(self, op_wavelength):
         from ray_paraxial import RayParaxial
         tracer_ray = RayParaxial([0,0,0], [0,0,1], op_wavelength)
         path = self.propagate_through_aol(tracer_ray, 0)
-        self.aod_centres = path[1:,0:2]
+        self.base_ray_positions = path[1:,0:2]
     
     def plot_ray_through_aol(self, ray, time, distance):
         import matplotlib as mpl
@@ -86,11 +87,9 @@ class Aol(object):
         return positions
         
     def deflect_at_aod(self, ray, time, aod_number):
-        acoustics = Acoustics(0)
+        aod_dir = self.aod_directions[aod_number-1]
         
-        distance = dot(ray.position[0:2] - self.aod_centres[aod_number-1], self.aod_directions[aod_number-1][0:2])
-        frequency = self.freq_const[aod_number-1] + self.freq_linear[aod_number-1] * (time - distance/acoustics.velocity)
-        acoustics.frequency = frequency
+        local_acoustics = self.acoustic_drives.get_local_acoustics(time, ray.position, self.base_ray_positions[aod_number-1], aod_dir)
         
-        wavevector_shift = self.order * (2 * pi * acoustics.frequency / acoustics.velocity) * self.aod_directions[aod_number-1] 
+        wavevector_shift = self.order * (2 * pi * local_acoustics.frequency / local_acoustics.velocity) * aod_dir 
         ray.wavevector_vac += wavevector_shift 

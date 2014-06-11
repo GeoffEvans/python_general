@@ -1,8 +1,8 @@
 from numpy import array, append, dtype
 
-def calculate_drive_freq_4(order, op_wavelength, ac_velocity, aod_spacing, crystal_depth, base_freq, pair_deflection_ratio, focus_position, focus_velocity):
+def calculate_drive_freq_4(order, op_wavelength, ac_velocity, aod_spacing, crystal_thickness, base_freq, pair_deflection_ratio, focus_position, focus_velocity):
     
-    spacing_correction = crystal_depth * (1 - 1/2.26) # 2.26 is approx TeO2 refractive index
+    spacing_correction = crystal_thickness * (1 - 1/2.26) # 2.26 is approx TeO2 refractive index
     aod_spacing = array(aod_spacing, dtype=dtype(float))
     focal_length = focus_position[2]
     spacing = append(aod_spacing, focal_length) - spacing_correction 

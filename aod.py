@@ -8,16 +8,14 @@ from scipy.optimize import newton
 
 class Aod(object):
        
-    def __init__(self, normal, sound_direction, aperture_width, transducer_width, crystal_thickness, order):
+    def __init__(self, normal, sound_direction, aperture_width, transducer_width, crystal_thickness, centre=[0,0,0]):
         self.normal = array(normal, dtype=dtype(float))
         self.relative_acoustic_direction = array(sound_direction, dtype=dtype(float))
         self.aperture_width = aperture_width
         self.crystal_thickness = crystal_thickness
         self.transducer_width = transducer_width    
-        self.order = order
+        self.centre = array(centre, dtype=dtype(float))
         
-        if order > 1:
-            raise ValueError("Order only supports +1, -1 and 0")
         check_is_unit_vector(normal)
         check_is_unit_vector(sound_direction)
 
@@ -44,9 +42,9 @@ class Aod(object):
         
         return sound_vector 
 
-    def propagate_ray(self, ray, local_acoustics):
+    def propagate_ray(self, ray, local_acoustics, order):
         self.refract_in(ray)
-        diffract_acousto_optically(self, ray, local_acoustics)
+        diffract_acousto_optically(self, ray, local_acoustics, order)
         self.move_ray_through_aod(ray)
         self.refract_out(ray)
         

@@ -5,16 +5,19 @@ from scipy.optimize import fsolve
 from scipy.constants import c, pi
 from copy import copy
 
-def diffract_acousto_optically(aod, ray, local_acoustics):
-    (wavevector_mismatch_mag, original_ray) = diffract_by_wavevector_triangle(aod, ray, local_acoustics)
+def diffract_acousto_optically(aod, ray, local_acoustics, order):
+    if order > 1:
+        raise ValueError("Order only supports +1, -1 and 0")
+
+    (wavevector_mismatch_mag, original_ray) = diffract_by_wavevector_triangle(aod, ray, local_acoustics, order)
     ray.energy *= get_aod_efficiency(aod, wavevector_mismatch_mag, original_ray, ray, local_acoustics)
 
-def diffract_by_wavevector_triangle(aod, ray, local_acoustics):
+def diffract_by_wavevector_triangle(aod, ray, local_acoustics, order):
     n_ext = aod.calc_refractive_indices_ray(ray)[0]
     
     wavevector_in = n_ext * ray.wavevector_vac
     wavevector_ac = local_acoustics.wavevector(aod)
-    resultant = wavevector_in + aod.order * wavevector_ac 
+    resultant = wavevector_in + order * wavevector_ac 
     
     wavevector_vac_mag_out = ray.wavevector_vac_mag + (2 * pi / c) * local_acoustics.frequency # from w_out = w_in + w_ac
     
