@@ -28,10 +28,10 @@ class AcousticDrive(object):
 
     @staticmethod
     def make_acoustic_drives(const, linear, quad=[0]*4, power=[default_power]*4, velocity=teo2_ac_vel):
-        acoustic_drives = []
+        acoustic_drives = [0]*4
         for k in range(4):
             acoustic_drives[k] = AcousticDrive(const[k], linear[k], quad[k], power[k], velocity)
-        return acoustic_drives
+        return array(acoustic_drives)
     
     def __init__(self, const, linear, quad=0, power=default_power, velocity=teo2_ac_vel):
         self.const = array(const, dtype=dtype(float))
@@ -39,10 +39,6 @@ class AcousticDrive(object):
         self.quad = array(quad, dtype=dtype(float))
         self.power = array(power, dtype=dtype(float))
         self.velocity = velocity
-        
-        check_is_of_length(4, self.const)
-        check_is_of_length(4, self.linear)
-        check_is_of_length(4, self.quad)
         
     def get_local_acoustics(self, time, ray_position, aod_centre, aod_direction):
         distance = dot(ray_position[0:2] - aod_centre, aod_direction[0:2])
