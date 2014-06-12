@@ -36,17 +36,17 @@ def test_ray_passes_through_focus():
     aol = AolSimple.create_aol(order, op_wavelength, ac_velocity, aod_spacing, base_freq, pair_deflection_ratio, focus_position, focus_velocity)
 
     ray1 = RayParaxial([0,0,0], [0,0,1], op_wavelength)
-    aol.propagate_to_distance_from_aol(ray1, 0, focus_position[2]) # t = 0
+    aol.propagate_to_distance_past_aol(ray1, 0, focus_position[2]) # t = 0
     
     ray2 = RayParaxial([0,0,0], [0,0,1], op_wavelength)
-    aol.propagate_to_distance_from_aol(ray2, 11, focus_position[2]) # t != 0
+    aol.propagate_to_distance_past_aol(ray2, 11, focus_position[2]) # t != 0
     
     ray3 = RayParaxial([1,0,0], [0,0,1], op_wavelength) # position not origin
-    aol.propagate_to_distance_from_aol(ray3, 0, focus_position[2]) # t = 0
+    aol.propagate_to_distance_past_aol(ray3, 0, focus_position[2]) # t = 0
         
     expected_position = focus_position + [0,0,sum(aod_spacing)]
     assert allclose(ray1.position, expected_position) and allclose(ray2.position, expected_position) and allclose(ray3.position, expected_position)
-  
+
 def test_focus_scans_correctly():
  
     focus_position = array([.1,.2,3], dtype=dtype(float))
@@ -55,11 +55,11 @@ def test_focus_scans_correctly():
      
     ray1 = RayParaxial([0,0,0], [0,0,1], op_wavelength)
     aol1 = AolSimple.create_aol(1, op_wavelength, ac_velocity, aod_spacing, base_freq, pair_deflection_ratio, focus_position, focus_velocity)
-    aol1.propagate_to_distance_from_aol(ray1, time, focus_position[2])
+    aol1.propagate_to_distance_past_aol(ray1, time, focus_position[2])
      
     ray2 = RayParaxial([0,0,0], [0,0,1], op_wavelength)
     aol2 = AolSimple.create_aol(order, op_wavelength, ac_velocity, aod_spacing, base_freq, pair_deflection_ratio, focus_position, focus_velocity)
-    aol2.propagate_to_distance_from_aol(ray2, time, focus_position[2])
+    aol2.propagate_to_distance_past_aol(ray2, time, focus_position[2])
          
     expected_position = focus_position + [0,0,sum(aod_spacing)] + time * focus_velocity
     assert allclose(ray1.position, expected_position) and allclose(ray2.position, expected_position) 
