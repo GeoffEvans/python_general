@@ -2,7 +2,7 @@ from aod import Aod
 from ray import Ray
 from numpy import sqrt, allclose, cross, dot
 
-aod = Aod([0,0,1], [1,0,0], 1, 1, 1, 1)
+aod = Aod([0,0,1], [1,0,0], 1, 1, 1)
 
 def test_on_axis_ray_displacement():
     r = Ray([0,0,0],[0,0,1],800e-9,1)
@@ -36,6 +36,12 @@ def test_refracting_in_towards_normal():
     not_reflected = cosine_outside * cosine_inside >= 0
     assert towards_normal and not_reflected
     
+def test_refracting_in_at_normal():
+    wavevec = [0,0,1]
+    r = Ray([0,0,0],wavevec,800e-9,1)
+    aod.refract_in(r)
+    assert allclose(wavevec, r.wavevector_unit)
+    
 def test_refracting_out_away_from_normal():
     wavevec = [17./145,0,144./145]
     r = Ray([0,0,0],wavevec,800e-9,1)
@@ -45,6 +51,12 @@ def test_refracting_out_away_from_normal():
     towards_normal = abs(cosine_outside) < abs(cosine_inside)
     not_reflected = cosine_outside * cosine_inside >= 0
     assert towards_normal and not_reflected
+
+def test_refracting_out_at_normal():
+    wavevec = [0,0,1]
+    r = Ray([0,0,0],wavevec,800e-9,1)
+    aod.refract_out(r)
+    assert allclose(wavevec, r.wavevector_unit)
 
 def test_refraction_in_out_no_change():
     wavevec = [3./5,0,4./5]

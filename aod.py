@@ -2,22 +2,22 @@ from teo2 import calc_refractive_indices
 from xu_stroud_model import diffract_acousto_optically
 from vector_utils import perpendicular_component, normalise
 from error_utils import check_is_unit_vector
-from numpy import array, sqrt, arccos, arcsin, sin, cos, cross, dot, dtype
+from numpy import array, sqrt, arccos, arcsin, sin, cos, cross, dot, dtype, allclose
 from numpy.linalg import norm
 from scipy.optimize import newton
 
 class Aod(object):
        
-    def __init__(self, normal, sound_direction, aperture_width, transducer_width, crystal_thickness, centre=[0,0,0]):
+    def __init__(self, normal, relative_ac_dir, aperture_width, transducer_width, crystal_thickness, centre=[0]*3):
         self.normal = array(normal, dtype=dtype(float))
-        self.relative_acoustic_direction = array(sound_direction, dtype=dtype(float))
+        self.relative_acoustic_direction = array(relative_ac_dir, dtype=dtype(float))
         self.aperture_width = aperture_width
         self.crystal_thickness = crystal_thickness
         self.transducer_width = transducer_width    
         self.centre = array(centre, dtype=dtype(float))
         
         check_is_unit_vector(normal)
-        check_is_unit_vector(sound_direction)
+        check_is_unit_vector(relative_ac_dir)
 
     @property
     def optic_axis(self):
@@ -83,6 +83,9 @@ class Aod(object):
     def refract_in(self, ray):
         # get vectors perpendicular and parallel to normal
         perpendicular_comp = perpendicular_component(ray.wavevector_unit, self.normal) 
+        if allclose(perpendicular_comp, [0,0,0]):
+            return # ray is entering normally and the optic axis is (currently) taken to be parallel 
+        
         unit_perpendicular = normalise(perpendicular_comp)
         
         sin_angle_in = sqrt(1 - dot(ray.wavevector_unit, self.optic_axis) ** 2)
