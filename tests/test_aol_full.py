@@ -23,6 +23,10 @@ aods[3] = Aod([0,0,1], [ 0,-1,0], 25e-3, 1.6e-3, 8e-3)
 
 aol = AolFull.create_aol(aods, aod_spacing, order, op_wavelength, base_freq, pair_deflection_ratio, focus_position, focus_velocity)
 
+def test_plot():
+    ray = Ray([0,0,0], [0,0,1], 800e-9)
+    aol.plot_ray_through_aol(ray, 0, 0.1)
+
 def test_ray_passes_through_focus():
     location = [0]*10
     for t in arange(10):

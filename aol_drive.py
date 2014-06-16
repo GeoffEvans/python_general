@@ -40,4 +40,4 @@ def find_linear(order, op_wavelength, ac_velocity, spacing, base_freq, pair_defl
                   (1 - v[0])/(2 * spacing[2:4].sum()), \
                   (1 - v[1])/(2 * spacing[3:4].sum()) ])
 
-    return (ac_velocity**2 / op_wavelength) * factors
+    return (ac_velocity**2 / op_wavelength) * factors / order 

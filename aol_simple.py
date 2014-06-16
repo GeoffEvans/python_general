@@ -10,7 +10,7 @@ class AolSimple(object):
     def create_aol(order, op_wavelength, ac_velocity, aod_spacing, base_freq, pair_deflection_ratio, focus_position, focus_velocity):
         from aol_drive import calculate_drive_freq_4
         
-        (const, linear, _) = calculate_drive_freq_4(order, op_wavelength, ac_velocity, aod_spacing, 0, \
+        (const, linear, _) = calculate_drive_freq_4(order, op_wavelength, ac_velocity, aod_spacing, \
                                                 base_freq, pair_deflection_ratio, focus_position, focus_velocity)
         acoustic_drives = AcousticDrive.make_acoustic_drives(const, linear)
 
@@ -82,10 +82,8 @@ class AolSimple(object):
         return plt
     
     def propagate_to_distance_past_aol(self, ray, time, distance=0):
-        path = zeros( (4,3) )
-        path[0,:] = ray.position
-        
         spacings = append(self.aod_spacing, distance) 
+        path = zeros( (5,3) )
             
         def diffract_and_propagate(aod_number):
             path[aod_number-1,:] = ray.position
@@ -95,6 +93,7 @@ class AolSimple(object):
         for k in range(spacings.size):
             diffract_and_propagate(k+1)
         
+        path[4,:] = ray.position
         return path
         
     def diffract_at_aod(self, ray, time, aod_number):
