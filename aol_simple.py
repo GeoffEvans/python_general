@@ -52,7 +52,17 @@ class AolSimple(object):
     def find_base_ray_positions(self, op_wavelength):
         from ray_paraxial import RayParaxial
         tracer_ray = RayParaxial([0,0,0], [0,0,1], op_wavelength)
+        
+        linear = [0]*4
+        for k in range(4):
+            linear[k] = self.acoustic_drives[k].linear
+            self.acoustic_drives[k].linear = 0
+        
         path = self.propagate_to_distance_past_aol(tracer_ray, 0)
+
+        for k in range(4):
+            self.acoustic_drives[k].linear = linear[k]
+        
         return path[:,0:2]
     
     def plot_ray_through_aol(self, ray, time, distance):

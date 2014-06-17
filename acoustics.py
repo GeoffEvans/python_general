@@ -40,7 +40,7 @@ class AcousticDrive(object):
         self.power = array(power, dtype=dtype(float))
         self.velocity = velocity
         
-    def get_local_acoustics(self, time, ray_position, aod_centre, aod_direction):
-        distance = dot(ray_position[0:2] - array(aod_centre), aod_direction[0:2])
+    def get_local_acoustics(self, time, ray_position, base_ray_position, aod_direction):
+        distance = dot(ray_position[0:2] - array(base_ray_position), aod_direction[0:2])
         frequency = self.const + self.linear * (time - distance/self.velocity) + self.quad * (time - distance/self.velocity)**2
         return Acoustics(frequency, self.power, self.velocity)

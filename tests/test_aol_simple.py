@@ -42,3 +42,8 @@ def test_deflect_right_way():
     ray = Ray([0,0,0], wavevec, wavelength)
     aol.propagate_to_distance_past_aol(ray, 0)
     assert ray.wavevector_unit[0] < 0    
+    
+def test_find_base_ray_positions():
+    aol_const = AolSimple.create_aol_from_drive(order, spacing, [1e9]*4, [0]*4, wavelength)
+    aol_chirp = AolSimple.create_aol_from_drive(order, spacing, [1e9]*4, [1e12]*4, wavelength)
+    assert allclose(aol_const.base_ray_positions, aol_chirp.base_ray_positions) and not aol_chirp.acoustic_drives[0].linear == 0 

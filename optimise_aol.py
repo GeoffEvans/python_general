@@ -32,7 +32,7 @@ def optimise_aol():
     for aod_num in arange(1, 5):
         optimise_nth_aod(aod_num)
         
-    print array([a.normal for a in aol.aods], dtype=dtype(float))
+    return array([a.normal for a in aol.aods], dtype=dtype(float))
 
 def set_up_aol():
     order = 1
