@@ -42,7 +42,6 @@ def microscope_driver( \
                                                                             fn.displacement, reference_point)
         main_aol = AolSimple.create_aol(order, op_wavelength, ac_velocity, aod_spacing, base_freq, \
                                         pair_deflection_ratio, focus_pos, focus_vel, crystal_thickness=crystal_thickness)
-        assert allclose(preliminary_aol.base_ray_positions, main_aol.base_ray_positions)
         
         base_freq_offset = compensate_freq_for_transducer_location(main_aol, aod_xy_centres, transducer_offsets, reference_point)    
         
