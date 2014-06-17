@@ -65,12 +65,12 @@ def test_refraction_in_out_no_change():
     aod.refract_out(r)
     assert allclose(r.wavevector_unit, [3./5,0,4./5], rtol=5e-3)
     
-def test_absolute_sound_direction_trivial():
+def test_acoustic_direction_trivial():
     direc = aod.acoustic_direction
     assert allclose(direc, [1,0,0])
     
-def test_absolite_sound_direction():
-    aod_new = Aod([1,0,1]/sqrt(2), [1,0,0], 1, 1, 1, 1)
+def test_acoustic_sound_direction():
+    aod_new = Aod([1,0,1]/sqrt(2), [1,0,0], 1, 1, 1)
     direc = aod_new.acoustic_direction
     assert allclose(direc, [1,0,-1]/sqrt(2))
 

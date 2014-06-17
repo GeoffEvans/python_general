@@ -4,7 +4,7 @@ from aol_simple import AolSimple
 from ray_paraxial import RayParaxial
 from numpy import array, dtype, allclose
 
-order = 1
+order = -1
 op_wavelength = 900e-9
 aod_spacing = [5e-2, 5e-2, 5e-2]
 spacing = array([1,1,1,1])

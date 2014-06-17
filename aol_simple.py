@@ -15,7 +15,7 @@ class AolSimple(object):
         focus_position[2] = reduced_spacings[3] # focal distance is effectively shorter than as measured
         reduced_spacings = reduced_spacings[0:3]
         
-        (const, linear, _) = calculate_drive_freq_4(order, op_wavelength, ac_velocity, aod_spacing, \
+        (const, linear, _) = calculate_drive_freq_4(order, op_wavelength, ac_velocity, aod_spacing, [0]*4, \
                                                 base_freq, pair_deflection_ratio, focus_position, focus_velocity)
         acoustic_drives = AcousticDrive.make_acoustic_drives(const, linear)
 
