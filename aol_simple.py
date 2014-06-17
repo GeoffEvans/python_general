@@ -1,5 +1,6 @@
 from numpy import array, dtype, pi, atleast_2d, concatenate, zeros, append
 from acoustics import AcousticDrive
+from aol_drive import get_reduced_spacings
 from error_utils import check_is_unit_vector, check_is_of_length
 import copy
 
@@ -7,23 +8,27 @@ class AolSimple(object):
 # Can work with ray or ray_paraxial
 
     @staticmethod
-    def create_aol(order, op_wavelength, ac_velocity, aod_spacing, base_freq, pair_deflection_ratio, focus_position, focus_velocity):
+    def create_aol(order, op_wavelength, ac_velocity, aod_spacing, base_freq, pair_deflection_ratio, focus_position, focus_velocity, crystal_thickness=[0]*4):
         from aol_drive import calculate_drive_freq_4
+        
+        reduced_spacings = get_reduced_spacings(crystal_thickness, aod_spacing, focus_position[2])
+        focus_position[2] = reduced_spacings[3] # focal distance is effectively shorter than as measured
+        reduced_spacings = reduced_spacings[0:3]
         
         (const, linear, _) = calculate_drive_freq_4(order, op_wavelength, ac_velocity, aod_spacing, \
                                                 base_freq, pair_deflection_ratio, focus_position, focus_velocity)
         acoustic_drives = AcousticDrive.make_acoustic_drives(const, linear)
 
-        aol = AolSimple(order, aod_spacing, acoustic_drives)
+        aol = AolSimple(order, reduced_spacings, acoustic_drives)
         aol.set_base_ray_positions(op_wavelength)
         return aol
 
     @staticmethod
-    def create_aol_from_drive(order, aod_spacing, const, linear, op_wavelength):
-        
+    def create_aol_from_drive(order, aod_spacing, const, linear, op_wavelength, crystal_thickness=[0]*4):
+        reduced_spacings = get_reduced_spacings(crystal_thickness, aod_spacing, 0)[0:3] # ignore focal length
         acoustic_drives = AcousticDrive.make_acoustic_drives(const, linear)
 
-        aol = AolSimple(order, aod_spacing, acoustic_drives)
+        aol = AolSimple(order, reduced_spacings, acoustic_drives)
         aol.set_base_ray_positions(op_wavelength)
         return aol
 

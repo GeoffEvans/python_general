@@ -24,7 +24,7 @@ class AolFull(object):
         self.order = order
         
         simple = AolSimple(order, self.aod_spacing, self.acoustic_drives)
-        self.base_ray_centres = simple.find_base_ray_positions(op_wavelength)
+        self.base_ray_positions = simple.find_base_ray_positions(op_wavelength)
      
     def plot_ray_through_aol(self, ray, time, distance):
         import matplotlib as mpl
@@ -80,7 +80,7 @@ class AolFull(object):
         idx = aod_number-1
         
         aod = self.aods[idx]
-        base_ray_position = self.base_ray_centres[idx]
+        base_ray_position = self.base_ray_positions[idx]
         drive = self.acoustic_drives[idx]
         local_acoustics = drive.get_local_acoustics(time, ray.position, base_ray_position, aod.acoustic_direction)
         

@@ -1,7 +1,7 @@
 from aol_full import AolFull
 from aod import Aod
 from ray import Ray
-from numpy import array, arange, meshgrid, append, sqrt, dtype
+from numpy import array, arange, append, sqrt, dtype
 from numpy.linalg import norm
 import copy
 from scipy import optimize

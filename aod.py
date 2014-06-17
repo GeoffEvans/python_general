@@ -8,13 +8,12 @@ from scipy.optimize import newton
 
 class Aod(object):
        
-    def __init__(self, normal, relative_ac_dir, aperture_width, transducer_width, crystal_thickness, centre=[0]*3):
+    def __init__(self, normal, relative_ac_dir, aperture_width, transducer_width, crystal_thickness):
         self.normal = array(normal, dtype=dtype(float))
         self.relative_acoustic_direction = array(relative_ac_dir, dtype=dtype(float))
         self.aperture_width = aperture_width
         self.crystal_thickness = crystal_thickness
         self.transducer_width = transducer_width    
-        self.centre = array(centre, dtype=dtype(float))
         
         check_is_unit_vector(normal)
         check_is_unit_vector(relative_ac_dir)
