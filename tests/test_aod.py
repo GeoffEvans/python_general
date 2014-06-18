@@ -63,8 +63,8 @@ def test_refraction_in_out_no_change():
     r = Ray([0,0,0],wavevec,800e-9,1)
     aod.refract_in(r)
     aod.refract_out(r)
-    assert allclose(r.wavevector_unit, [3./5,0,4./5], rtol=5e-3)
-    
+    assert allclose(r.wavevector_unit, [3./5,0,4./5], rtol=5e-3) # should be close but not the same since ext in, ord out
+
 def test_acoustic_direction_trivial():
     direc = aod.acoustic_direction
     assert allclose(direc, [1,0,0])

@@ -11,7 +11,8 @@ def get_drive( \
                        dwell_time, \
                        zoom_factor, \
                        base_freq, \
-                       focus_info_normalised, \
+                       focus_pos_normalised, \
+                       focus_disp_normalised, \
                        system_clock_freq, \
                        pair_deflection_ratio, \
                        data_time_interval, \
@@ -32,17 +33,20 @@ def get_drive( \
                                        common_offsets(0) + differential_offsets(0),  \
                                        common_offsets(1) + differential_offsets(1)])
 
+    aol = AolSimple.create_aol(order, op_wavelength, ac_velocity, aod_spacing, base_freq, \
+                               pair_deflection_ratio, [0,0,100], [0,0,0], crystal_thickness=crystal_thickness)
+
     (a,b,c,t) = (array([[]]),array([[]]),array([[]]),array([[]]))  
     
-    for fn in focus_info_normalised:
-        (focus_pos, focus_vel, ramp_time) = convert_normalised_to_cartesian(xy_num_elems, zoom_factor, acceptance_angle, fn.position, \
-                                                                            fn.displacement, reference_shift)
-        main_aol = AolSimple.create_aol(order, op_wavelength, ac_velocity, aod_spacing, base_freq, \
-                                        pair_deflection_ratio, focus_pos, focus_vel, crystal_thickness=crystal_thickness)
+    (focus_pos, focus_vel, ramp_time) = convert_normalised_to_cartesian(xy_num_elems, zoom_factor, acceptance_angle, focus_pos_normalised, \
+                                                                        focus_disp_normalised, reference_shift)
+    
+    for m in range(len(focus_pos)):
+        aol.update_drive(focus_pos[m], focus_vel[m], op_wavelength, base_freq, pair_deflection_ratio, crystal_thickness)
         
-        base_freq_offset = compensate_freq_for_transducer_location(main_aol, aod_xy_centres, transducer_offsets, reference_shift)    
+        base_freq_offset = compensate_freq_for_transducer_location(aol, aod_xy_centres, transducer_offsets, reference_shift)    
         
-        (a_,b_,c_,t_) = compute_returns_for_labview(main_aol, base_freq_offset, ramp_time, system_clock_freq, data_time_interval)
+        (a_,b_,c_,t_) = compute_returns_for_labview(aol, base_freq_offset, ramp_time, system_clock_freq, data_time_interval)
         
         a = concatenate((a, atleast_2d(a_)))
         b = concatenate((b, atleast_2d(b_)))

@@ -57,9 +57,9 @@ def change_orientation(aol, aod_num, new_normal):
     aol.aods[aod_num-1].normal = new_normal
 
 def calculate_efficiency(aol):
-    time_array = (arange(5)-3)*5e-5
-    x_array = (arange(5)-3)*2e-3
-    y_array = copy.copy(x_array)
+    time_array = (arange(3)-1)*5e-5
+    x_array = (arange(3)-1)*2e-3
+    y_array = x_array
     
     energy = 0
     ray_count = 0
@@ -73,7 +73,3 @@ def calculate_efficiency(aol):
                 ray_count += 1
                 
     return energy / ray_count
-        
-    
-    
-    

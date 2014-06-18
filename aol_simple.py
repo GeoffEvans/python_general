@@ -1,6 +1,6 @@
 from numpy import array, dtype, pi, atleast_2d, concatenate, zeros, append
 from acoustics import AcousticDrive
-from aol_drive import get_reduced_spacings
+from aol_drive import get_reduced_spacings, calculate_drive_freq_4
 from error_utils import check_is_unit_vector, check_is_of_length
 import copy
 
@@ -9,26 +9,19 @@ class AolSimple(object):
 
     @staticmethod
     def create_aol(order, op_wavelength, ac_velocity, aod_spacing, base_freq, pair_deflection_ratio, focus_position, focus_velocity, crystal_thickness=[0]*4):
-        from aol_drive import calculate_drive_freq_4
-        
-        reduced_spacings = get_reduced_spacings(crystal_thickness, aod_spacing, focus_position[2])
-        focus_position[2] = reduced_spacings[3] # focal distance is effectively shorter than as measured
-        reduced_spacings = reduced_spacings[0:3]
+        # useful for converting a 'real' aol into the simple aol
+        reduced_spacings = get_reduced_spacings(crystal_thickness[0:3], aod_spacing)
+        focus_position[2] = get_reduced_spacings(crystal_thickness[3], focus_position[2]) # focal distance is effectively shorter than as measured
         
         (const, linear, _) = calculate_drive_freq_4(order, op_wavelength, ac_velocity, aod_spacing, [0]*4, \
                                                 base_freq, pair_deflection_ratio, focus_position, focus_velocity)
-        acoustic_drives = AcousticDrive.make_acoustic_drives(const, linear)
-
-        aol = AolSimple(order, reduced_spacings, acoustic_drives)
-        aol.set_base_ray_positions(op_wavelength)
-        return aol
+        return AolSimple.create_aol_from_drive(order, reduced_spacings, const, linear, op_wavelength)
 
     @staticmethod
-    def create_aol_from_drive(order, aod_spacing, const, linear, op_wavelength, crystal_thickness=[0]*4):
-        reduced_spacings = get_reduced_spacings(crystal_thickness, aod_spacing, 0)[0:3] # ignore focal length
+    def create_aol_from_drive(order, aod_spacing, const, linear, op_wavelength):
         acoustic_drives = AcousticDrive.make_acoustic_drives(const, linear)
 
-        aol = AolSimple(order, reduced_spacings, acoustic_drives)
+        aol = AolSimple(order, aod_spacing, acoustic_drives)
         aol.set_base_ray_positions(op_wavelength)
         return aol
 
@@ -46,6 +39,16 @@ class AolSimple(object):
         check_is_of_length(4, self.aod_directions)
         check_is_of_length(4, self.base_ray_positions)
     
+    def update_drive(self, focus_position, focus_velocity, op_wavelength, base_freq, pair_deflection_ratio, crystal_thickness):
+        ac_velocity = [a.acoustic_drives.velocity for a in self.aods]
+        focus_position[2] = get_reduced_spacings(crystal_thickness[3], focus_position[2])
+        
+        (const, linear, _) = calculate_drive_freq_4(self.order, op_wavelength, ac_velocity, self.aod_spacing, [0]*4, \
+                                        base_freq, pair_deflection_ratio, focus_position, focus_velocity)
+        
+        self.acoustic_drives = AcousticDrive.make_acoustic_drives(const, linear) 
+        self.set_base_ray_positions(op_wavelength)
+        
     def set_base_ray_positions(self, op_wavelength):
         self.base_ray_positions = self.find_base_ray_positions(op_wavelength)
     

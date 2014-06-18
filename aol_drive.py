@@ -2,7 +2,7 @@ from numpy import array, append, dtype
 
 def calculate_drive_freq_4(order, op_wavelength, ac_velocity, aod_spacing, crystal_thickness, base_freq, pair_deflection_ratio, focus_position, focus_velocity):
     
-    spacing = get_reduced_spacings(crystal_thickness, aod_spacing, focus_position[2])
+    spacing = get_reduced_spacings(crystal_thickness, append(aod_spacing, focus_position[2]))
     xy_deflection = array(focus_position[0:2])
     xy_focus_velocity = array(focus_velocity[0:2])
     
@@ -11,10 +11,10 @@ def calculate_drive_freq_4(order, op_wavelength, ac_velocity, aod_spacing, cryst
     quadratic = [0]*4 # not yet implemented
     return (const, linear, quadratic)
 
-def get_reduced_spacings(crystal_thickness, aod_spacing, focal_length):
+def get_reduced_spacings(crystal_thickness, spacing):
     spacing_correction = array(crystal_thickness) * (1 - 1/2.26) # 2.26 is approx TeO2 refractive index
-    aod_spacing = array(aod_spacing, dtype=dtype(float))
-    return append(aod_spacing, focal_length) - spacing_correction 
+    spacing = array(spacing, dtype=dtype(float))
+    return spacing - spacing_correction 
     
 def find_constant(order, op_wavelength, ac_velocity, spacing, base_freq, pair_deflection_ratio, xy_deflection):
     

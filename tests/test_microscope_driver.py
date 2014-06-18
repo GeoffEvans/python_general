@@ -1,6 +1,6 @@
 from microscope_driver import get_drive, convert_normalised_to_cartesian
 from driver_wrapper import FocusInfo
-from numpy import array
+from numpy import array, allclose
 from test_aol_full import focal_length
 
 is_structural = 0
@@ -34,14 +34,41 @@ def test_structural():
     (focus_pos, focus_vel, ramp_time) = convert_normalised_to_cartesian(imaging_mode, xy_num_elems, zoom_factor, acceptance_angle, aod_aperture, \
                                                                         focus_pos_normalised, focus_disp_normalised, dwell_time, reference_shift)
     
+    right_shapes = focus_pos.shape == (xy_num_elems, 3) and focus_vel.shape == (xy_num_elems, 3) and ramp_time.shape == (xy_num_elems)
+    
+    assert right_shapes and \
+            allclose(focus_vel, 0, rtol=0, atol=1e-15) and \
+            allclose(focus_pos, 0, rtol=0, atol=1e-15) and \
+            allclose(ramp_time, dwell_time, rtol=0, atol=1e-15)
+            
 def test_raster():
     imaging_mode = is_raster
+    (focus_pos, focus_vel, ramp_time) = convert_normalised_to_cartesian(imaging_mode, xy_num_elems, zoom_factor, acceptance_angle, aod_aperture, \
+                                                                        focus_pos_normalised, focus_disp_normalised, dwell_time, reference_shift)
 
+    right_shapes = focus_pos.shape == (xy_num_elems, 3) and focus_vel.shape == (xy_num_elems, 3) and ramp_time.shape == (xy_num_elems)
+    
+    assert right_shapes and \
+            allclose(focus_vel[:,1], 0, rtol=0, atol=1e-15) and \
+            allclose(focus_pos[:,0], 0, rtol=0, atol=1e-15) and \
+            allclose(ramp_time, dwell_time*xy_num_elems, rtol=0, atol=1e-15)
+                            
 def test_miniscan():
     imaging_mode = is_miniscan
-    
+    (focus_pos, focus_vel, ramp_time) = convert_normalised_to_cartesian(imaging_mode, xy_num_elems, zoom_factor, acceptance_angle, aod_aperture, \
+                                                                        focus_pos_normalised, focus_disp_normalised, dwell_time, reference_shift)
+
+    right_shapes = focus_pos.shape == (len(focus_info_normalised), 3) and focus_vel.shape == (len(focus_info_normalised), 3) and ramp_time.shape == (len(focus_info_normalised))
+
+    assert right_shapes
     
 def test_pointing():
     imaging_mode = is_pointing
+    (focus_pos, focus_vel, ramp_time) = convert_normalised_to_cartesian(imaging_mode, xy_num_elems, zoom_factor, acceptance_angle, aod_aperture, \
+                                                                        focus_pos_normalised, focus_disp_normalised, dwell_time, reference_shift)
     
+    right_shapes = focus_pos.shape == (len(focus_info_normalised), 3) and focus_vel.shape == (len(focus_info_normalised), 3) and ramp_time.shape == (len(focus_info_normalised))
     
+    assert right_shapes and \
+            allclose(focus_vel, 0, rtol=0, atol=1e-15) and \
+            allclose(ramp_time, dwell_time, rtol=0, atol=1e-15)
