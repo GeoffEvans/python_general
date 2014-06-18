@@ -3,7 +3,7 @@ from numpy import array, linspace, outer, concatenate, zeros, tile, ceil, allclo
 from aol_simple import AolSimple
 from numpy.linalg.linalg import norm
 
-def microscope_driver( \
+def get_drive( \
                        imaging_mode, \
                        order, \
                        xy_num_elems, \

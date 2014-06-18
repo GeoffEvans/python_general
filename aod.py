@@ -83,7 +83,7 @@ class Aod(object):
         # get vectors perpendicular and parallel to normal
         perpendicular_comp = perpendicular_component(ray.wavevector_unit, self.normal) 
         if allclose(perpendicular_comp, [0,0,0]):
-            return # ray is entering normally and the optic axis is (currently) taken to be parallel 
+            return None# ray is entering normally and the optic axis is (currently) taken to be parallel 
         
         unit_perpendicular = normalise(perpendicular_comp)
         
@@ -95,7 +95,7 @@ class Aod(object):
             n_ext = self.calc_refractive_indices_vector(wavevector_unit)[0]
             return (n_ext * sin(angle_out)) - sin_angle_in 
         
-        ang = newton(zero_func, angle_guess)
+        ang = newton(zero_func, angle_guess) #qq
                 
         ray.wavevector_unit = cos(ang) * self.normal + sin(ang) * unit_perpendicular 
          

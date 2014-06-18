@@ -4,4 +4,4 @@ def test_efficiency():
     aol = set_up_aol()
     eff = calculate_efficiency(aol)
     
-    assert eff < 1e-3
+    assert eff < 1e-3 and eff > 0
