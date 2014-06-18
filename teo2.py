@@ -1,4 +1,5 @@
-from numpy import array, diag, cos, sin, transpose, dot, sqrt, atleast_1d
+from numpy import array, diag, cos, sin, transpose, dot, sqrt, atleast_1d 
+from numpy.linalg import eigvals
 
 # Follow the calculation in Xu&St Section 1.3
 # z axis is taken as direction of the optical wavevector
@@ -40,24 +41,22 @@ def get_imperm_properties(angles_raw):
     return (sqrt_term,eigensum,eigendiff)
 
 def find_transverse_imperm_eigvals(angles):
-    from numpy.linalg import eig
     relative_impermeability_matrix = find_relative_impermeability_matrix(angles) # Xu&St (1.59)
-    return eig([x[0:2,0:2] for x in relative_impermeability_matrix])[0] # don't care about the third eigenvalue which is parallel to propagation
+    return eigvals([x[0:2,0:2] for x in relative_impermeability_matrix]) # want 2x2 matrices
 
 def find_relative_impermeability_matrix(angles):
-
-    def get_yz_rotation_matrix(angles):
-        num_angles = angles.size
-        one = array([1] * num_angles)
-        zero = array([0] * num_angles)
-        elems = array([[one,    zero,          zero           ], \
-                 [zero,    cos(angles), -sin(angles) ], \
-                 [zero,    sin(angles), cos(angles)  ]])
-        return transpose(elems, (2,0,1)); # permute indices to get [angle, row, col]
-
     principal_imperm = diag(relative_impermeability_eigenvals)    
     rotation_matrix = get_yz_rotation_matrix(angles)
     return [dot(dot(rot,principal_imperm),rot.T) for rot in rotation_matrix]
+
+def get_yz_rotation_matrix(angles):
+    num_angles = angles.size
+    one = array([1] * num_angles)
+    zero = array([0] * num_angles)
+    elems = array([[one,    zero,          zero           ], \
+             [zero,    cos(angles), -sin(angles) ], \
+             [zero,    sin(angles), cos(angles)  ]])
+    return transpose(elems, (2,0,1)); # permute indices to get [angle, row, col]
 
 def plot_refractive_index(): 
     from pylab import plot,xlabel,ylabel,title,grid,show
