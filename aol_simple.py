@@ -3,6 +3,7 @@ from acoustics import AcousticDrive
 from aol_drive import get_reduced_spacings, calculate_drive_freq_4
 from error_utils import check_is_unit_vector, check_is_of_length
 import copy
+import error_utils
 
 class AolSimple(object):
 # Can work with ray or ray_paraxial
@@ -15,6 +16,8 @@ class AolSimple(object):
         
         (const, linear, _) = calculate_drive_freq_4(order, op_wavelength, ac_velocity, aod_spacing, [0]*4, \
                                                 base_freq, pair_deflection_ratio, focus_position, focus_velocity)
+        
+        check_is_of_length(1, ac_velocity) # simple drive theory only handles single velocity
         return AolSimple.create_aol_from_drive(order, reduced_spacings, const, linear, op_wavelength)
 
     @staticmethod

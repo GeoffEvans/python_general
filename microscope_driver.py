@@ -1,5 +1,5 @@
 from numpy import array, linspace, outer, concatenate, zeros, tile, ceil, allclose, arange,\
-    atleast_2d, dot
+    atleast_2d, dot, mean
 from aol_simple import AolSimple
 from numpy.linalg.linalg import norm
 
@@ -16,7 +16,7 @@ def get_drive( \
                        system_clock_freq, \
                        pair_deflection_ratio, \
                        data_time_interval, \
-                       aod_aperture, \
+                       aod_apertures, \
                        ac_power, \
                        ac_velocity, \
                        op_wavelength, \
@@ -33,20 +33,20 @@ def get_drive( \
                                        common_offsets(0) + differential_offsets(0),  \
                                        common_offsets(1) + differential_offsets(1)])
 
-    aol = AolSimple.create_aol(order, op_wavelength, ac_velocity, aod_spacing, base_freq, \
+    aol_simple = AolSimple.create_aol(order, op_wavelength, ac_velocity, aod_spacing, base_freq, \
                                pair_deflection_ratio, [0,0,100], [0,0,0], crystal_thickness=crystal_thickness)
 
     (a,b,c,t) = (array([[]]),array([[]]),array([[]]),array([[]]))  
     
-    (focus_pos, focus_vel, ramp_time) = convert_normalised_to_cartesian(xy_num_elems, zoom_factor, acceptance_angle, focus_pos_normalised, \
-                                                                        focus_disp_normalised, reference_shift)
+    (focus_pos, focus_vel, ramp_time) = convert_normalised_to_cartesian(imaging_mode, xy_num_elems, zoom_factor, acceptance_angle, aod_apertures, \
+                                                                        focus_pos_normalised, focus_disp_normalised, dwell_time, reference_shift)
     
     for m in range(len(focus_pos)):
-        aol.update_drive(focus_pos[m], focus_vel[m], op_wavelength, base_freq, pair_deflection_ratio, crystal_thickness)
+        aol_simple.update_drive(focus_pos[m], focus_vel[m], op_wavelength, base_freq, pair_deflection_ratio, crystal_thickness)
         
-        base_freq_offset = compensate_freq_for_transducer_location(aol, aod_xy_centres, transducer_offsets, reference_shift)    
+        base_freq_offset = compensate_freq_for_transducer_location(aol_simple, aod_xy_centres, transducer_offsets, reference_shift, aod_apertures)    
         
-        (a_,b_,c_,t_) = compute_returns_for_labview(aol, base_freq_offset, ramp_time, system_clock_freq, data_time_interval)
+        (a_,b_,c_,t_) = compute_returns_for_labview(aol_simple, base_freq_offset, ramp_time, system_clock_freq, data_time_interval)
         
         a = concatenate((a, atleast_2d(a_)))
         b = concatenate((b, atleast_2d(b_)))
@@ -55,14 +55,15 @@ def get_drive( \
         
     return (a,b,c,t)
  
-def convert_normalised_to_cartesian(imaging_mode, xy_num_elems, zoom_factor, acceptance_angle, aod_aperture, \
+def convert_normalised_to_cartesian(imaging_mode, xy_num_elems, zoom_factor, acceptance_angle, aod_apertures, \
                                     focus_pos_normalised, focus_disp_normalised, dwell_time, reference_shift):
     
     # Originally, half deflection went on each of the pair, so if max deflection on one is accAngle then total def is twice that, hence factor of 2 below
     z_focus_pos_normalised = focus_pos_normalised[:,2]
-    z_focus_pos_normalised = (z_focus_pos_normalised == 0) * 1e-6 + z_focus_pos_normalised # avoid divide by 0
+    z_focus_pos_normalised[z_focus_pos_normalised == 0] +=  1e-7 
+    # avoid divide by 0, don't try to use inf because it doesn't work in cartesian coords
     
-    z_focus_pos = aod_aperture / (4 * acceptance_angle * z_focus_pos_normalised)
+    z_focus_pos = mean(aod_apertures) / (4 * acceptance_angle * z_focus_pos_normalised)
     
     xy_extreme_rel_to_base_ray = 2 * acceptance_angle / zoom_factor * z_focus_pos
     
@@ -106,20 +107,19 @@ def adjust_for_mode(imaging_mode, xy_num_elems, xy_extreme_rel_to_base_ray, dwel
         
     return (xy_focus_pos, xy_focus_vel, ramp_time)
 
-def compensate_freq_for_transducer_location(aol, aod_xy_centres, transducer_offsets):
-    linear = array([a.acoustic_drives.linear for a in aol.aods])
-    ac_direction_vectors = array([a.acoustic_direction for a in aol.aods])
+def compensate_freq_for_transducer_location(aol_simple, aod_xy_centres, transducer_offsets, aod_apertures):
+    linear = array([a.linear for a in aol_simple.acoustic_drives])
+    ac_direction_vectors = array([a for a in aol_simple.aod_directions])
 
     time_from_transducer_to_base_ray = zeros(4)
     for k in arange(4):
-        xy_displacement = aol.base_ray_positions[k] - aod_xy_centres[k]
-        aod_aperture = aol.aods[k].aperture_width
-        distance_transducer_to_base_ray = aod_aperture/2 + transducer_offsets[k] + dot(ac_direction_vectors[k], xy_displacement)
-        time_from_transducer_to_base_ray[k] = distance_transducer_to_base_ray / aol.acoustic_drives[k].velocity
+        xy_displacement = aol_simple.base_ray_positions[k] - aod_xy_centres[k]
+        distance_transducer_to_base_ray = aod_apertures[k]/2 + transducer_offsets[k] + dot(ac_direction_vectors[k], xy_displacement)
+        time_from_transducer_to_base_ray[k] = distance_transducer_to_base_ray / aol_simple.acoustic_drives[k].velocity
         
     return linear * time_from_transducer_to_base_ray
 
-def compute_returns_for_labview(aol, base_freq_offset, ramp_time, system_clock_freq, data_time_interval):
+def compute_returns_for_labview(aol_simple, base_freq_offset, ramp_time, system_clock_freq, data_time_interval, aod_apertures):
     
     def swap_scale_round(arr, scaling):
         arr[:,[1,2]] = arr[:,[2,1]]
@@ -127,18 +127,18 @@ def compute_returns_for_labview(aol, base_freq_offset, ramp_time, system_clock_f
         arr = ceil(arr)
         return arr
     
-    const = [a.acoustic_drive.const for a in aol.aods]
-    linear = [a.acoustic_drive.linear for a in aol.aods] 
+    const = [a.const for a in aol_simple.acoustic_drives]
+    linear = [a.linear for a in aol_simple.acoustic_drives] 
     quad = linear * 0
-    ac_velocity = [a.acoustic_drive.velocity for a in aol.aods]
-    aod_aperture = [a.aperture_width for a in aol.aods]
+    ac_velocity = [a.velocity for a in aol_simple.acoustic_drives]
+    aod_apertures
     
     a = swap_scale_round(const, 2**32 / system_clock_freq)
     b = swap_scale_round(linear, 2**32 / system_clock_freq^2 / 8) # scale B down here and expand later
     c = swap_scale_round(quad, 2**32 / system_clock_freq^3)
     
-    aod_fill_time = data_time_interval * ceil(aod_aperture / ac_velocity / data_time_interval)
-    scan_time = aod_fill_time + ramp_time # the time needed for each point
-    ticks_per_ramp =  swap_scale_round( tile(scan_time, (4,1) ), system_clock_freq)
+    aod_fill_times = data_time_interval * ceil(aod_apertures / ac_velocity / data_time_interval)
+    scan_times = outer(aod_fill_times, ramp_time) # the time needed for each point
+    ticks_per_ramp =  swap_scale_round(scan_times, system_clock_freq)
 
     return (a, b, c, ticks_per_ramp)
