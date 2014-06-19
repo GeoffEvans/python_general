@@ -1,4 +1,4 @@
-from numpy import allclose
+from numpy import allclose, array
 from numpy.linalg import norm
 
 def check_is_unit_vector(vector):
@@ -14,3 +14,7 @@ def check_is_of_length(desired, arr):
 def check_is_val(var,val):
     if not var == val:
         raise ValueError("variable has wrong value")
+    
+def check_is_singleton(var):
+    if not array(var).size == 1:
+        raise ValueError("variable is a list")

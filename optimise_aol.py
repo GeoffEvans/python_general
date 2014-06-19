@@ -73,3 +73,6 @@ def calculate_efficiency(aol):
                 ray_count += 1
                 
     return energy / ray_count
+
+if __name__ == '__main__':
+    calculate_efficiency(set_up_aol())

@@ -1,9 +1,8 @@
 from numpy import array, dtype, pi, atleast_2d, concatenate, zeros, append
 from acoustics import AcousticDrive
 from aol_drive import get_reduced_spacings, calculate_drive_freq_4
-from error_utils import check_is_unit_vector, check_is_of_length
+from error_utils import check_is_unit_vector, check_is_of_length, check_is_singleton
 import copy
-import error_utils
 
 class AolSimple(object):
 # Can work with ray or ray_paraxial
@@ -17,7 +16,7 @@ class AolSimple(object):
         (const, linear, _) = calculate_drive_freq_4(order, op_wavelength, ac_velocity, aod_spacing, [0]*4, \
                                                 base_freq, pair_deflection_ratio, focus_position, focus_velocity)
         
-        check_is_of_length(1, ac_velocity) # simple drive theory only handles single velocity
+        check_is_singleton(ac_velocity) # simple drive theory only handles single velocity
         return AolSimple.create_aol_from_drive(order, reduced_spacings, const, linear, op_wavelength)
 
     @staticmethod
@@ -69,7 +68,7 @@ class AolSimple(object):
         for k in range(4):
             self.acoustic_drives[k].linear = linear[k]
         
-        return path[:,0:2]
+        return path[:-1,0:2]
     
     def plot_ray_through_aol(self, ray, time, distance):
         import matplotlib as mpl

@@ -3,6 +3,11 @@ from numpy import array, linspace, outer, concatenate, zeros, tile, ceil, allclo
 from aol_simple import AolSimple
 from numpy.linalg.linalg import norm
 
+mode_structural = 0
+mode_raster = 1
+mode_pointing = 2
+mode_miniscan = 3
+
 def get_drive( \
                        imaging_mode, \
                        order, \
@@ -57,55 +62,53 @@ def get_drive( \
  
 def convert_normalised_to_cartesian(imaging_mode, xy_num_elems, zoom_factor, acceptance_angle, aod_apertures, \
                                     focus_pos_normalised, focus_disp_normalised, dwell_time, reference_shift):
+    is_structural = (imaging_mode == mode_structural)
+    is_raster = (imaging_mode == mode_raster)
+    is_pointing = (imaging_mode == mode_pointing)
+    is_miniscan = (imaging_mode == mode_miniscan)
     
     # Originally, half deflection went on each of the pair, so if max deflection on one is accAngle then total def is twice that, hence factor of 2 below
     z_focus_pos_normalised = focus_pos_normalised[:,2]
-    z_focus_pos_normalised[z_focus_pos_normalised == 0] +=  1e-7 
-    # avoid divide by 0, don't try to use inf because it doesn't work in cartesian coords
-    
-    z_focus_pos = mean(aod_apertures) / (4 * acceptance_angle * z_focus_pos_normalised)
-    
+    z_focus_pos_normalised[z_focus_pos_normalised == 0] +=  1e-7 # avoid divide by 0, don't try to use inf because it doesn't work in cartesian coords
+
+    z_focus_pos = mean(aod_apertures) / (4 * acceptance_angle * z_focus_pos_normalised) + reference_shift[2]
     xy_extreme_rel_to_base_ray = 2 * acceptance_angle / zoom_factor * z_focus_pos
     
-    (xy_focus_pos, xy_focus_vel, ramp_time) = adjust_for_mode(imaging_mode, xy_num_elems, xy_extreme_rel_to_base_ray, \
-                                                              dwell_time, focus_disp_normalised, focus_pos_normalised)
-    xy_focus_pos += reference_shift
-
-    focus_pos = concatenate(xy_focus_pos, z_focus_pos)
-    focus_vel = concatenate(xy_focus_vel, zeros( (xy_focus_vel.shape[1], 1) ))
-    return (focus_pos, focus_vel, ramp_time)
-
-def adjust_for_mode(imaging_mode, xy_num_elems, xy_extreme_rel_to_base_ray, dwell_time, focus_disp_normalised, focus_pos_normalised):
-    xy_row_rel_to_base_ray = linspace(-xy_extreme_rel_to_base_ray, xy_extreme_rel_to_base_ray, xy_num_elems)
-    if xy_num_elems == 1:
-        xy_row_rel_to_base_ray = 0
+    if is_structural or is_raster:
+        z_focus_pos = [z_focus_pos[0]]*xy_num_elems # should only be looking at one z plane but don't worry if not...
+        xy_extreme_rel_to_base_ray = xy_extreme_rel_to_base_ray[0]
+        
+        xy_row_rel_to_base_ray = linspace(-xy_extreme_rel_to_base_ray, xy_extreme_rel_to_base_ray, xy_num_elems)
+        if xy_num_elems == 1:
+            xy_row_rel_to_base_ray = 0
     
-    is_structural = imaging_mode == 0
-    is_raster = imaging_mode == 1
-    is_pointing = imaging_mode == 2
-    is_miniscan = imaging_mode == 3
-    
+    if is_structural: 
+        ramp_time = tile(dwell_time, xy_num_elems )
+        xy_focus_vel = tile([0,0], (xy_num_elems, 1))
+        xy_focus_pos = outer(xy_row_rel_to_base_ray,[1,1])
+        
+    if is_raster: 
+        ramp_time = tile(dwell_time * xy_num_elems, xy_num_elems )
+        xy_focus_vel = outer(xy_extreme_rel_to_base_ray / ramp_time, array([2,0])) # scan x
+        xy_focus_pos = outer(xy_row_rel_to_base_ray,[0,1])
+            
     if is_miniscan:
         ramp_time = dwell_time * xy_num_elems * norm(focus_disp_normalised[:,0:2], axis=0) / 2 # divide by 2 because scan from -1 to +1
         xy_focus_vel = focus_disp_normalised[:,0:2] * xy_extreme_rel_to_base_ray / ramp_time
         xy_focus_pos = focus_pos_normalised[:,0:2] * xy_extreme_rel_to_base_ray
         
     if is_pointing:
-        ramp_time = tile(dwell_time, (xy_num_elems,1) )
+        ramp_time = tile(dwell_time, focus_disp_normalised.shape[0] )
         xy_focus_vel = 0 * focus_disp_normalised[:,0:2]
         xy_focus_pos = focus_pos_normalised[:,0:2] * xy_extreme_rel_to_base_ray
-
-    if is_structural: # assumes single point but doesn't throw if not...
-        ramp_time = tile(dwell_time, (xy_num_elems,1) )
-        xy_focus_vel = tile([0,0], (xy_num_elems, 1))
-        xy_focus_pos = outer(xy_row_rel_to_base_ray,[1,1])
-        
-    if is_raster: # assumes single point but doesn't throw if not...
-        ramp_time = tile(dwell_time * xy_num_elems, (xy_num_elems,1) )
-        xy_focus_vel = tile(array([2,0]) * xy_extreme_rel_to_base_ray / ramp_time, (xy_num_elems,1)) # scan x
-        xy_focus_pos = outer(xy_row_rel_to_base_ray,[0,1])
-        
-    return (xy_focus_pos, xy_focus_vel, ramp_time)
+    
+    xy_focus_pos += reference_shift[0:2]
+    focus_pos = concatenate( (xy_focus_pos, atleast_2d(z_focus_pos).T), axis=1)
+    
+    z_vel_zeros = zeros( (xy_focus_vel.shape[0], 1) )
+    focus_vel = concatenate( (xy_focus_vel, z_vel_zeros), axis=1)
+    
+    return (focus_pos, focus_vel, ramp_time)
 
 def compensate_freq_for_transducer_location(aol_simple, aod_xy_centres, transducer_offsets, aod_apertures):
     linear = array([a.linear for a in aol_simple.acoustic_drives])
@@ -114,10 +117,11 @@ def compensate_freq_for_transducer_location(aol_simple, aod_xy_centres, transduc
     time_from_transducer_to_base_ray = zeros(4)
     for k in arange(4):
         xy_displacement = aol_simple.base_ray_positions[k] - aod_xy_centres[k]
-        distance_transducer_to_base_ray = aod_apertures[k]/2 + transducer_offsets[k] + dot(ac_direction_vectors[k], xy_displacement)
+        distance_transducer_to_base_ray = aod_apertures[k]/2 + transducer_offsets[k] + dot(ac_direction_vectors[k,0:2], xy_displacement)
         time_from_transducer_to_base_ray[k] = distance_transducer_to_base_ray / aol_simple.acoustic_drives[k].velocity
         
-    return linear * time_from_transducer_to_base_ray
+    freq_offset = linear * time_from_transducer_to_base_ray
+    return freq_offset
 
 def compute_returns_for_labview(aol_simple, base_freq_offset, ramp_time, system_clock_freq, data_time_interval, aod_apertures):
     

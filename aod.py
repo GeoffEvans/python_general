@@ -24,7 +24,7 @@ class Aod(object):
     @property
     def acoustic_direction(self):
         # three basis vectors
-        z = array([0,0,1.])
+        z = array([0.,0.,1.])
         invariant = normalise( cross(self.relative_acoustic_direction, z) )
         t = cross(z,invariant)
         
