@@ -1,11 +1,16 @@
-from numpy import dot
+from numpy import dot, outer, array
 from numpy.linalg import norm
 
 def normalise(vector):
     return vector/norm(vector, axis=0)
 
 def normalise_list(vectors):
-    return (vectors.T/norm(vectors, axis=1)).T
+    mags = norm(vectors, axis=1)
+    mags[mags == 0] = 1 # avoid divide by zero error: [0,0,0] normalises to [0,0,0]
+    return (array(vectors).T/mags).T
 
 def perpendicular_component(vector, unit_normal):
     return vector - dot(vector, unit_normal) * unit_normal
+
+def perpendicular_component_list(vector_list, unit_normal):
+    return vector_list - outer( dot(vector_list, unit_normal), unit_normal )

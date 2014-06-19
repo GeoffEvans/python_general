@@ -1,7 +1,7 @@
 from aol_full import AolFull
 from aod import Aod
 from ray import Ray
-from numpy import array, arange, append, sqrt, dtype
+from numpy import array, arange, append, sqrt, dtype, zeros
 from numpy.linalg import norm
 import copy
 from scipy import optimize
@@ -64,13 +64,16 @@ def calculate_efficiency(aol):
     energy = 0
     ray_count = 0
     
-    for time in time_array:
-        for x in x_array:
-            for y in y_array:    
-                new_ray = Ray([x,y,0], [0,0,1], op_wavelength)
-                aol.propagate_to_distance_past_aol(new_ray, time)
-                energy += new_ray.energy
-                ray_count += 1
+    rays = [0] * len(x_array) * len(y_array)
+    
+    for t in time_array:
+        for xn in range(len(x_array)):
+            for yn in range(len(y_array)):    
+                rays[xn + yn*len(x_array)] = Ray([x_array[xn],y_array[yn],0], [0,0,1], op_wavelength)
+        
+        aol.propagate_to_distance_past_aol(rays, t)
+        energy += sum([r.energy for r in rays])
+        ray_count += len(rays)
                 
     return energy / ray_count
 

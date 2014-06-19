@@ -42,7 +42,7 @@ def get_imperm_properties(angles_raw):
 
 def find_transverse_imperm_eigvals(angles):
     relative_impermeability_matrix = find_relative_impermeability_matrix(angles) # Xu&St (1.59)
-    return eigvals([x[0:2,0:2] for x in relative_impermeability_matrix]) # want 2x2 matrices
+    return array([[x[0,0],x[1,1]] for x in relative_impermeability_matrix]) # eigenvals for transverse components
 
 def find_relative_impermeability_matrix(angles):
     principal_imperm = diag(relative_impermeability_eigenvals)    

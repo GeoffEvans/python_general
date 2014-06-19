@@ -5,65 +5,65 @@ from numpy import sqrt, allclose, cross, dot
 aod = Aod([0,0,1], [1,0,0], 1, 1, 1)
 
 def test_on_axis_ray_displacement():
-    r = Ray([0,0,0],[0,0,1],800e-9,1)
-    aod.move_ray_through_aod(r)
-    still_on_axis = allclose(cross(r.position, [0,0,1]), [0,0,0])
+    rays = [Ray([0,0,0],[0,0,1],800e-9,1)]*5
+    aod.move_ray_through_aod(rays)
+    still_on_axis = allclose(cross([r.position for r in rays], [0,0,1]), [0,0,0])
     direction_unchanged = allclose(r.wavevector_unit, [0,0,1])
     assert still_on_axis and direction_unchanged
-    
+
 def test_off_axis_ray_displacement():
     wavevec = [17./145,0,144./145]
-    r = Ray([0,0,0],wavevec,800e-9,1)
-    aod.move_ray_through_aod(r)
-    off_wavevector = not allclose(cross(r.position, wavevec), [0,0,0])
-    direction_unchanged = allclose(r.wavevector_unit, wavevec)
+    rays = [Ray([0,0,0],wavevec,800e-9,1)]*5
+    aod.move_ray_through_aod(rays)
+    off_wavevector = not allclose(cross([r.position for r in rays], wavevec), [0,0,0])
+    direction_unchanged = allclose([r.wavevector_unit for r in rays], wavevec)
     assert off_wavevector and direction_unchanged
 
 def test_refractive_indices_match():
     wavevec = [3./5,0,4./5]
-    r = Ray([0,0,0],wavevec,800e-9,1)
-    n1 = aod.calc_refractive_indices_vector(r.wavevector_unit) 
-    n2 = aod.calc_refractive_indices_ray(r)
+    rays = [Ray([0,0,0],wavevec,800e-9,1)]*5
+    n1 = aod.calc_refractive_indices_vectors([r.wavevector_unit for r in rays]) 
+    n2 = aod.calc_refractive_indices_rays(rays)
     assert allclose(n1,n2)
 
 def test_refracting_in_towards_normal():
     wavevec = [3./5,0,4./5]
-    r = Ray([0,0,0],wavevec,800e-9,1)
-    aod.refract_in(r)
+    rays = [Ray([0,0,0],wavevec,800e-9,1)]*5
+    aod.refract_in(rays)
     cosine_outside = dot(wavevec, aod.normal) 
-    cosine_inside =  dot(r.wavevector_unit, aod.normal)
+    cosine_inside =  dot([r.wavevector_unit for r in rays], aod.normal)
     towards_normal = abs(cosine_outside) < abs(cosine_inside)
     not_reflected = cosine_outside * cosine_inside >= 0
-    assert towards_normal and not_reflected
-    
+    assert towards_normal.all() and not_reflected.all()
+
 def test_refracting_in_at_normal():
     wavevec = [0,0,1]
-    r = Ray([0,0,0],wavevec,800e-9,1)
-    aod.refract_in(r)
-    assert allclose(wavevec, r.wavevector_unit)
-    
+    rays = [Ray([0,0,0],wavevec,800e-9,1)]*5
+    aod.refract_in(rays)
+    assert allclose(wavevec, [r.wavevector_unit for r in rays])
+
 def test_refracting_out_away_from_normal():
     wavevec = [17./145,0,144./145]
-    r = Ray([0,0,0],wavevec,800e-9,1)
-    aod.refract_out(r)
-    cosine_outside =  dot(r.wavevector_unit, aod.normal)
+    rays = [Ray([0,0,0],wavevec,800e-9,1)]*5
+    aod.refract_out(rays)
+    cosine_outside =  dot([r.wavevector_unit for r in rays], aod.normal)
     cosine_inside = dot(wavevec, aod.normal)
     towards_normal = abs(cosine_outside) < abs(cosine_inside)
     not_reflected = cosine_outside * cosine_inside >= 0
-    assert towards_normal and not_reflected
+    assert towards_normal.all() and not_reflected.all()
 
 def test_refracting_out_at_normal():
     wavevec = [0,0,1]
-    r = Ray([0,0,0],wavevec,800e-9,1)
-    aod.refract_out(r)
-    assert allclose(wavevec, r.wavevector_unit)
+    rays = [Ray([0,0,0],wavevec,800e-9,1)]*5
+    aod.refract_out(rays)
+    assert allclose(wavevec, [r.wavevector_unit for r in rays])
 
 def test_refraction_in_out_no_change():
     wavevec = [3./5,0,4./5]
-    r = Ray([0,0,0],wavevec,800e-9,1)
-    aod.refract_in(r)
-    aod.refract_out(r)
-    assert allclose(r.wavevector_unit, [3./5,0,4./5], rtol=5e-3) # should be close but not the same since ext in, ord out
+    rays = [Ray([0,0,0],wavevec,800e-9,1)]*5
+    aod.refract_in(rays)
+    aod.refract_out(rays)
+    assert allclose([r.wavevector_unit for r in rays], [3./5,0,4./5], rtol=5e-3) # should be close but not the same since ext in, ord out
 
 def test_acoustic_direction_trivial():
     direc = aod.acoustic_direction

@@ -1,10 +1,10 @@
 from teo2 import calc_refractive_indices
 from xu_stroud_model import diffract_acousto_optically
-from vector_utils import perpendicular_component, normalise
+from vector_utils import perpendicular_component_list, normalise_list, normalise
 from error_utils import check_is_unit_vector
-from numpy import array, sqrt, arccos, arcsin, sin, cos, cross, dot, dtype, allclose
+from numpy import array, sqrt, arccos, arcsin, sin, cos, cross, dot, dtype, allclose, outer
 from numpy.linalg import norm
-from scipy.optimize import newton
+from scipy.optimize import fsolve
 
 class Aod(object):
        
@@ -41,66 +41,71 @@ class Aod(object):
         
         return sound_vector 
 
-    def propagate_ray(self, ray, local_acoustics, order):
-        self.refract_in(ray)
-        diffract_acousto_optically(self, ray, local_acoustics, order)
-        self.move_ray_through_aod(ray)
-        self.refract_out(ray)
+    def propagate_ray(self, rays, local_acoustics, order):
+        self.refract_in(rays)
+        diffract_acousto_optically(self, rays, local_acoustics, order)
+        self.move_ray_through_aod(rays)
+        self.refract_out(rays)
         
-    def move_ray_through_aod(self, ray):
-        direction = self.get_ray_direction_ord(ray)
-        distance = self.crystal_thickness / dot(direction, self.normal)
-        ray.position += distance * direction
+    def move_ray_through_aod(self, rays):
+        directions = self.get_ray_direction_ord(rays)
+        distances = self.crystal_thickness / dot(directions, self.normal)
+        for m in range(len(rays)):
+            rays[m].position += distances[m] * directions[m]
 
-    def get_ray_direction_ord(self, ray):      
+    def get_ray_direction_ord(self, rays):      
         
-        def n_ord_vector(unit_dir):
-            ang = arccos(dot(unit_dir, self.optic_axis))
-            return unit_dir * calc_refractive_indices(ang)[1]
+        def n_ord_vectors(unit_dirs):
+            angles = arccos(dot(unit_dirs, self.optic_axis))
+            return (unit_dirs.T * calc_refractive_indices(angles)[1]).T
             
-        w0 = ray.wavevector_unit.copy()
-        w1 = ray.wavevector_unit.copy()
-        w1[0] += 1e-9
-        w1 = normalise(w1)
-        w2 = ray.wavevector_unit.copy()
-        w2[1] += 1e-9
-        w2 = normalise(w2)
+        w0 = array([r.wavevector_unit.copy() for r in rays])
+        w1 = array([r.wavevector_unit.copy() for r in rays])
+        w1[:,0] += 1e-9
+        w1 = normalise_list(w1)
+        w2 = array([r.wavevector_unit.copy() for r in rays])
+        w2[:,1] += 1e-9
+        w2 = normalise_list(w2)
         
-        d1 = n_ord_vector(w1) - n_ord_vector(w0)
-        d2 = n_ord_vector(w2) - n_ord_vector(w0)
+        d1 = n_ord_vectors(w1) - n_ord_vectors(w0)
+        d2 = n_ord_vectors(w2) - n_ord_vectors(w0)
         
-        return normalise(cross(d1,d2))
+        return normalise_list(cross(d1,d2))
     
-    def calc_refractive_indices_vector(self, vector):
-        get_angle_to_axis = arccos(dot(normalise(vector), self.optic_axis))
-        return calc_refractive_indices(get_angle_to_axis)
+    def calc_refractive_indices_vectors(self, vectors):
+        angles_to_axis = arccos(dot(normalise_list(vectors), self.optic_axis))
+        return calc_refractive_indices(angles_to_axis)
 
-    def calc_refractive_indices_ray(self, ray):
-        angle_to_axis = arccos(dot(ray.wavevector_unit, self.optic_axis))
-        return calc_refractive_indices(angle_to_axis)
+    def calc_refractive_indices_rays(self, rays):
+        wavevecs = [r.wavevector_unit for r in rays]
+        angles_to_axis = arccos(dot(wavevecs, self.optic_axis))
+        return calc_refractive_indices(angles_to_axis)
         
-    def refract_in(self, ray):
+    def refract_in(self, rays):
         # get vectors perpendicular and parallel to normal
-        perpendicular_comp = perpendicular_component(ray.wavevector_unit, self.normal) 
-        if allclose(perpendicular_comp, [0,0,0]):
-            return None# ray is entering normally and the optic axis is (currently) taken to be parallel 
+        wavevecs = [r.wavevector_unit for r in rays]
+        perpendicular_comps = perpendicular_component_list(wavevecs, self.normal) 
         
-        unit_perpendicular = normalise(perpendicular_comp)
+        unit_perpendiculars = normalise_list(perpendicular_comps)
         
-        sin_angle_in = sqrt(1 - dot(ray.wavevector_unit, self.optic_axis) ** 2)
-        angle_guess = arcsin(sin_angle_in / 2.26)  
+        sin_angles_in = sqrt(1 - dot(wavevecs, self.optic_axis) ** 2)
+        angle_guesses = arcsin(sin_angles_in / 2.26)  
               
-        def zero_func(angle_out):
-            wavevector_unit = cos(angle_out) * self.normal + sin(angle_out) * unit_perpendicular
-            n_ext = self.calc_refractive_indices_vector(wavevector_unit)[0]
-            return (n_ext * sin(angle_out)) - sin_angle_in 
+        def zero_func(angles_out):
+            wavevector_unit = outer(cos(angles_out), self.normal) + (sin(angles_out) * unit_perpendiculars.T).T
+            n_ext = self.calc_refractive_indices_vectors(wavevector_unit)[0]
+            return (n_ext * sin(angles_out)) - sin_angles_in 
         
-        ang = newton(zero_func, angle_guess) #qq
-                
-        ray.wavevector_unit = cos(ang) * self.normal + sin(ang) * unit_perpendicular 
+        angles = fsolve(zero_func, angle_guesses, band=(0,0))
+        
+        for m in range(len(rays)):        
+            rays[m].wavevector_unit = cos(angles[m]) * self.normal + sin(angles[m]) * unit_perpendiculars[m]
          
-    def refract_out(self, ray):
-        n_ord = self.calc_refractive_indices_ray(ray)[1]
-        perpendicular_comp = perpendicular_component(n_ord * ray.wavevector_unit, self.normal)
-        parallel_component = self.normal * sqrt( 1 - norm(perpendicular_comp, axis=0)**2 )
-        ray.wavevector_unit = parallel_component + perpendicular_comp 
+    def refract_out(self, rays):
+        wavevecs = array([r.wavevector_unit for r in rays])
+        n_ords = self.calc_refractive_indices_rays(rays)[1]
+        perpendicular_comps = perpendicular_component_list((n_ords * wavevecs.T).T, self.normal)
+        parallel_components = outer(sqrt( 1 - norm(perpendicular_comps, axis=1)**2 ), self.normal)
+        for m in range(len(rays)):        
+            rays[m].wavevector_unit = parallel_components[m] + perpendicular_comps[m] 
+            

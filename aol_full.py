@@ -26,27 +26,31 @@ class AolFull(object):
         simple = AolSimple(order, self.aod_spacing, self.acoustic_drives)
         self.base_ray_positions = simple.find_base_ray_positions(op_wavelength)
      
-    def plot_ray_through_aol(self, ray, time, distance):
+    def plot_ray_through_aol(self, rays, time, distance):
         import matplotlib as mpl
         from mpl_toolkits.mplot3d import Axes3D
         import matplotlib.pyplot as plt
-        from numpy import meshgrid, atleast_2d
+        from numpy import meshgrid, atleast_3d, mean
         
-        new_ray = copy.deepcopy(ray)
-        new_ray.propagate_free_space_z(self.aod_spacing.sum())
+        num_rays = len(rays)
+        new_rays = [0]*num_rays
+        for m in range(num_rays): 
+            new_rays[m] = copy.deepcopy(rays[m])
+            new_rays[m].propagate_free_space_z(self.aod_spacing.sum())
 
-        (path, _) = self.propagate_to_distance_past_aol(new_ray, time, distance)
-        path_extended = concatenate( (atleast_2d(ray.position), path) )
+        (paths, _) = self.propagate_to_distance_past_aol(new_rays, time, distance)
+        paths_extended = concatenate( (atleast_3d([r.position for r in rays]), paths) )
         
         fig = plt.figure()
         ax = fig.gca(projection='3d')
-        ax.plot(path_extended[:,0], path_extended[:,1], path_extended[:,2])
+        for m in range(num_rays):
+            ax.plot(paths_extended[m,:,0], paths_extended[m,:,1], paths_extended[m,:,2])
         ax.set_xlabel('x')
         ax.set_ylabel('y')
         ax.set_zlabel('z')  
 
         def add_planes():        
-            for point in path_extended[1:9]:
+            for point in mean(paths_extended[1:9], axis=0):
                 (xpts, ypts) = array(meshgrid([1, -1], [1, -1])) * 1e-2
                 xpts += point[0]
                 ypts += point[1]
@@ -57,31 +61,35 @@ class AolFull(object):
         plt.show()
         return plt
         
-    def propagate_to_distance_past_aol(self, ray, time, distance=0):
+    def propagate_to_distance_past_aol(self, rays, time, distance=0):
+        num_rays = len(rays)
         crystal_thickness = array([a.crystal_thickness for a in self.aods], dtype=dtype(float))
         reduced_spacings = append(self.aod_spacing, distance) - crystal_thickness 
-        path = zeros( (9,3) )
-        energies = zeros( (4,3) )
+        paths = zeros( (len(rays),9,3) )
+        energies = zeros( (len(rays),4) )
 
-        def diffract_and_propagate(ray, time, aod_number):
-            path[2*aod_number - 2,:] = ray.position
-            self.diffract_at_aod(ray, time, aod_number)
-            path[2*aod_number - 1,:] = ray.position
-            energies[aod_number-1] = ray.energy
-            ray.propagate_free_space_z(reduced_spacings[aod_number-1])
+        def diffract_and_propagate(aod_number):
+            for m in range(num_rays):
+                paths[m,2*aod_number - 2,:] = rays[m].position
+            self.diffract_at_aod(rays, time, aod_number)
+            for m in range(num_rays):
+                paths[m,2*aod_number - 1,:] = rays[m].position
+                energies[m,aod_number-1] = rays[m].energy
+                rays[m].propagate_free_space_z(reduced_spacings[aod_number-1])
         
         for k in range(4):
-            diffract_and_propagate(ray, time, k+1)
+            diffract_and_propagate(k+1)
         
-        path[8,:] = ray.position
-        return (path, energies)
+        for m in range(num_rays):
+            paths[m,8,:] = rays[m].position
+        return (paths, energies)
         
-    def diffract_at_aod(self, ray, time, aod_number):
+    def diffract_at_aod(self, rays, time, aod_number):
         idx = aod_number-1
         
         aod = self.aods[idx]
         base_ray_position = self.base_ray_positions[idx]
         drive = self.acoustic_drives[idx]
-        local_acoustics = drive.get_local_acoustics(time, ray.position, base_ray_position, aod.acoustic_direction)
+        local_acoustics = [drive.get_local_acoustics(time, r.position, base_ray_position, aod.acoustic_direction) for r in rays]
         
-        aod.propagate_ray(ray, local_acoustics, self.order)
+        aod.propagate_ray(rays, local_acoustics, self.order)
