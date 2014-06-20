@@ -39,7 +39,7 @@ def test_wavevector_triangle():
     k_i = original_rays[0].wavevector_vac * aod.calc_refractive_indices_rays(original_rays)[0]
     k_d = ray.wavevector_vac * aod.calc_refractive_indices_rays([ray])[1]
     K = acoustics.wavevector(aod) * order
-    zero_sum = k_i + K + aod.normal * wavevector_mismatch_mag - k_d
+    zero_sum = k_i + order * K + aod.normal * wavevector_mismatch_mag - k_d
     assert allclose(zero_sum, 0)
 
 def test_setting_invalid_mode():

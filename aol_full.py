@@ -56,7 +56,7 @@ class AolFull(object):
                 xpts += point[0]
                 ypts += point[1]
                 zpts = point[2] + zeros((2,2))
-                ax.plot_surface(xpts, ypts, zpts, color='blue', alpha=.3, linewidth=0, zorder=3)
+                ax.generic_plot_surface(xpts, ypts, zpts, color='blue', alpha=.3, linewidth=0, zorder=3)
 
         add_planes()             
         plt.show()

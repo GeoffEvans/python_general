@@ -1,5 +1,5 @@
 from vector_utils import normalise_list
-from numpy import dot, sin, sqrt, array
+from numpy import dot, sin, sqrt, array, zeros, outer, allclose
 from numpy.linalg import norm
 from scipy.optimize import fsolve
 from scipy.constants import c, pi
@@ -24,19 +24,25 @@ def diffract_by_wavevector_triangle(aod, rays, local_acoustics, order):
     wavevectors_vac_mag_out = [r.wavevector_vac_mag for r in rays] + (2 * pi / c) * array([a.frequency for a in local_acoustics]) # from w_out = w_in + w_ac
     
     def zero_func(mismatches):
-        wavevector_mismatches = mismatches * aod.normal * 1e6
+        wavevector_mismatches = outer(mismatches * 1e6, aod.normal)
         wavevectors_out = resultants + wavevector_mismatches
         wavevectors_out_mag1 = norm(wavevectors_out, axis=1)
           
         n_ord = aod.calc_refractive_indices_vectors(wavevectors_out)[1]
-        wavevectors_out_mag2 = n_ord * wavevectors_vac_mag_out # pretty much constant
+        wavevectors_out_mag2 = n_ord * wavevectors_vac_mag_out # n_ord pretty much constant
         
         return wavevectors_out_mag2 - wavevectors_out_mag1 
-
-    wavevector_mismatches_mag = fsolve(zero_func, 0, band=(0,0)) * 1e6
     
-    wavevector_mismatches = wavevector_mismatches_mag * aod.normal
+    initial_guess = zeros(len(rays))
+    wavevector_mismatches_mag = fsolve(zero_func, initial_guess, band=(0,0)) * 1e6
+    wavevector_mismatches = outer(wavevector_mismatches_mag, aod.normal)
     wavevectors_out = resultants + wavevector_mismatches
+    
+    n_ord = aod.calc_refractive_indices_vectors(wavevectors_out)[1]
+    wavevectors_out_mag2 = n_ord * wavevectors_vac_mag_out
+    wavevectors_out_mag1 = norm(wavevectors_out, axis=1)
+    assert allclose(wavevectors_out_mag1, wavevectors_out_mag2)
+    
     wavevectors_out_unit = normalise_list(wavevectors_out)
     
     original_rays = [0]*len(rays)

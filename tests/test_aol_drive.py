@@ -48,7 +48,7 @@ def test_ray_passes_through_base_point():
         
     expected_position = focus_position + offset
     assert allclose(ray1.position, expected_position, atol=tol, rtol=0) and allclose(ray2.position, expected_position, atol=tol, rtol=0) and allclose(ray3.position, expected_position, atol=tol, rtol=0)
-test_ray_passes_through_base_point()
+
 def test_ray_passes_through_focus():
     
     focus_position = array([1,2,3], dtype=dtype(float))

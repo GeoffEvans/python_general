@@ -5,6 +5,7 @@ from numpy import array, arange, append, sqrt, dtype, zeros, isnan
 from numpy.linalg import norm
 import copy
 from scipy import optimize
+from vector_utils import normalise
 
 op_wavelength = 800e-9
 
@@ -19,22 +20,21 @@ def optimise_aol():
             xy_normal[0] = xy_normal[0] if (xy_normal[0] > -0.5) else -0.5  
             xy_normal[1] = xy_normal[1] if (xy_normal[1] < 0.5) else 0.5
             xy_normal[1] = xy_normal[1] if (xy_normal[1] > -0.5) else -0.5  
-            z_comp_sqr = 1 - norm(xy_normal)**2
-            if z_comp_sqr < 0:
-                x = 2
-            new_normal = append(xy_normal, sqrt(z_comp_sqr))
+
+            new_normal = append(xy_normal, sqrt(1 - norm(xy_normal)**2))
             change_orientation(aol, aod_num, new_normal)
-            print 'y'
-            return -calculate_efficiency(aol)
+            print '.'
+            return - calculate_efficiency(aol, aod_num)
     
         acoustics = aol.acoustic_drives[aod_num-1]
         this_aod = aol.aods[aod_num-1]
         
         bragg_angle = op_wavelength * acoustics.const / acoustics.velocity
-        guess = this_aod.normal + this_aod.acoustic_direction * bragg_angle * aol.order  
+        guess = normalise(this_aod.normal + this_aod.acoustic_direction * bragg_angle * aol.order / 2.26)   
         
-        new_optimal_normal = optimize.basinhopping(min_fun, guess[0:2])
+        result = optimize.basinhopping(min_fun, guess[0:2])
         
+        new_optimal_normal = result.x
         change_orientation(aol, aod_num, new_optimal_normal)
         
     for aod_num in arange(1, 5):
@@ -67,7 +67,7 @@ def change_orientation(aol, aod_num, new_normal):
     assert not any(isnan(new_normal))
     aol.aods[aod_num-1].normal = new_normal
 
-def calculate_efficiency(aol):
+def calculate_efficiency(aol, after_nth_aod):
     time_array = (arange(3)-1)*5e-5
     x_array = (arange(3)-1)*2e-3
     y_array = x_array
@@ -76,18 +76,17 @@ def calculate_efficiency(aol):
     ray_count = 0
     
     rays = [0] * len(x_array) * len(y_array)
-    
     for t in time_array:
         for xn in range(len(x_array)):
             for yn in range(len(y_array)):    
                 rays[xn + yn*len(x_array)] = Ray([x_array[xn],y_array[yn],0], [0,0,1], op_wavelength)
         
-        aol.propagate_to_distance_past_aol(rays, t)
-        energy += sum([r.energy for r in rays])
+        (_,energies) = aol.propagate_to_distance_past_aol(rays, t)
+        energy += sum(energies[:,after_nth_aod-1])
         ray_count += len(rays)
                 
     return energy / ray_count
 
 if __name__ == '__main__':
-    #calculate_efficiency(set_up_aol())
+    #calculate_efficiency(set_up_aol(), 1)
     optimise_aol()
