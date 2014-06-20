@@ -91,7 +91,7 @@ class AolSimple(object):
 
         def add_planes():        
             for point in path_extended[1:5]:
-                (xpts, ypts) = meshgrid([1, -1], [1, -1])
+                (xpts, ypts) = meshgrid([1., -1.], [1., -1.])
                 xpts += point[0]
                 ypts += point[1]
                 zpts = point[2] + zeros((2,2))

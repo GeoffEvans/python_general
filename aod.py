@@ -1,8 +1,8 @@
 from teo2 import calc_refractive_indices
 from xu_stroud_model import diffract_acousto_optically
-from vector_utils import perpendicular_component_list, normalise_list, normalise
+from vector_utils import perpendicular_component_list, normalise_list, normalise, angle_between_unit_vectors
 from error_utils import check_is_unit_vector
-from numpy import array, sqrt, arccos, arcsin, sin, cos, cross, dot, dtype, allclose, outer
+from numpy import array, sqrt, arcsin, sin, cos, cross, dot, dtype, allclose, outer
 from numpy.linalg import norm
 from scipy.optimize import fsolve
 
@@ -56,7 +56,7 @@ class Aod(object):
     def get_ray_direction_ord(self, rays):      
         
         def n_ord_vectors(unit_dirs):
-            angles = arccos(dot(unit_dirs, self.optic_axis))
+            angles = angle_between_unit_vectors(unit_dirs, self.optic_axis)
             return (unit_dirs.T * calc_refractive_indices(angles)[1]).T
             
         w0 = array([r.wavevector_unit.copy() for r in rays])
@@ -73,12 +73,12 @@ class Aod(object):
         return normalise_list(cross(d1,d2))
     
     def calc_refractive_indices_vectors(self, vectors):
-        angles_to_axis = arccos(dot(normalise_list(vectors), self.optic_axis))
+        angles_to_axis = angle_between_unit_vectors(normalise_list(vectors), self.optic_axis)
         return calc_refractive_indices(angles_to_axis)
 
     def calc_refractive_indices_rays(self, rays):
         wavevecs = [r.wavevector_unit for r in rays]
-        angles_to_axis = arccos(dot(wavevecs, self.optic_axis))
+        angles_to_axis = angle_between_unit_vectors(wavevecs, self.optic_axis)
         return calc_refractive_indices(angles_to_axis)
         
     def refract_in(self, rays):
@@ -98,14 +98,15 @@ class Aod(object):
         
         angles = fsolve(zero_func, angle_guesses, band=(0,0))
         
-        for m in range(len(rays)):        
-            rays[m].wavevector_unit = cos(angles[m]) * self.normal + sin(angles[m]) * unit_perpendiculars[m]
+        for m in range(len(rays)):        #
+            wav = cos(angles[m]) * self.normal + sin(angles[m]) * unit_perpendiculars[m]
+            rays[m].wavevector_unit = wav
          
     def refract_out(self, rays):
         wavevecs = array([r.wavevector_unit for r in rays])
         n_ords = self.calc_refractive_indices_rays(rays)[1]
         perpendicular_comps = perpendicular_component_list((n_ords * wavevecs.T).T, self.normal)
         parallel_components = outer(sqrt( 1 - norm(perpendicular_comps, axis=1)**2 ), self.normal)
-        for m in range(len(rays)):        
+        for m in range(len(rays)): # if this is throwing exceptions, probably total internal reflection        
             rays[m].wavevector_unit = parallel_components[m] + perpendicular_comps[m] 
             

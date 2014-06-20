@@ -39,7 +39,8 @@ class AolFull(object):
             new_rays[m].propagate_free_space_z(self.aod_spacing.sum())
 
         (paths, _) = self.propagate_to_distance_past_aol(new_rays, time, distance)
-        paths_extended = concatenate( (atleast_3d([r.position for r in rays]), paths) )
+        start = atleast_3d([r.position for r in rays]).transpose((0,2,1))
+        paths_extended = concatenate((start, paths), axis=1)
         
         fig = plt.figure()
         ax = fig.gca(projection='3d')

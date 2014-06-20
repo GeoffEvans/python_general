@@ -1,7 +1,7 @@
 from aol_full import AolFull
 from aod import Aod
 from ray import Ray
-from numpy import array, arange, append, sqrt, dtype, zeros
+from numpy import array, arange, append, sqrt, dtype, zeros, isnan
 from numpy.linalg import norm
 import copy
 from scipy import optimize
@@ -13,10 +13,18 @@ def optimise_aol():
     aol = set_up_aol()
      
     def optimise_nth_aod(aod_num):
-            
+        
         def min_fun(xy_normal):
-            new_normal = append(xy_normal, sqrt(1 - norm(xy_normal)**2))
+            xy_normal[0] = xy_normal[0] if (xy_normal[0] < 0.5) else 0.5
+            xy_normal[0] = xy_normal[0] if (xy_normal[0] > -0.5) else -0.5  
+            xy_normal[1] = xy_normal[1] if (xy_normal[1] < 0.5) else 0.5
+            xy_normal[1] = xy_normal[1] if (xy_normal[1] > -0.5) else -0.5  
+            z_comp_sqr = 1 - norm(xy_normal)**2
+            if z_comp_sqr < 0:
+                x = 2
+            new_normal = append(xy_normal, sqrt(z_comp_sqr))
             change_orientation(aol, aod_num, new_normal)
+            print 'y'
             return -calculate_efficiency(aol)
     
         acoustics = aol.acoustic_drives[aod_num-1]
@@ -33,6 +41,8 @@ def optimise_aol():
         optimise_nth_aod(aod_num)
         
     return array([a.normal for a in aol.aods], dtype=dtype(float))
+
+    #first opt = array([ 0.46172377, -0.40717573])
 
 def set_up_aol():
     order = 1
@@ -54,6 +64,7 @@ def set_up_aol():
     return AolFull.create_aol(aods, aod_spacing, order, op_wavelength, base_freq, pair_deflection_ratio, focus_position, focus_velocity)
 
 def change_orientation(aol, aod_num, new_normal):
+    assert not any(isnan(new_normal))
     aol.aods[aod_num-1].normal = new_normal
 
 def calculate_efficiency(aol):
@@ -78,4 +89,5 @@ def calculate_efficiency(aol):
     return energy / ray_count
 
 if __name__ == '__main__':
-    calculate_efficiency(set_up_aol())
+    #calculate_efficiency(set_up_aol())
+    optimise_aol()
