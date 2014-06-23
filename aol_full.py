@@ -69,14 +69,17 @@ class AolFull(object):
         paths = zeros( (len(rays),9,3) )
         energies = zeros( (len(rays),4) )
 
-        def diffract_and_propagate(aod_number):
+        for m in range(num_rays): # move rays to entrance of first crystal
+                rays[m].propagate_from_plane_to_plane(self, 0, array([0.,0.,0.]), self.aods[0].normal)
+
+        def diffract_and_propagate(aod_num):
+            for m in range(num_rays):   
+                paths[m,2*aod_num - 2,:] = rays[m].position     # set path at entrance
+            self.diffract_at_aod(rays, time, aod_num)           # diffract at crystal
             for m in range(num_rays):
-                paths[m,2*aod_number - 2,:] = rays[m].position
-            self.diffract_at_aod(rays, time, aod_number)
-            for m in range(num_rays):
-                paths[m,2*aod_number - 1,:] = rays[m].position
-                energies[m,aod_number-1] = rays[m].energy
-                rays[m].propagate_free_space_z(reduced_spacings[aod_number-1])
+                paths[m,2*aod_num - 1,:] = rays[m].position     # set path at exit
+                energies[m,aod_num-1] = rays[m].energy          # (line below) move ray to entrance of next crystal
+                rays[m].propagate_from_plane_to_plane(self, reduced_spacings[aod_num-1], self.aods[aod_num-1].normal, self.aods[aod_num].normal)        
         
         for k in range(4):
             diffract_and_propagate(k+1)

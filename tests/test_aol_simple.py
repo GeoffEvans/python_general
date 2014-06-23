@@ -12,7 +12,7 @@ def test_non_unit_direction():
         AolSimple(1, [1,1,1], [0,0,0,0], [0,0,0,0], aod_directions=[[1,0,0.1],[0,1,0],[-1,0,0],[0,-1,0]])
         
 def test_plot():
-    aol = AolSimple.create_aol_from_drive(order, spacing, array([1,1,1,1])*1e8, [1,1,1,1], wavelength)
+    aol = AolSimple.create_aol_from_drive(order, spacing, array([1,1,1,1])*1e9, [1,1,1,1], wavelength)
     wavevec = [0,3./5,4./5]
     ray = Ray([0,0,0], wavevec, wavelength)
     plt = aol.plot_ray_through_aol(ray, 1, aol.aod_spacing.sum())

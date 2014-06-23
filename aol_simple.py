@@ -95,7 +95,7 @@ class AolSimple(object):
                 xpts += point[0]
                 ypts += point[1]
                 zpts = point[2] + zeros((2,2))
-                ax.generic_plot_surface(xpts, ypts, zpts, color='blue', alpha=.3, linewidth=0, zorder=3)
+                ax.plot_surface(xpts, ypts, zpts, color='blue', alpha=.3, linewidth=0, zorder=3)
 
         add_planes()             
         plt.show()
@@ -105,10 +105,10 @@ class AolSimple(object):
         spacings = append(self.aod_spacing, distance) 
         path = zeros( (5,3) )
             
-        def diffract_and_propagate(aod_number):
-            path[aod_number-1,:] = ray.position
-            self.diffract_at_aod(ray, time, aod_number)
-            ray.propagate_free_space_z(spacings[aod_number-1])
+        def diffract_and_propagate(aod_num):
+            path[aod_num-1,:] = ray.position
+            self.diffract_at_aod(ray, time, aod_num)
+            ray.propagate_free_space_z(spacings[aod_num-1])
 
         for k in range(spacings.size):
             diffract_and_propagate(k+1)

@@ -1,6 +1,6 @@
 from error_utils import check_is_unit_vector
 from vector_utils import normalise
-from numpy import pi, array, dot, dtype
+from numpy import pi, array, dot, dtype, concatenate
 from numpy.linalg import norm
 
 class Ray(object):
@@ -41,6 +41,14 @@ class Ray(object):
         from_ray_to_point = point_on_plane - self.position
         distance = dot(from_ray_to_point, normal_to_plane) / dot(self.wavevector_unit, normal_to_plane)
         self.propagate_free_space(distance)
+        
+    def propagate_from_plane_to_plane(self, plane_z_separation, normal_to_first, normal_to_second):
+        point_on_first_plane = self.position
+        z_displacement_from_point_to_origin = dot(point_on_first_plane[0:2], normal_to_first[0:2]) / normal_to_first[2] 
+        displacement_from_point_to_origin = concatenate( (-point_on_first_plane[0:2], [z_displacement_from_point_to_origin]) )
+        
+        point_on_second_plane = point_on_first_plane + displacement_from_point_to_origin + [0,0,plane_z_separation]
+        self.propagate_to_plane(point_on_second_plane, normal_to_second)
         
     def propagate_free_space_z(self, distance):
         self.propagate_to_plane(self.position + [0,0,distance], [0,0,1])

@@ -1,6 +1,7 @@
 from ray import Ray
 from numpy import allclose, array
 import pytest
+from vector_utils import normalise
 
 position = [0,0,2]
 wavevector_unit = [1,0,0]
@@ -36,3 +37,18 @@ def test_setting_wavevector_property():
     dir_correct = allclose(r.wavevector_unit, [144./145, 0, 17./145])
     assert mag_correct and dir_correct
 
+def test_propagate_from_plane_to_plane_z():
+    r = Ray([1,0,0], [0,0,1], wavelength, energy)
+    r.propagate_from_plane_to_plane(10, normalise([1,0,1]), normalise([-1,0,1]))
+    assert allclose(r.position, [1,0,12])
+
+def test_align_to_plane():
+    r = Ray([1,0,0], [0,0,1], wavelength, energy)
+    r.propagate_from_plane_to_plane(0, array([0,0,1]), normalise([-1,0,1]))
+    assert allclose(r.position, [1,0,1])
+
+def test_propagate_from_plane_to_plane_reverse():
+    r = Ray([1,0,0], [0,0,1], wavelength, energy)
+    r.propagate_from_plane_to_plane( 10, normalise([ 1,2,1]), normalise([-1,3,1]))
+    r.propagate_from_plane_to_plane(-10, normalise([-1,3,1]), normalise([ 1,2,1]))
+    assert allclose(r.position, [1,0,0])
