@@ -16,7 +16,6 @@ def optimise_aol():
         optimise_nth_aod(aod_num, aol)
         
     return array([a.normal for a in aol.aods], dtype=dtype(float))
-    
 
 def optimise_nth_aod(aod_num, aol):
     
@@ -29,9 +28,9 @@ def optimise_nth_aod(aod_num, aol):
     this_aod = aol.aods[aod_num-1]
     
     bragg_angle = op_wavelength * acoustics.const / acoustics.velocity
-    guess = normalise(this_aod.normal + this_aod.acoustic_direction * bragg_angle * aol.order / 2.26)   
+    #guess = normalise(this_aod.normal + this_aod.acoustic_direction * bragg_angle * aol.order / 2.26)   
     
-    result = optimize.minimize(min_fun, guess[0:2], method='L-BFGS-B', bounds=[(-0.5,0.5), (-0.5,0.5)])
+    result = optimize.brute(min_fun, [(-0.1,0.1), (-0.1,0.1)], Ns=20)
     xy_normal = result.x
     new_optimal_normal = append(xy_normal, sqrt(1 - norm(xy_normal)**2))
     change_orientation(aol, aod_num, new_optimal_normal)

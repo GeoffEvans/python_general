@@ -1,7 +1,7 @@
 from aol_simple import AolSimple
 from acoustics import AcousticDrive, default_power, teo2_ac_vel
 from aol_drive import calculate_drive_freq_4
-from numpy import append, array, dtype, concatenate, zeros
+from numpy import append, array, dtype, concatenate, zeros, atleast_2d
 import copy
 
 class AolFull(object):
@@ -51,12 +51,12 @@ class AolFull(object):
         ax.set_zlabel('z')  
 
         def add_planes():        
-            for point in mean(paths_extended[1:9], axis=0):
+            for point in mean(paths_extended[:,1:9,:], axis=0):
                 (xpts, ypts) = array(meshgrid([1, -1], [1, -1])) * 1e-2
                 xpts += point[0]
                 ypts += point[1]
                 zpts = point[2] + zeros((2,2))
-                ax.generic_plot_surface(xpts, ypts, zpts, color='blue', alpha=.3, linewidth=0, zorder=3)
+                ax.plot_surface(xpts, ypts, zpts, color='blue', alpha=.3, linewidth=0, zorder=3)
 
         add_planes()             
         plt.show()
@@ -66,11 +66,12 @@ class AolFull(object):
         num_rays = len(rays)
         crystal_thickness = array([a.crystal_thickness for a in self.aods], dtype=dtype(float))
         reduced_spacings = append(self.aod_spacing, distance) - crystal_thickness 
+        normals = concatenate( ([a.normal for a in self.aods], atleast_2d([0,0,1])) )
         paths = zeros( (len(rays),9,3) )
         energies = zeros( (len(rays),4) )
 
         for m in range(num_rays): # move rays to entrance of first crystal
-                rays[m].propagate_from_plane_to_plane(self, 0, array([0.,0.,0.]), self.aods[0].normal)
+                rays[m].propagate_from_plane_to_plane(0, array([0.,0.,1.]), self.aods[0].normal)
 
         def diffract_and_propagate(aod_num):
             for m in range(num_rays):   
@@ -79,7 +80,7 @@ class AolFull(object):
             for m in range(num_rays):
                 paths[m,2*aod_num - 1,:] = rays[m].position     # set path at exit
                 energies[m,aod_num-1] = rays[m].energy          # (line below) move ray to entrance of next crystal
-                rays[m].propagate_from_plane_to_plane(self, reduced_spacings[aod_num-1], self.aods[aod_num-1].normal, self.aods[aod_num].normal)        
+                rays[m].propagate_from_plane_to_plane(reduced_spacings[aod_num-1], normals[aod_num-1], normals[aod_num])        
         
         for k in range(4):
             diffract_and_propagate(k+1)

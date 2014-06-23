@@ -49,7 +49,6 @@ def test_ray_scans_correctly():
     focus_theory = focus_position + [0,0,aod_spacing.sum()] + [5e-3, 5e-3, 0] + outer(arange(100)*1e-6, focus_velocity)
     assert allclose(location, focus_theory, rtol=1e-2, atol=0)
 
-test_ray_scans_correctly()
 def test_efficiency_low_at_angle():
     ray = Ray([0,0,0], [3./5,0,4./5], 800e-9)
     aol.propagate_to_distance_past_aol([ray], 0, focal_length)
