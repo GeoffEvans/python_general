@@ -1,11 +1,11 @@
 from aol_full import AolFull
 from aod import Aod
 from ray import Ray
-from numpy import array, arange, append, sqrt, dtype, zeros, isnan
+from numpy import array, arange, append, sqrt, dtype, isnan, linspace
 from numpy.linalg import norm
-import copy
 from scipy import optimize
 from vector_utils import normalise, normalise_list
+from aod_visualisation import generic_plot_surface
 
 op_wavelength = 800e-9
 
@@ -18,20 +18,29 @@ def optimise_aol():
     return array([a.normal for a in aol.aods], dtype=dtype(float))
 
 def optimise_nth_aod(aod_num, aol):
+    Ns = 120
     
     def min_fun(xy_normal):
         new_normal = append(xy_normal, sqrt(1 - norm(xy_normal)**2))
         change_orientation(aol, aod_num, new_normal)
+        print ','
         return - calculate_efficiency(aol, aod_num)
 
-    acoustics = aol.acoustic_drives[aod_num-1]
-    this_aod = aol.aods[aod_num-1]
-    
-    bragg_angle = op_wavelength * acoustics.const / acoustics.velocity
-    #guess = normalise(this_aod.normal + this_aod.acoustic_direction * bragg_angle * aol.order / 2.26)   
-    
-    result = optimize.brute(min_fun, [(-0.1,0.1), (-0.1,0.1)], Ns=20)
-    xy_normal = result.x
+    def plot_brute_region(aod_num):
+        def func(x, y):
+            new_normal = [x, y, sqrt(1 - x**2 - y**2)]
+            change_orientation(aol, aod_num, new_normal)
+            energies = calculate_efficiency(aol, aod_num)
+            print '.'
+            return energies
+            
+        labels = ["x","y","eff"]
+        rng = linspace(-0.3, 0.3, Ns)
+        generic_plot_surface(linspace(0, 0.1, 10), rng, func, labels)
+        
+    plot_brute_region(aod_num)
+    result = optimize.brute(min_fun, ((-0.1,0.1), (-0.1,0.1)), Ns=Ns, full_output=True)
+    xy_normal = result[0]
     new_optimal_normal = append(xy_normal, sqrt(1 - norm(xy_normal)**2))
     change_orientation(aol, aod_num, new_optimal_normal)
 
@@ -51,11 +60,6 @@ def set_up_aol():
                           [ 4.03663526e-02,   7.19263615e-08,   9.99184947e-01], \
                           [ 7.19263615e-08,  4.03663526e-02,  9.99184947e-01] ]))
     
-    orientation = normalise_list([[  1.05807270e-01,   3.75889637e-07,   9.94386656e-01] ,\
-                            [ -3.38090520e-04,   5.72771621e-02,   9.98358259e-01] ,\
-                            [ -4.89868339e-02,  -9.71658841e-04,   9.98798952e-01] ,\
-                            [  5.27145634e-06,  -4.66860201e-02,   9.98909613e-01]])
-    
     aods = [0]*4
     aods[0] = Aod(orientations[0], [ 1, 0,0], 25e-3, 3.2e-3, 8e-3)
     aods[1] = Aod(orientations[1], [ 0, 1,0], 25e-3, 3.2e-3, 8e-3)
@@ -66,7 +70,7 @@ def set_up_aol():
 
 def change_orientation(aol, aod_num, new_normal):
     assert not any(isnan(new_normal))
-    aol.aods[aod_num-1].normal = new_normal
+    aol.aods[aod_num-1].normal = array(new_normal)
 
 def calculate_efficiency(aol, after_nth_aod):
     time_array = (arange(3)-1)*5e-5

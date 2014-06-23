@@ -11,11 +11,12 @@ transducer_width = 3.6e-3
 crystal_thickness = 5e-3
 order = -1
 op_wavelength_vac = 800e-9
+resolution = 40
 
 aod = Aod(normal, sound_direction, aperture_width, transducer_width, crystal_thickness)
 
-mhz_range = linspace(20, 60, 20)
-degrees_range =  linspace(0, 4, 20) 
+mhz_range = linspace(20, 60, resolution)
+degrees_range =  linspace(0, 4, resolution) 
 
 def generic_plot_surface(x_array, y_array, z_func, labels):
     from mpl_toolkits.mplot3d import Axes3D
@@ -28,14 +29,14 @@ def generic_plot_surface(x_array, y_array, z_func, labels):
     z = z_func_vec(x, y) 
     
     fig = plt.figure()
-    ax = fig.gca(projection='3d')               # to work in 3d
-    surf = ax.plot_surface(x, y, z, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0)   # plot a 3d surface plot
+    ax = fig.gca()               
+    cs = ax.pcolor(x, y, z)   
     
     ax.set_xlabel(labels[0])
     ax.set_ylabel(labels[1])
-    ax.set_zlabel(labels[2])
-    
-    fig.colorbar(surf, aspect=5)
+    cb = plt.colorbar(cs, orientation = 'horizontal') 
+    cb.set_label(labels[2]) 
+ 
     plt.show()
 
 def plot_mismatch_angle_freq():
