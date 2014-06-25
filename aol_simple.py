@@ -10,14 +10,15 @@ class AolSimple(object):
     @staticmethod
     def create_aol(order, op_wavelength, ac_velocity, aod_spacing, base_freq, pair_deflection_ratio, focus_position, focus_velocity, crystal_thickness=[0]*4):
         # useful for converting a 'real' aol into the simple aol
-        reduced_spacings = get_reduced_spacings(crystal_thickness[0:3], aod_spacing)
-        focus_position[2] = get_reduced_spacings(crystal_thickness[3], focus_position[2]) # focal distance is effectively shorter than as measured
+        reduced_spacing = get_reduced_spacings(crystal_thickness[0:3], aod_spacing) # reduce spacings because crystals are taken to be thin
+        z_reduced_focus_position = get_reduced_spacings(crystal_thickness[3], focus_position[2])
+        reduced_focus_position = concatenate( (focus_position[0:2], [z_reduced_focus_position]) )
         
-        (const, linear, _) = calculate_drive_freq_4(order, op_wavelength, ac_velocity, aod_spacing, [0]*4, \
-                                                base_freq, pair_deflection_ratio, focus_position, focus_velocity)
+        (const, linear, _) = calculate_drive_freq_4(order, op_wavelength, ac_velocity, reduced_spacing, [0]*4, base_freq, \
+                                                    pair_deflection_ratio, reduced_focus_position, focus_velocity)
         
         check_is_singleton(ac_velocity) # simple drive theory only handles single velocity
-        return AolSimple.create_aol_from_drive(order, reduced_spacings, const, linear, op_wavelength)
+        return AolSimple.create_aol_from_drive(order, reduced_spacing, const, linear, op_wavelength)
 
     @staticmethod
     def create_aol_from_drive(order, aod_spacing, const, linear, op_wavelength):
