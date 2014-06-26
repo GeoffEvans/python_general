@@ -21,8 +21,8 @@ class Acoustics(object):
     def amplitude(self, aod):
         teo2_density = 5990;
         numerator = 2 * self.power
-        denominator = teo2_density * self.velocity**3 * aod.transducer_width * aod.aperture_width # assumes sqr aperture 
-        return sqrt(numerator / denominator)
+        denominator = teo2_density * self.velocity**3 * aod.transducer_width * aod.aperture_width # use of aperture width assumes square aperture 
+        return sqrt(numerator / denominator) # Xu & Stroud (2.143)
     
 class AcousticDrive(object):
 
