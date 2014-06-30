@@ -1,4 +1,5 @@
-from numpy import array, diag, cos, sin, transpose, dot, sqrt, atleast_1d 
+from numpy import array, diag, transpose, dot, atleast_1d, dtype, sqrt, arange, pi
+from scipy.interpolate import interp1d
 from numpy.linalg import eigvals
 
 # Follow the calculation in Xu&St Section 1.3
@@ -8,28 +9,7 @@ principal_refractive_indices = array([2.2597 , 2.2597, 2.4119])
 relative_impermeability_eigenvals = principal_refractive_indices**-2
 activity_vector = 2.65e-05; #See Warner White Bonner, 87deg/mm
 
-def calc_refractive_indices(angles):
-    (sqrt_term,eigensum,_) = get_imperm_properties(angles)
-    
-    ext_recip_sqr = 0.5 * ( eigensum - sqrt_term ) # Xu&St (1.62)
-    ord_recip_sqr = 0.5 * ( eigensum + sqrt_term )
-
-    n_e = ext_recip_sqr ** (-0.5)
-    n_o = ord_recip_sqr ** (-0.5)
-    
-    return (n_e,n_o)
-    
-def calc_polarisations(angles):
-    (sqrt_term,_,eigendiff) = get_imperm_properties(angles)
-    
-    p_e =  0.5j / activity_vector * ( sqrt_term - eigendiff ) # Xu&St (1.62)
-    p_o = -0.5j / activity_vector * ( sqrt_term + eigendiff )
-    
-    return (p_e,p_o)
-    
-def get_imperm_properties(angles_raw):
-    angles = atleast_1d(angles_raw)
-    
+def get_imperm_properties(angles):
     transverse_imperm_eigvals = find_transverse_imperm_eigvals(angles)
     eigenval1 = transverse_imperm_eigvals[:,0]
     eigenval2 = transverse_imperm_eigvals[:,1]     
@@ -43,13 +23,14 @@ def get_imperm_properties(angles_raw):
 def find_transverse_imperm_eigvals(angles):
     relative_impermeability_matrix = find_relative_impermeability_matrix(angles) # Xu&St (1.59)
     return array([[x[0,0],x[1,1]] for x in relative_impermeability_matrix]) # eigenvals for transverse components
-
+   
 def find_relative_impermeability_matrix(angles):
     principal_imperm = diag(relative_impermeability_eigenvals)    
     rotation_matrix = get_yz_rotation_matrix(angles)
-    return [dot(dot(rot,principal_imperm),rot.T) for rot in rotation_matrix]
+    return array([dot(dot(rot,principal_imperm),rot.T) for rot in rotation_matrix])
 
 def get_yz_rotation_matrix(angles):
+    from numpy import cos, sin
     num_angles = angles.size
     one = array([1] * num_angles)
     zero = array([0] * num_angles)
@@ -58,17 +39,61 @@ def get_yz_rotation_matrix(angles):
              [zero,    sin(angles), cos(angles)  ]])
     return transpose(elems, (2,0,1)); # permute indices to get [angle, row, col]
 
+angles = arange(0, pi/2+1e-4, 1e-4)
+interp = interp1d(angles, get_imperm_properties(angles))
+
+def get_imperm_properties_interp(angles_raw):
+    angles = atleast_1d(angles_raw)
+    return interp(abs(angles))
+
+def calc_refractive_indices(angles):
+    (sqrt_term,eigensum,_) = get_imperm_properties_interp(angles)
+    
+    ext_recip_sqr = 0.5 * ( eigensum - sqrt_term ) # Xu&St (1.62)
+    ord_recip_sqr = 0.5 * ( eigensum + sqrt_term )
+
+    n_e = ext_recip_sqr ** (-0.5)
+    n_o = ord_recip_sqr ** (-0.5)
+    
+    return (n_e,n_o)
+    
+def calc_polarisations(angles):
+    (sqrt_term,_,eigendiff) = get_imperm_properties_interp(angles)
+    
+    p_e =  0.5j / activity_vector * ( sqrt_term - eigendiff ) # Xu&St (1.62)
+    p_o = -0.5j / activity_vector * ( sqrt_term + eigendiff )
+    
+    return (p_e,p_o)
+
+def calc_refractive_indices_slow(angles):
+    (sqrt_term,eigensum,_) = get_imperm_properties(atleast_1d(angles))
+    
+    ext_recip_sqr = 0.5 * ( eigensum - sqrt_term ) # Xu&St (1.62)
+    ord_recip_sqr = 0.5 * ( eigensum + sqrt_term )
+
+    n_e = ext_recip_sqr ** (-0.5)
+    n_o = ord_recip_sqr ** (-0.5)
+    
+    return (n_e,n_o)
+
 def plot_refractive_index(): 
     from pylab import plot,xlabel,ylabel,title,grid,show
-    from numpy import arange,pi
     
     angles = arange(-pi/2, pi/2, pi/360)
-    n = calc_refractive_indices(angles)
+    angles_rough = arange(-pi/2-pi/36, pi/2+pi/36, pi/36)
+    n = calc_refractive_indices_slow(angles)
+    s0 = interp1d(angles_rough, calc_refractive_indices_slow(angles_rough)[0])
+    s1 = interp1d(angles_rough, calc_refractive_indices_slow(angles_rough)[1])
     plot(angles, n[0])
     plot(angles, n[1])
+    plot(angles, s0(angles))
+    plot(angles, s1(angles))
     
     xlabel('angle / rad')
     ylabel('refractive index')
     title('Ordinary under Extraordinary')
     grid(True)
     show()
+
+if __name__ == '__main__':
+    plot_refractive_index()

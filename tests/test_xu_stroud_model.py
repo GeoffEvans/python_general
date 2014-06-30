@@ -46,3 +46,4 @@ def test_setting_invalid_mode():
     with pytest.raises(ValueError):
         ray = Ray([0,0,0,], [0,0,1], 800e-9)
         diffract_acousto_optically(aod, [ray], [acoustics], 2)
+        

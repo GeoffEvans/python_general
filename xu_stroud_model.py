@@ -18,11 +18,11 @@ def diffract_by_wavevector_triangle(aod, rays, local_acoustics, order):
     n_ext = aod.calc_refractive_indices_rays(rays)[0]
     
     wavevectors_in = (n_ext * array([r.wavevector_vac for r in rays]).T).T
-    wavevectors_ac = array([a.wavevector(aod) for a in local_acoustics])
+    wavevectors_ac = outer(array([a.wavevector_mag for a in local_acoustics]), aod.acoustic_direction)
     resultants = wavevectors_in + order * wavevectors_ac 
     
     wavevectors_vac_mag_out = [r.wavevector_vac_mag for r in rays] + (2 * pi / c) * array([a.frequency for a in local_acoustics]) # from w_out = w_in + w_ac
-    
+
     def zero_func(mismatches):
         wavevector_mismatches = outer(mismatches * 1e6, aod.normal)
         wavevectors_out = resultants + wavevector_mismatches
@@ -56,8 +56,8 @@ def get_efficiency(aod, wavevector_mismatches_mag, rays_in, rays_out, acoustics)
     
     wavevecs_in_mag  = array([r.wavevector_vac_mag for r in rays_in ])
     wavevecs_out_mag = array([r.wavevector_vac_mag for r in rays_out])
-    wavevecs_in  = [r.wavevector_unit for r in rays_in ]
-    wavevecs_out = [r.wavevector_unit for r in rays_out]
+    wavevecs_in_unit  = [r.wavevector_unit for r in rays_in ]
+    wavevecs_out_unit = [r.wavevector_unit for r in rays_out]
     amp = [a.amplitude(aod) for a in acoustics]
     
     (n_in, _) = aod.calc_refractive_indices_rays(rays_in) # extraordinary in
@@ -66,8 +66,8 @@ def get_efficiency(aod, wavevector_mismatches_mag, rays_in, rays_out, acoustics)
     
     delta_n0 = -0.5 * n_in**2 * n_out * p * amp # Xu&St (2.128)
     delta_n1 = -0.5 * n_out**2 * n_in * p * amp
-    v0 = - wavevecs_out_mag * delta_n0 * aod.transducer_width / dot(wavevecs_out, aod.normal) # TODO, qq, check approximation made here
-    v1 = - wavevecs_in_mag  * delta_n1 * aod.transducer_width / dot(wavevecs_in , aod.normal) 
+    v0 = - wavevecs_out_mag * delta_n0 * aod.transducer_width / dot(wavevecs_out_unit, aod.normal)
+    v1 = - wavevecs_in_mag  * delta_n1 * aod.transducer_width / dot(wavevecs_in_unit , aod.normal) 
     
     zeta = -0.5 * wavevector_mismatches_mag * aod.transducer_width 
     sigma = sqrt(zeta**2 + v0*v1/4) # Xu&St (2.132)

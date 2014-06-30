@@ -7,12 +7,12 @@ from vector_utils import normalise
 
 normal = normalise([0,0,100])
 sound_direction = [1,0,0]
-aperture_width = 25e-3
+aperture_width = 15e-3
 transducer_width = 1.2e-3
 crystal_thickness = 8e-3
 order = -1
-op_wavelength_vac = 800e-9
-resolution = 100
+op_wavelength_vac = 900e-9
+resolution = 60
 
 aod = Aod(normal, sound_direction, aperture_width, transducer_width, crystal_thickness)
 
@@ -88,7 +88,7 @@ def plot_efficiency_xangle_yangle():
         return ray.energy
     
     labels = ["incidence angle / deg","transverse incidence angle / deg","efficiency"]
-    generic_plot_surface(linspace(0.03, 0.08, 20)/pi*180, linspace(-0.3, 0.3, 60)/pi*180, func, labels)
+    generic_plot_surface(linspace(0.00, 0.1, 20)/pi*180, linspace(-0.3, 0.3, 60)/pi*180, func, labels)
 
 def plot_xangleout_xangle_freq():
     
@@ -167,4 +167,4 @@ def plot_efficiency_xangle():
     generic_plot(degrees_range, func, labels)
     
 if __name__ == '__main__':
-    plot_efficiency_xangle()
+    plot_efficiency_xangle_yangle()

@@ -25,7 +25,7 @@ def test_symmetry():
     def all_elements_same(lst):
         return allclose(lst, lst[0], atol=1e-15)
    
-    angles = array([0.3,-0.3,0.3+pi,-0.3+pi])
+    angles = array([0.3,-0.3])
     refractive_indices = calc_refractive_indices(angles)
     
     ext_same = all_elements_same(refractive_indices[0])

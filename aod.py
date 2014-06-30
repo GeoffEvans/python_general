@@ -40,7 +40,7 @@ class Aod(object):
         sound_vector = s1 * invariant + (cosine * s2 - sine * s3) * z + (cosine * s3 + sine * s2) * t
         
         return sound_vector 
-
+    
     def propagate_ray(self, rays, local_acoustics, order):
         self.refract_in(rays)
         diffract_acousto_optically(self, rays, local_acoustics, order)
@@ -71,7 +71,7 @@ class Aod(object):
         d2 = n_ord_vectors(w2) - n_ord_vectors(w0)
         
         return normalise_list(cross(d1,d2))
-    
+
     def calc_refractive_indices_vectors(self, vectors):
         angles_to_axis = angle_between_unit_vectors(normalise_list(vectors), self.optic_axis)
         return calc_refractive_indices(angles_to_axis)
@@ -80,7 +80,7 @@ class Aod(object):
         wavevecs = [r.wavevector_unit for r in rays]
         angles_to_axis = angle_between_unit_vectors(wavevecs, self.optic_axis)
         return calc_refractive_indices(angles_to_axis)
-        
+    
     def refract_in(self, rays):
         # get vectors perpendicular and parallel to normal
         wavevecs = [r.wavevector_unit for r in rays]

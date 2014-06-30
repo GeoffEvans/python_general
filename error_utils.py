@@ -1,8 +1,7 @@
-from numpy import allclose, array
-from numpy.linalg import norm
+from numpy import allclose, array, dot
 
 def check_is_unit_vector(vector):
-    magnitude = norm(vector, axis=0)
+    magnitude = dot(vector,vector)
     if not allclose(magnitude, 1, atol=1e-15):
         raise ValueError("vector must be unit length")
     

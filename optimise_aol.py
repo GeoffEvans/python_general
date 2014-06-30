@@ -9,7 +9,7 @@ from aod_visualisation import generic_plot_surface
 import optimisation_params
 from optimisation_params import OptParams
 
-op_wavelength = 800e-9
+op_wavelength = 900e-9
 
 def optimise_nth_aod_by_hand(aod_num, aol):
     p = OptParams()
@@ -21,8 +21,8 @@ def optimise_nth_aod_by_hand(aod_num, aol):
     return new_optimal_normal
 
 def plot_region(aod_num, aol):
-    def func(x_deg, y_deg):
-        x = x_deg * pi/180
+    def func(scan_deg, y_deg):
+        x = scan_deg * pi/180
         y = y_deg * pi/180
         new_normal = [x, y, sqrt(1 - x**2 - y**2)]
         change_orientation(aol, aod_num, new_normal)
@@ -39,22 +39,15 @@ def min_fun(variable, params, aod_num, aol):
     print ','
     return - calculate_efficiency(aol, aod_num)
 
-def set_up_aol():
-    order = 1
-    base_freq = 35e6
-    pair_deflection_ratio = 1
-    
+def set_up_aol(order=-1, op_wavelength=op_wavelength, base_freq=35e6, focus_position=[0,0,1e21], focus_velocity=[0,0,0], pair_deflection_ratio=1):
     focal_length = -1e1
     focus_position = array([1e-1,0,focal_length])
-    focus_velocity = [0,0,0]
     
-    aod_spacing = array([5e-2] * 3)
-    
-    orientations = normalise_list(array([ [ 0.03901281, 0., 0.99923871], \
+    orientations = - normalise_list(array([ [ 0.03901281, 0., 0.99923871], \
                                           [ 0.05585054, 0.03899298, 0.99767744], \
                                           [ 0.00671442,  0.05235988, 0.99860571], \
                                           [ 0., 6.64008463e-03, 9.99977954e-01] ]))
-    
+    aod_spacing = array([5e-2] * 3)
     aods = [0]*4
     aods[0] = Aod(orientations[0], [ 1, 0,0], 25e-3, 3.6e-3, 8e-3)
     aods[1] = Aod(orientations[1], [ 0, 1,0], 15e-3, 3.6e-3, 8e-3)
@@ -67,7 +60,7 @@ def change_orientation(aol, aod_num, new_normal):
     assert not any(isnan(new_normal))
     aol.aods[aod_num-1].normal = array(new_normal)
 
-def calculate_efficiency(aol, after_nth_aod):
+def calculate_efficiency(aol, after_nth_aod, op_wavelength=op_wavelength):
     time_array = (arange(3)-1)*5e-5
     x_array = (arange(3)-1)*2e-3
     y_array = x_array
@@ -89,8 +82,8 @@ def calculate_efficiency(aol, after_nth_aod):
 
 if __name__ == '__main__':
     aol = set_up_aol()
-    #plot_region(4, aol)
-    #optimise_nth_aod_by_hand(4, aol)
+    #plot_region(1, aol)
+    #optimise_nth_aod_by_hand(1, aol)
     print calculate_efficiency(aol, 4)
     print calculate_efficiency(aol, 3)
     print calculate_efficiency(aol, 2)
