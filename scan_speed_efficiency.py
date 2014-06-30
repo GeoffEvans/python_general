@@ -2,7 +2,6 @@ from optimise_aol import set_up_aol
 from aod_visualisation import multi_line_plot, generic_plot_surface
 from numpy import linspace, pi, arange, dot, sin, cos, array, arctan2
 from ray import Ray
-from test_aol_full import focal_length
 
 op_wavelength = 800e-9
 
@@ -39,7 +38,7 @@ def calculate_efficiency(aol, time):
         for yn in range(len(y_array)):    
             rays[xn + yn*len(x_array)] = Ray([x_array[xn],y_array[yn],0], [0,0,1], op_wavelength)
                 
-    (_,energies) = aol.propagate_to_distance_past_aol(rays, time, focal_length)
+    (_,energies) = aol.propagate_to_distance_past_aol(rays, time, 0)
     energy = sum(energies[:,-1])
     ray_count = len(rays)
                 
