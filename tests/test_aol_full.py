@@ -80,3 +80,6 @@ def test_efficiency_low_at_angle():
     ray = Ray([0,0,0], [3./5,0,4./5], op_wavelength)
     aol.propagate_to_distance_past_aol([ray], 0, focal_length)
     assert ray.energy < 1e-9
+    
+if __name__ == '__main__':
+    test_angles_on_aods()

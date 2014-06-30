@@ -16,7 +16,7 @@ class Ray(object):
         return self._wavevector_unit
     @wavevector_unit.setter
     def wavevector_unit(self, v):
-        #check_is_unit_vector(v) # useful for error checking but slow!
+        check_is_unit_vector(v) # useful for error checking but slow!
         self._wavevector_unit = array(v, dtype=dtype(float))
     
     @property

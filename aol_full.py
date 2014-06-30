@@ -64,7 +64,7 @@ class AolFull(object):
         add_planes()             
         plt.show()
         return plt
-        
+
     def propagate_to_distance_past_aol(self, rays, time, distance=0):
         num_rays = len(rays)
         crystal_thickness = array([a.crystal_thickness for a in self.aods], dtype=dtype(float))

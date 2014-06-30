@@ -36,7 +36,6 @@ def generic_plot_surface(x_array, y_array, z_func, labels):
     def onclick(event):
         print 'button=%d, x=%d, y=%d, xdata=%f, ydata=%f'%(
             event.button, event.x, event.y, event.xdata, event.ydata)
-
     cid = fig.canvas.mpl_connect('button_press_event', onclick)
     
     ax.set_xlabel(labels[0])
@@ -119,11 +118,9 @@ def plot_xangleout_xangle_yangle():
     labels = ["incidence angle / deg","transverse incidence angle / deg","diffracted angle / deg"]
     generic_plot_surface(degrees_range, linspace(-5, 5, resolution), func, labels)
 
-def generic_plot(x, y_func, labels):
-    from mpl_toolkits.mplot3d import Axes3D
+def generic_plot(x, y_func, labels, limits=0):
     import matplotlib.pyplot as plt
-    from matplotlib import cm
-    from numpy import meshgrid, vectorize
+    from numpy import vectorize
     
     y_func_vec = vectorize(y_func)
     y = y_func_vec(x) 
@@ -134,10 +131,33 @@ def generic_plot(x, y_func, labels):
     
     ax.set_xlabel(labels[0])
     ax.set_ylabel(labels[1])
- 
+    
+    if not limits == 0:
+        plt.axis(limits)
     plt.grid()
     plt.show()
-
+    
+def multi_line_plot(x, y_func_many, labels, lgnd, limits=0):
+    import matplotlib.pyplot as plt
+    from numpy import meshgrid, vectorize
+    
+    fig = plt.figure()
+    ax = fig.gca() 
+    
+    for y_func in y_func_many:
+        y_func_vec = vectorize(y_func)
+        y = y_func_vec(x) 
+        plt.plot(x, y)   
+    
+    ax.set_xlabel(labels[0])
+    ax.set_ylabel(labels[1])
+    
+    if not limits == 0:
+        plt.axis(limits)
+    plt.legend(lgnd, loc='upper left')
+    plt.grid()
+    plt.show()
+    
 def plot_efficiency_freq():
     
     def func(mhz):
