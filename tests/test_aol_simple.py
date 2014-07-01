@@ -17,7 +17,7 @@ def test_plot():
     ray = Ray([0,0,0], wavevec, wavelength)
     plt = aol.plot_ray_through_aol(ray, 1, aol.aod_spacing.sum())
     plt.close()
-    assert allclose(ray.position, [0,0,0]) and allclose(ray.wavevector_unit, wavevec)
+    assert allclose(ray.position, [0,0,0], atol=0) and allclose(ray.wavevector_unit, wavevec, atol=0)
 
 def test_no_chirp_at_tzero():
     aol = AolSimple.create_aol_from_drive(order, spacing, [0,0,0,0], array([1,1,1,1])*1e9, wavelength)
@@ -25,16 +25,16 @@ def test_no_chirp_at_tzero():
     wavevec = [0,0,1]
     ray = Ray([0,0,0], wavevec, wavelength)
     aol.propagate_to_distance_past_aol(ray, 0, 10)
-    assert allclose(ray.wavevector_unit, wavevec)
+    assert allclose(ray.wavevector_unit, wavevec, atol=0)
     
 def test_constant_freq_for_zero_chirp():
-    aol = AolSimple.create_aol_from_drive(order, spacing, [0,0,0,0], [1,1,1,1], wavelength)
+    aol = AolSimple.create_aol_from_drive(order, spacing, [10]*4, [0]*4, wavelength)
     wavevec = [0,3./5,4./5]
     ray1 = Ray([0,0,0], wavevec, wavelength)
     aol.propagate_to_distance_past_aol(ray1, 0)
     ray2 = Ray([0,0,0], wavevec, wavelength)
-    aol.propagate_to_distance_past_aol(ray2, 100)
-    assert allclose(ray1.wavevector_unit, ray2.wavevector_unit)    
+    aol.propagate_to_distance_past_aol(ray2, 1e-3)
+    assert allclose(ray1.wavevector_unit, ray2.wavevector_unit, atol=0)    
     
 def test_deflect_right_way():
     aol = AolSimple.create_aol_from_drive(order, spacing, [1,0,0,0], [0,0,0,0], wavelength)
@@ -46,4 +46,7 @@ def test_deflect_right_way():
 def test_find_base_ray_positions():
     aol_const = AolSimple.create_aol_from_drive(order, spacing, [1e9]*4, [0]*4, wavelength)
     aol_chirp = AolSimple.create_aol_from_drive(order, spacing, [1e9]*4, [1e12]*4, wavelength)
-    assert allclose(aol_const.base_ray_positions, aol_chirp.base_ray_positions) and not aol_chirp.acoustic_drives[0].linear == 0 
+    assert allclose(aol_const.base_ray_positions, aol_chirp.base_ray_positions, atol=0) and not aol_chirp.acoustic_drives[0].linear == 0 
+
+if __name__ == '__main__':
+    test_constant_freq_for_zero_chirp()

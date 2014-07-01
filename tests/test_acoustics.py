@@ -17,14 +17,14 @@ def test_no_offset():
     assert f == 10
     
 def test_x_shift():
-    drive = AcousticDrive(10, 10, velocity=1)
+    drive = AcousticDrive(1000, 10, velocity=1)
     f1 = drive.get_local_acoustics(0, [0,0,0], [0,0], [1,0,0]).frequency
     f2 = drive.get_local_acoustics(0, [10,0,0], [0,0], [1,0,0]).frequency
     
     assert allclose(f2 - f1, -100)
 
 def test_base_shift():
-    drive = AcousticDrive(10, 10, velocity=1)
+    drive = AcousticDrive(1000, 10, velocity=1)
     f1 = drive.get_local_acoustics(0, [0,0,0], [0,0], [1,0,0]).frequency
     f2 = drive.get_local_acoustics(0, [0,0,0], [-10,0], [1,0,0]).frequency
     
