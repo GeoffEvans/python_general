@@ -7,7 +7,8 @@ default_power = 1
 class Acoustics(object):
     
     def __init__(self, frequency, power=default_power, velocity=teo2_ac_vel):
-        assert frequency >= 0
+        if not frequency >= 0:
+            power = 0 # this is not perfect but at least gives zero diffraction efficiency in Xu & Stroud
         self.frequency = frequency
         self.power = power
         self.velocity = velocity

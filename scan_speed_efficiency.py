@@ -2,38 +2,40 @@ from plot_utils import multi_line_plot, generic_plot_surface_vals
 from numpy import linspace, pi, sin, cos, array, arctan2, meshgrid
 from numpy.linalg import norm
 from set_up_utils import get_ray_bundle, set_up_aol
+from vector_utils import normalise
 
 op_wavelength = 800e-9
 
-def plot_lines(focal_length, angular_vel_many):
+def plot_lines(focal_length, vel_many):
     funcs = []
-    for angular_vel in angular_vel_many:
-        funcs.append(create_efficiency_function_closure([0,0,focal_length], array(angular_vel)*focal_length))
+    for vel in vel_many:
+        funcs.append(create_efficiency_function_closure([0,0,focal_length], vel))
                 
     labels = ["scan angle / deg", "efficiency"]
-    scan_range_mrad = linspace(-80, 80, 40)
+    scan_range_mrad = linspace(-40, 40, 40)
     scan_deg = scan_range_mrad * 180/pi * 1e-3
-    lgnd = angular_vel_many
+    lgnd = vel_many
     multi_line_plot(scan_deg, funcs, labels, lgnd, (min(scan_deg),max(scan_deg),0,0.5))
 
-def plot_surf(focal_length, angular_vel):
+def plot_surf(focal_length, vel):
     from numpy import vectorize
     
-    scan_range_mrad = linspace(-80, 80, 20)
+    scan_range_mrad = linspace(-10, 10, 10)
     scan_deg = scan_range_mrad * 180/pi * 1e-3
     orthogonal_deg = scan_range_mrad * 180/pi * 1e-3
     orthogonal_distance = focal_length * scan_deg * pi / 180
-    scan_angle = arctan2(angular_vel[1], angular_vel[0])
+    scan_angle = arctan2(vel[1], vel[0])
     
     effs = []
     for dist in orthogonal_distance:
         focus_position = dist * array([-sin(scan_angle), cos(scan_angle), 0]) + [0,0,focal_length]
-        func = create_efficiency_function_closure(focus_position, array(angular_vel)*focal_length)
+        func = create_efficiency_function_closure(focus_position, vel)
         vec_func = vectorize(func)
         effs.append(vec_func(scan_deg))
     
+    labels = ["xangle / deg", "yangle / deg", "efficiency"]
     (x, y) = get_xy(scan_angle, scan_deg, orthogonal_deg)          
-    generic_plot_surface_vals(x, y, array(effs))   
+    generic_plot_surface_vals(x, y, array(effs), labels)   
     
 def get_xy(scan_angle, scan_deg, orthogonal_deg):
     (scan_mesh, orthogonal_mesh) = meshgrid(scan_deg, orthogonal_deg)
@@ -61,5 +63,5 @@ def calculate_efficiency(aol, time):
     return energy / ray_count
 
 if __name__ == '__main__':
-    plot_lines(1, [[-1e2,0,0],[-1e3,0,0]])
-    #plot_surf(10, [-1e3,0,0])
+    #plot_lines(-1e15, 10 * array([[-1e1,0,0],[-1e2,0,0],[-1e3,0,0],[-1e4,0,0],[-1e5,0,0]]))
+    plot_surf(1e1, 100 * array([1,0,0]))
