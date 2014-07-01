@@ -2,6 +2,7 @@ from aod import Aod
 from ray import Ray
 from acoustics import Acoustics
 from numpy import linspace, pi, sin, cos, abs, sqrt, arcsin
+from plot_utils import generic_plot_surface, generic_plot
 from xu_stroud_model import diffract_by_wavevector_triangle
 from vector_utils import normalise
 
@@ -18,33 +19,6 @@ aod = Aod(normal, sound_direction, aperture_width, transducer_width, crystal_thi
 
 mhz_range = linspace(10, 60, resolution)
 degrees_range =  linspace(-1, 6, resolution) 
-
-def generic_plot_surface(x_array, y_array, z_func, labels):
-    from mpl_toolkits.mplot3d import Axes3D
-    import matplotlib.pyplot as plt
-    from matplotlib import cm
-    from numpy import meshgrid, vectorize
-    
-    (x, y) = meshgrid(x_array, y_array)
-    z_func_vec = vectorize(z_func)
-    z = z_func_vec(x, y) 
-    
-    fig = plt.figure()
-    ax = fig.gca()               
-    cs = ax.pcolor(x, y, z)   
-    
-    def onclick(event):
-        print 'button=%d, x=%d, y=%d, xdata=%f, ydata=%f'%(
-            event.button, event.x, event.y, event.xdata, event.ydata)
-    cid = fig.canvas.mpl_connect('button_press_event', onclick)
-    
-    ax.set_xlabel(labels[0])
-    ax.set_ylabel(labels[1])
-    cb = plt.colorbar(cs, orientation = 'vertical') 
-    cb.set_label(labels[2]) 
-
-    plt.grid() 
-    plt.show()
 
 def plot_mismatch_angle_freq():
     
@@ -118,46 +92,6 @@ def plot_xangleout_xangle_yangle():
     labels = ["incidence angle / deg","transverse incidence angle / deg","diffracted angle / deg"]
     generic_plot_surface(degrees_range, linspace(-5, 5, resolution), func, labels)
 
-def generic_plot(x, y_func, labels, limits=0):
-    import matplotlib.pyplot as plt
-    from numpy import vectorize
-    
-    y_func_vec = vectorize(y_func)
-    y = y_func_vec(x) 
-    
-    fig = plt.figure()
-    ax = fig.gca()               
-    cs = ax.plot(x, y)   
-    
-    ax.set_xlabel(labels[0])
-    ax.set_ylabel(labels[1])
-    
-    if not limits == 0:
-        plt.axis(limits)
-    plt.grid()
-    plt.show()
-    
-def multi_line_plot(x, y_func_many, labels, lgnd, limits=0):
-    import matplotlib.pyplot as plt
-    from numpy import meshgrid, vectorize
-    
-    fig = plt.figure()
-    ax = fig.gca() 
-    
-    for y_func in y_func_many:
-        y_func_vec = vectorize(y_func)
-        y = y_func_vec(x) 
-        plt.plot(x, y)   
-    
-    ax.set_xlabel(labels[0])
-    ax.set_ylabel(labels[1])
-    
-    if not limits == 0:
-        plt.axis(limits)
-    plt.legend(lgnd, loc='upper left')
-    plt.grid()
-    plt.show()
-    
 def plot_efficiency_freq():
     
     def func(mhz):
