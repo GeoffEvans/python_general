@@ -7,6 +7,8 @@ default_power = 1
 class Acoustics(object):
     
     def __init__(self, frequency, power=default_power, velocity=teo2_ac_vel):
+        if frequency < 0:
+            frequency = 0
         self.frequency = frequency
         self.power = power
         self.velocity = velocity
