@@ -1,7 +1,8 @@
 from aol_simple import AolSimple
 from acoustics import AcousticDrive, default_power, teo2_ac_vel
 from aol_drive import calculate_drive_freq_4
-from numpy import append, array, dtype, concatenate, zeros, atleast_2d, dot
+from numpy import append, array, dtype, concatenate, zeros, atleast_2d, dot,\
+    isnan
 import copy
 
 class AolFull(object):
@@ -25,7 +26,7 @@ class AolFull(object):
         
         simple = AolSimple(order, self.aod_spacing, self.acoustic_drives)
         self.base_ray_positions = simple.find_base_ray_positions(op_wavelength)
-     
+    
     def plot_ray_through_aol(self, rays, time, distance):
         import matplotlib as mpl
         from mpl_toolkits.mplot3d import Axes3D
@@ -102,3 +103,7 @@ class AolFull(object):
         local_acoustics = [drive.get_local_acoustics(time, r.position, base_ray_position, aod.acoustic_direction) for r in rays]
         
         aod.propagate_ray(rays, local_acoustics, self.order)
+        
+    def change_orientation(self, aod_num, new_normal):
+        assert not any(isnan(new_normal))
+        self.aods[aod_num-1].normal = array(new_normal)
