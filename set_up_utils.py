@@ -18,7 +18,7 @@ def set_up_aol(order=-1, op_wavelength=800e-9, base_freq=35e6, focus_position=[0
 
     return AolFull.create_aol(aods, aod_spacing, order, op_wavelength, base_freq, pair_deflection_ratio, focus_position, focus_velocity)
 
-def get_ray_bundle(op_wavelength=800e-9, spacing=2e-3):
+def get_ray_bundle(op_wavelength=800e-9, spacing=5e-3):
     x_array = (arange(3)-1)*spacing
     y_array = x_array
     

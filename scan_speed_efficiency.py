@@ -17,7 +17,7 @@ def plot_lines(focal_length, vel_many):
     lgnd = vel_many
     multi_line_plot(scan_deg, funcs, labels, lgnd, (min(scan_deg),max(scan_deg),0,0.5))
 
-def plot_surf(focal_length, vel):
+def plot_fov_surf(focal_length, vel):
     from numpy import vectorize
     
     scan_range_mrad = linspace(-10, 10, 10)
@@ -54,7 +54,7 @@ def create_efficiency_function_closure(focus_position_tzero, focus_velocity):
     return func    
 
 def calculate_efficiency(aol, time):
-    rays = get_ray_bundle(op_wavelength, 2e-3)
+    rays = get_ray_bundle(op_wavelength)
                 
     (_,energies) = aol.propagate_to_distance_past_aol(rays, time, 0)
     energy = sum(energies[:,-1])
@@ -64,4 +64,4 @@ def calculate_efficiency(aol, time):
 
 if __name__ == '__main__':
     #plot_lines(-1e15, 10 * array([[-1e1,0,0],[-1e2,0,0],[-1e3,0,0],[-1e4,0,0],[-1e5,0,0]]))
-    plot_surf(1e1, 100 * array([1,0,0]))
+    plot_fov_surf(1e1, 613 * array([1,0,0]))

@@ -27,10 +27,7 @@ def generic_plot_surface_vals(x, y, z, labels):
     plt.grid() 
     plt.show()
 
-def generic_plot(x, y_func, labels, limits=0):
-    y_func_vec = vectorize(y_func)
-    y = y_func_vec(x) 
-    
+def generic_plot_vals(x, y, labels, limits=0):
     fig = plt.figure()
     ax = fig.gca()               
     cs = ax.plot(x, y)   
@@ -43,6 +40,11 @@ def generic_plot(x, y_func, labels, limits=0):
     plt.grid()
     plt.show()
     
+def generic_plot(x, y_func, labels, limits=0):
+    y_func_vec = vectorize(y_func)
+    y = y_func_vec(x) 
+    generic_plot_vals(x, y, labels, limits=0)
+    
 def multi_line_plot(x, y_func_many, labels, lgnd, limits=0):
     fig = plt.figure()
     ax = fig.gca() 
@@ -50,6 +52,22 @@ def multi_line_plot(x, y_func_many, labels, lgnd, limits=0):
     for y_func in y_func_many:
         y_func_vec = vectorize(y_func)
         y = y_func_vec(x) 
+        plt.plot(x, y)   
+    
+    ax.set_xlabel(labels[0])
+    ax.set_ylabel(labels[1])
+    
+    if not limits == 0:
+        plt.axis(limits)
+    plt.legend(lgnd, loc='upper left')
+    plt.grid()
+    plt.show()
+    
+def multi_line_plot_vals(x, y_many, labels, lgnd, limits=0):
+    fig = plt.figure()
+    ax = fig.gca() 
+    
+    for y in y_many:
         plt.plot(x, y)   
     
     ax.set_xlabel(labels[0])

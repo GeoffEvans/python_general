@@ -40,7 +40,7 @@ def calculate_efficiency(aol, after_nth_aod, op_wavelength=op_wavelength):
     ray_count = 0
     
     for t in time_array:
-        rays = get_ray_bundle(op_wavelength, 2e-3)
+        rays = get_ray_bundle(op_wavelength)
         
         (_,energies) = aol.propagate_to_distance_past_aol(rays, t)
         energy += sum(energies[:,after_nth_aod-1])

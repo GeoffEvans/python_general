@@ -39,13 +39,13 @@ def test_aol_drives_same():
     assert allclose(const_full, const_simple) and allclose(linear_full, linear_simple) and allclose(quad_full, quad_simple)
 
 def test_plot():
-    x,y = meshgrid(linspace(-1,1,10)*1e-2, linspace(-1,1,10)*1e-2)
+    x,y = meshgrid(linspace(-1,1,5)*1e-2, linspace(-1,1,5)*1e-2)
     list_of_positions = zip(x.ravel(), y.ravel()) 
     rays = [Ray([xy[0], xy[1], 0], [0,0,1], op_wavelength) for xy in list_of_positions]
     aol.plot_ray_through_aol(rays, 0, focus_position[2])
 
 def test_angles_on_aods():
-    x,y = meshgrid(linspace(-1,1,10)*1e-2, linspace(-1,1,10)*1e-2)
+    x,y = meshgrid(linspace(-1,1,5)*1e-2, linspace(-1,1,5)*1e-2)
     list_of_positions = zip(x.ravel(), y.ravel()) 
     rays = [Ray([xy[0], xy[1], 0], [0,0,1], op_wavelength) for xy in list_of_positions]
     paths,_ = aol.propagate_to_distance_past_aol(rays, 3e-6)

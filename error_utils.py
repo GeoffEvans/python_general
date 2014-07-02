@@ -1,8 +1,7 @@
-from numpy import allclose, array, dot
+from numpy import array, dot
 
 def check_is_unit_vector(vector):
-    magnitude = dot(vector,vector)
-    if not allclose(magnitude, 1, atol=1e-15):
+    if abs(dot(vector,vector) - 1) > 1e-14:
         raise ValueError("vector must be unit length")
     
 def check_is_of_length(desired, arr):
