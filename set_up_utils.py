@@ -11,7 +11,7 @@ def set_up_aol(order=-1, op_wavelength=800e-9, base_freq=35e6, focus_position=[0
                                           [ -0., -6.64008463e-03, 9.99977954e-01] ]))
     aod_spacing = array([5e-2] * 3)
     aods = [0]*4
-    aods[0] = Aod(orientations[0], [ 1, 0,0], 25e-3, 3.6e-3, 8e-3)
+    aods[0] = Aod(orientations[0], [ 1, 0,0], 15e-3, 3.6e-3, 8e-3)
     aods[1] = Aod(orientations[1], [ 0, 1,0], 15e-3, 3.6e-3, 8e-3)
     aods[2] = Aod(orientations[2], [-1, 0,0], 15e-3, 1.2e-3, 8e-3)
     aods[3] = Aod(orientations[3], [ 0,-1,0], 15e-3, 1.2e-3, 8e-3)

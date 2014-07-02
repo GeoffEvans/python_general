@@ -6,7 +6,7 @@ from test_aol_full import focal_length
 op_wavelength = 800e-9
 
 def plot_fov_lines(focal_lengths):
-    x_rad = linspace(-10, 10, 10) * 1e-3
+    x_rad = linspace(-18, 18, 18) * 1e-3
     x_deg = x_rad * 180/pi
     focus_position_many = []
     for f in focal_lengths:
@@ -52,4 +52,4 @@ def calculate_efficiency(aol):
     return energy / ray_count
 
 if __name__ == '__main__':
-    plot_fov_lines([1e0, 5e0, 1e1, 1e6, 1e12])
+    plot_fov_lines([1e0, 2, 3e0, 1e1, 1e6, 1e12])

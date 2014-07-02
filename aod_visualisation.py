@@ -13,7 +13,8 @@ transducer_width = 1.2e-3
 crystal_thickness = 8e-3
 order = -1
 op_wavelength_vac = 900e-9
-resolution = 60
+resolution = 30
+pwr = 5
 
 aod = Aod(normal, sound_direction, aperture_width, transducer_width, crystal_thickness)
 
@@ -26,7 +27,7 @@ def plot_mismatch_angle_freq():
         ang = deg * pi/180
         wavevector_unit = [sin(ang), 0, cos(ang)]
         ray = Ray([0,0,0], wavevector_unit, op_wavelength_vac)
-        acoustics = Acoustics(mhz*1e6, 1)
+        acoustics = Acoustics(mhz*1e6, pwr)
         
         (mismatch,_) = diffract_by_wavevector_triangle(aod, [ray], [acoustics], order)
         return abs(mismatch)
@@ -40,7 +41,7 @@ def plot_efficiency_xangle_freq():
         ang = deg * pi/180
         wavevector_unit = [sin(ang), 0, cos(ang)]
         ray = Ray([0,0,0], wavevector_unit, op_wavelength_vac)
-        acoustics = Acoustics(mhz*1e6, 1)
+        acoustics = Acoustics(mhz*1e6, pwr)
         
         aod.propagate_ray([ray], [acoustics], order)
         return ray.energy
@@ -69,7 +70,7 @@ def plot_xangleout_xangle_freq():
         ang = deg * pi/180
         wavevector_unit = [sin(ang), 0, cos(ang)]
         ray = Ray([0,0,0], wavevector_unit, op_wavelength_vac)
-        acoustics = Acoustics(mhz*1e6, 1)
+        acoustics = Acoustics(mhz*1e6, pwr)
         
         aod.propagate_ray([ray], [acoustics], order)
         return arcsin(ray.wavevector_unit[0]) * 180/pi
@@ -98,7 +99,7 @@ def plot_efficiency_freq():
         ang = 2.2 * pi / 180
         wavevector_unit = [sin(ang), 0, cos(ang)]
         ray = Ray([0,0,0], wavevector_unit, op_wavelength_vac)
-        acoustics = Acoustics(mhz*1e6, 1)
+        acoustics = Acoustics(mhz*1e6, pwr)
         
         aod.propagate_ray([ray], [acoustics], order)
         return ray.energy
@@ -121,4 +122,4 @@ def plot_efficiency_xangle():
     generic_plot(degrees_range, func, labels)
     
 if __name__ == '__main__':
-    plot_efficiency_xangle_yangle()
+    plot_efficiency_xangle_freq()
