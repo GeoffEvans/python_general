@@ -15,7 +15,7 @@ def plot_lines(focal_length, vel_many):
                 
     labels = ["scan angle / deg", "efficiency"]
     lgnd = vel_many
-    multi_line_plot(scan_deg, funcs, labels, lgnd, (min(scan_deg),max(scan_deg),0,0.5))
+    multi_line_plot(scan_deg, funcs, labels, lgnd, (min(scan_deg),max(scan_deg),0,1))
 
 def plot_fov_surf(focal_length, vel):
     from numpy import vectorize
@@ -60,5 +60,5 @@ def calculate_efficiency(aol, time):
     return energy / ray_count
 
 if __name__ == '__main__':
-    plot_lines(1e1, 1e0 * array([[-1e3,0,0],[-1e2,0,0],[1e2,0,0],[1e3,0,0]]))
+    plot_lines(1e12, 1e0 * array([[-1e3,0,0],[1e3,0,0]]))
     #plot_fov_surf(1e1, 613 * array([1,0,0]))

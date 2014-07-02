@@ -15,7 +15,7 @@ def plot_fov_lines(focal_lengths):
     effs = get_effs(transpose(focus_position_many, [0,2,1]))
     
     labels = ["xangle / deg", "efficiency"]
-    multi_line_plot_vals(x_deg, array(effs), labels, focal_lengths, (min(x_deg),max(x_deg),0,0.5))
+    multi_line_plot_vals(x_deg, array(effs), labels, focal_lengths, (min(x_deg),max(x_deg),0,1))
         
 def plot_fov_surf(focal_length):
     x_rad = linspace(-10, 10, 10) * 1e-3

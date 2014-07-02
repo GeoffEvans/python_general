@@ -12,9 +12,9 @@ aperture_width = 15e-3
 transducer_width = 1.2e-3
 crystal_thickness = 8e-3
 order = -1
-op_wavelength_vac = 900e-9
+op_wavelength_vac = 800e-9
 resolution = 30
-pwr = 5
+pwr = 3
 
 aod = Aod(normal, sound_direction, aperture_width, transducer_width, crystal_thickness)
 
