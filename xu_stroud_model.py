@@ -3,7 +3,6 @@ from numpy import dot, sin, sqrt, array, zeros, outer, allclose
 from numpy.linalg import norm
 from scipy.optimize import fsolve
 from scipy.constants import c, pi
-from copy import copy
 
 def diffract_acousto_optically(aod, rays, local_acoustics, order, ext_to_ord=True, rescattering=True):
     if order > 1:
@@ -38,7 +37,7 @@ def diffract_acousto_optically(aod, rays, local_acoustics, order, ext_to_ord=Tru
             rays[m].energy -= rays[m].energy * efficiencies[m]
             rays[m].wavevector_unit = wavevecs_in_unit[m] # we don't want to change the wavevectors again
             rays[m].wavevector_vac_mag = wavevecs_in_mag[m]
-             
+
 def diffract_by_wavevector_triangle(aod, rays, local_acoustics, order, ref_inds):
     n_in = aod.calc_refractive_indices_rays(rays)[ref_inds[0]]
     

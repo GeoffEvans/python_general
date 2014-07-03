@@ -12,7 +12,7 @@ def optimise_nth_aod_by_hand(aod_num, aol):
     
     result = optimize.fminbound(min_fun, p.min_val(), p.max_val(), (p, aod_num, aol), full_output=True)
     new_optimal_normal = p.get_normal(result[0])
-    aol.change_orientation(aol, aod_num, new_optimal_normal)
+    aol.change_orientation(aod_num, new_optimal_normal)
     return new_optimal_normal
 
 def plot_region(aod_num, aol):
@@ -21,7 +21,7 @@ def plot_region(aod_num, aol):
         x = scan_deg * pi/180
         y = y_deg * pi/180
         new_normal = [x, y, sqrt(1 - x**2 - y**2)]
-        aol.change_orientation(aol, aod_num, new_normal)
+        aol.change_orientation(aod_num, new_normal)
         energies = calculate_efficiency(aol, aod_num)
         return energies
         
@@ -30,7 +30,7 @@ def plot_region(aod_num, aol):
 
 def min_fun(variable, params, aod_num, aol):
     new_normal = params.get_normal(variable)
-    aol.change_orientation(aol, aod_num, new_normal)
+    aol.change_orientation(aod_num, new_normal)
     return - calculate_efficiency(aol, aod_num)
 
 def calculate_efficiency(aol, after_nth_aod, op_wavelength=op_wavelength):
@@ -50,9 +50,7 @@ def calculate_efficiency(aol, after_nth_aod, op_wavelength=op_wavelength):
 
 if __name__ == '__main__':
     aol = set_up_aol(op_wavelength=op_wavelength)
-    #plot_region(1, aol)
+    plot_region(1, aol)
     #optimise_nth_aod_by_hand(1, aol)
-    print calculate_efficiency(aol, 4)
-    print calculate_efficiency(aol, 3)
-    print calculate_efficiency(aol, 2)  
-    print calculate_efficiency(aol, 1)
+    #print calculate_efficiency(aol, 4)
+
