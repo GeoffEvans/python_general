@@ -18,7 +18,7 @@ def test_efficiency_range():
         v = normalise([random(),random(),10])
         ray_in = Ray([0,0,0],v,800e-9,1)
         ray_out = Ray([0,0,0],v,800e-9,1)
-        return get_efficiency(aod, random(), [ray_in], [ray_out], [acoustics])
+        return get_efficiency(aod, random(), [ray_in], [ray_out], [acoustics], (0,1))
         
     effs = [ eff_fun() for _ in range(100) ]
     assert all(less_equal(effs,1)) and all(greater_equal(effs,0))  
@@ -35,7 +35,7 @@ def test_order_sym():
 
 def test_wavevector_triangle():
     ray = Ray([0,0,0],[0,0,1],800e-9)
-    (wavevector_mismatch_mag, original_rays) = diffract_by_wavevector_triangle(aod, [ray], [acoustics], order)
+    (wavevector_mismatch_mag, original_rays) = diffract_by_wavevector_triangle(aod, [ray], [acoustics], order, (0,1))
     k_i = original_rays[0].wavevector_vac * aod.calc_refractive_indices_rays(original_rays)[0]
     k_d = ray.wavevector_vac * aod.calc_refractive_indices_rays([ray])[1]
     K = acoustics.wavevector(aod) * order

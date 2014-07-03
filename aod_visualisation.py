@@ -14,7 +14,7 @@ crystal_thickness = 8e-3
 order = -1
 op_wavelength_vac = 800e-9
 resolution = 30
-pwr = 3
+pwr = 1
 
 aod = Aod(normal, sound_direction, aperture_width, transducer_width, crystal_thickness)
 
@@ -29,7 +29,7 @@ def plot_mismatch_angle_freq():
         ray = Ray([0,0,0], wavevector_unit, op_wavelength_vac)
         acoustics = Acoustics(mhz*1e6, pwr)
         
-        (mismatch,_) = diffract_by_wavevector_triangle(aod, [ray], [acoustics], order)
+        (mismatch,_) = diffract_by_wavevector_triangle(aod, [ray], [acoustics], order, (0,1))
         return abs(mismatch)
         
     labels = ["incidence angle / deg","frequency / MHz","wavevector mismatch / 1/m"]
@@ -94,7 +94,7 @@ def plot_xangleout_xangle_yangle():
     generic_plot_surface(degrees_range, linspace(-5, 5, resolution), func, labels)
 
 def plot_efficiency_freq():
-    
+     
     def func(mhz):
         ang = 2.2 * pi / 180
         wavevector_unit = [sin(ang), 0, cos(ang)]
@@ -122,4 +122,4 @@ def plot_efficiency_xangle():
     generic_plot(degrees_range, func, labels)
     
 if __name__ == '__main__':
-    plot_efficiency_xangle_freq()
+    plot_efficiency_xangle()
