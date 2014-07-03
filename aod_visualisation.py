@@ -8,15 +8,15 @@ from vector_utils import normalise
 
 normal = normalise([0,0,100])
 sound_direction = [1,0,0]
-aperture_width = 15e-3
-transducer_width = 1.2e-3
+transducer_height = 16e-3
+transducer_width = 3.5e-3
 crystal_thickness = 8e-3
 order = -1
 op_wavelength_vac = 800e-9
-resolution = 30
-pwr = 1
+resolution = 60
+pwr = 1.5
 
-aod = Aod(normal, sound_direction, aperture_width, transducer_width, crystal_thickness)
+aod = Aod(normal, sound_direction, transducer_height, transducer_width, crystal_thickness)
 
 mhz_range = linspace(10, 60, resolution)
 degrees_range =  linspace(-1, 6, resolution) 
@@ -122,4 +122,4 @@ def plot_efficiency_xangle():
     generic_plot(degrees_range, func, labels)
     
 if __name__ == '__main__':
-    plot_efficiency_xangle()
+    plot_efficiency_xangle_freq()

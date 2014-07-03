@@ -61,13 +61,13 @@ class AolSimple(object):
         
         linear = [0]*4
         for k in range(4):
-            linear[k] = self.acoustic_drives[k].linear
+            linear[k] = self.acoustic_drives[k].linear # store values
             self.acoustic_drives[k].linear = 0
         
         path = self.propagate_to_distance_past_aol(tracer_ray, 0)
 
         for k in range(4):
-            self.acoustic_drives[k].linear = linear[k]
+            self.acoustic_drives[k].linear = linear[k] # restore values
         
         return path[:-1,0:2]
     
@@ -123,7 +123,7 @@ class AolSimple(object):
         aod_dir = self.aod_directions[idx]
         drive = self.acoustic_drives[idx]
         
-        local_acoustics = drive.get_local_acoustics(time, ray.position, self.base_ray_positions[idx], aod_dir)
+        local_acoustics = drive.get_local_acoustics(time, [ray.position], self.base_ray_positions[idx], aod_dir)[0] # only want singleton until class extended to support many rays
         
         wavevector_shift = self.order * (2 * pi * local_acoustics.frequency / local_acoustics.velocity) * aod_dir 
         ray.wavevector_vac += wavevector_shift 

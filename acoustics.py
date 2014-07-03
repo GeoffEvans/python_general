@@ -21,7 +21,7 @@ class Acoustics(object):
     def amplitude(self, aod):
         teo2_density = 5990;
         numerator = 2 * self.power
-        denominator = teo2_density * self.velocity**3 * aod.transducer_width * aod.aperture_width # use of aperture width assumes square aperture 
+        denominator = teo2_density * self.velocity**3 * aod.transducer_width * aod.transducer_height # use of aperture width assumes square aperture 
         return sqrt(numerator / denominator) # Xu & Stroud (2.143)
     
 class AcousticDrive(object):
@@ -39,8 +39,8 @@ class AcousticDrive(object):
         self.quad = array(quad, dtype=dtype(float))
         self.power = array(power, dtype=dtype(float))
         self.velocity = velocity
-        
-    def get_local_acoustics(self, time, ray_position, base_ray_position, aod_direction):
-        distance = dot(ray_position[0:2] - array(base_ray_position), aod_direction[0:2])
-        frequency = self.const + self.linear * (time - distance/self.velocity) + self.quad * (time - distance/self.velocity)**2
-        return Acoustics(frequency, self.power, self.velocity)
+    
+    def get_local_acoustics(self, time, ray_positions, base_ray_position, aod_direction):
+        distances = dot(array(ray_positions)[:,0:2] - base_ray_position, aod_direction[0:2])
+        frequencies = self.const + self.linear * (time - distances/self.velocity) + self.quad * (time - distances/self.velocity)**2
+        return [Acoustics(f, self.power, self.velocity) for f in frequencies] 

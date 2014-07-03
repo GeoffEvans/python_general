@@ -65,7 +65,7 @@ class AolFull(object):
         add_planes()             
         plt.show()
         return plt
-
+    
     def propagate_to_distance_past_aol(self, rays, time, distance=0):
         num_rays = len(rays)
         crystal_thickness = array([a.crystal_thickness for a in self.aods], dtype=dtype(float))
@@ -76,7 +76,7 @@ class AolFull(object):
 
         for m in range(num_rays): # move rays to entrance of first crystal
                 rays[m].propagate_from_plane_to_plane(0, array([0.,0.,1.]), self.aods[0].normal)
-
+        
         def diffract_and_propagate(aod_num):
             for m in range(num_rays):   
                 paths[m,2*aod_num - 2,:] = rays[m].position     # set path at entrance
@@ -93,14 +93,14 @@ class AolFull(object):
         for m in range(num_rays):
             paths[m,8,:] = rays[m].position
         return (paths, energies)
-        
+    
     def diffract_at_aod(self, rays, time, aod_number):
         idx = aod_number-1
         
         aod = self.aods[idx]
         base_ray_position = self.base_ray_positions[idx]
         drive = self.acoustic_drives[idx]
-        local_acoustics = [drive.get_local_acoustics(time, r.position, base_ray_position, aod.acoustic_direction) for r in rays]
+        local_acoustics = drive.get_local_acoustics(time, [r.position for r in rays], base_ray_position, aod.acoustic_direction)
         
         aod.propagate_ray(rays, local_acoustics, self.order)
         
