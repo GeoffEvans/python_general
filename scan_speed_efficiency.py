@@ -5,7 +5,7 @@ from set_up_utils import get_ray_bundle, set_up_aol
 from vector_utils import normalise
 
 op_wavelength = 800e-9
-scan_range_mrad = linspace(-18, 18, 18)
+scan_range_mrad = linspace(-9, 9, 18)
 scan_deg = scan_range_mrad * 180/pi * 1e-3
 
 def plot_lines(focal_length, vel_many):
@@ -60,5 +60,5 @@ def calculate_efficiency(aol, time):
     return energy / ray_count
 
 if __name__ == '__main__':
-    plot_lines(1e12, 1e0 * array([[-1e3,0,0],[1e3,0,0]]))
+    plot_lines(1e1, 1e0 * array([[-1e2,0,0],[-2e2,0,0],[-3e2,0,0],[-5e2,0,0],[-6e2,0,0],[-8e2,0,0],[-1e3,0,0],[-2e3,0,0]]))
     #plot_fov_surf(1e1, 613 * array([1,0,0]))

@@ -7,10 +7,14 @@ from vector_utils import normalise_list
 def set_up_aol(order=-1, op_wavelength=800e-9, base_freq=35e6, \
                focus_position=[0,0,1e21], focus_velocity=[0,0,0], \
                pair_deflection_ratio=1, ac_power=[1,1,3,3]):
-    orientations = normalise_list(array([ [ -0.03901281, -0., 0.99923871], \
+    orientations_no_rescat = normalise_list(array([ [ -0.03901281, -0., 0.99923871], \
                                           [ -0.05585054, -0.03899298, 0.99767744], \
                                           [ -0.00671442,  -0.05235988, 0.99860571], \
                                           [ -0., -6.64008463e-03, 9.99977954e-01] ]))
+    orientations = normalise_list(array([ [ -3.92662040e-02, -0., 9.99228785e-01], \
+                                          [ -0.04613158, -0.03934167,  0.99816036], \
+                                          [ 0.03665191,  0.14506655,  0.9887428], \
+                                          [ -0.16216751,  0.02197,     0.98651864] ]))
     aod_spacing = array([5e-2] * 3)
     aods = [0]*4
     aods[0] = Aod(orientations[0], [ 1, 0,0], 16e-3, 3.6e-3, 8e-3)

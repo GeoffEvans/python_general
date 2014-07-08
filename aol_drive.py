@@ -41,3 +41,7 @@ def find_linear(order, op_wavelength, ac_velocity, spacing, base_freq, pair_defl
                   (1 - v[1])/(2 * spacing[3:4].sum()) ])
 
     return (ac_velocity**2 / op_wavelength) * factors / order 
+
+
+if __name__ == '__main__':
+    calculate_drive_freq_4(-1, 800e-9, 613, [5e-2]*3, 8e-3, 35e6, 1, [0,0,1], [0,0,0])

@@ -13,13 +13,13 @@ transducer_width = 1.2e-3
 crystal_thickness = 8e-3
 order = -1
 op_wavelength_vac = 800e-9
-resolution = 60
-pwr = 1.5
+resolution = 30
+pwr = 1
 
 aod = Aod(normal, sound_direction, transducer_height, transducer_width, crystal_thickness)
 
-mhz_range = linspace(20, 50, resolution)
-degrees_range =  linspace(-1, 6, resolution) 
+mhz_range = linspace(10, 70, resolution)
+degrees_range =  linspace(0, 5, resolution) 
 
 def plot_mismatch_angle_freq():
     
@@ -150,4 +150,4 @@ def plot_efficiency_power():
     generic_plot(linspace(0,2.5,20), func, labels)
     
 if __name__ == '__main__':
-    plot_efficiency_freq_max()
+    plot_efficiency_xangle_freq()

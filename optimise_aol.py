@@ -26,7 +26,9 @@ def plot_region(aod_num, aol):
         return energies
         
     labels = ["incidence angle / deg","transverse incidence angle / deg","efficiency"]
-    generic_plot_surface(linspace(-0.1, 0.1, 30)*180/pi, linspace(-0.1, 0.1, 30)*180/pi, func, labels)
+    y_ax = linspace(-0.03, 0.06, 15)*180/pi
+    x_ax = linspace(-0.2, 0.2, 30)*180/pi
+    generic_plot_surface(x_ax, y_ax, func, labels)
 
 def min_fun(variable, params, aod_num, aol):
     new_normal = params.get_normal(variable)
@@ -50,7 +52,7 @@ def calculate_efficiency(aol, after_nth_aod, op_wavelength=op_wavelength):
 
 if __name__ == '__main__':
     aol = set_up_aol(op_wavelength=op_wavelength)
-    plot_region(1, aol)
-    #optimise_nth_aod_by_hand(1, aol)
-    #print calculate_efficiency(aol, 4)
+    #plot_region(4, aol)
+    optimise_nth_aod_by_hand(4, aol)
+    print calculate_efficiency(aol, 4)
 
