@@ -14,7 +14,7 @@ crystal_thickness = 8e-3
 order = -1
 op_wavelength_vac = 800e-9
 resolution = 30
-pwr = 1
+pwr = 3
 
 aod = Aod(normal, sound_direction, transducer_height, transducer_width, crystal_thickness)
 
@@ -56,7 +56,7 @@ def plot_efficiency_xangle_yangle():
         ang_trans = deg_trans * pi/180
         wavevector_unit = [ang, ang_trans, sqrt(1 - ang**2 - ang_trans**2)]
         ray = Ray([0,0,0], wavevector_unit, op_wavelength_vac)
-        acoustics = Acoustics(35e6, 1)        
+        acoustics = Acoustics(45e6, 1)        
         
         aod.propagate_ray([ray], [acoustics], order)
         return ray.energy
@@ -150,4 +150,4 @@ def plot_efficiency_power():
     generic_plot(linspace(0,2.5,20), func, labels)
     
 if __name__ == '__main__':
-    plot_efficiency_xangle_freq()
+    plot_efficiency_xangle_yangle()
