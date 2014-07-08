@@ -1,11 +1,12 @@
-from numpy import array, diag, transpose, dot, atleast_1d, sqrt, arange, pi, abs
+from numpy import array, diag, transpose, dot, atleast_1d, sqrt, arange, pi, abs,\
+    power
 from scipy.interpolate import splrep, splev 
 
 # Follow the calculation in Xu&St Section 1.3
 # z axis is taken as direction of the optical wavevector
 
 principal_refractive_indices = array([2.2597 , 2.2597, 2.4119]) 
-relative_impermeability_eigenvals = principal_refractive_indices**-2
+relative_impermeability_eigenvals = power(principal_refractive_indices, -2.)
 activity_vector = 2.65e-05; #See Warner White Bonner, 87deg/mm
 
 def get_imperm_properties(angles):
@@ -14,7 +15,7 @@ def get_imperm_properties(angles):
     eigenval1 = transverse_imperm_eigvals[:,0]
     eigenval2 = transverse_imperm_eigvals[:,1]     
     
-    sqrt_term = sqrt((eigenval1 - eigenval2)**2 + 4 * activity_vector**2)
+    sqrt_term = sqrt( power(eigenval1 - eigenval2, 2.) + 4 * activity_vector**2)
     eigensum = eigenval1 + eigenval2
     eigendiff = eigenval2 - eigenval1
     
@@ -45,8 +46,8 @@ def calc_refractive_indices_slow(angles):
     ext_recip_sqr = 0.5 * ( eigensum - sqrt_term ) # Xu&St (1.62)
     ord_recip_sqr = 0.5 * ( eigensum + sqrt_term )
 
-    n_e = ext_recip_sqr ** (-0.5)
-    n_o = ord_recip_sqr ** (-0.5)
+    n_e = power(ext_recip_sqr, -0.5)
+    n_o = power(ord_recip_sqr, -0.5)
     
     return (n_e,n_o)
 

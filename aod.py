@@ -2,7 +2,8 @@ from teo2 import calc_refractive_indices
 from xu_stroud_model import diffract_acousto_optically
 from vector_utils import perpendicular_component_list, normalise_list, normalise, angle_between_unit_vectors
 from error_utils import check_is_unit_vector
-from numpy import array, sqrt, arcsin, sin, cos, cross, dot, dtype, allclose, outer
+from numpy import array, sqrt, arcsin, sin, cos, cross, dot, dtype, allclose, outer,\
+    power
 from numpy.linalg import norm
 from scipy.optimize import fsolve
 
@@ -87,7 +88,7 @@ class Aod(object):
         
         unit_perpendiculars = normalise_list(perpendicular_comps)
         
-        sin_angles_in = sqrt(1 - dot(wavevecs, self.optic_axis) ** 2)
+        sin_angles_in = sqrt( 1 - power(dot(wavevecs, self.optic_axis), 2.) )
         angle_guesses = arcsin(sin_angles_in / 2.26)  
         
         def zero_func(angles_out):
@@ -105,7 +106,7 @@ class Aod(object):
         wavevecs = array([r.wavevector_unit for r in rays])
         n_ords = self.calc_refractive_indices_rays(rays)[1]
         perpendicular_comps = perpendicular_component_list((n_ords * wavevecs.T).T, self.normal)
-        parallel_components = outer(sqrt( 1 - norm(perpendicular_comps, axis=1)**2 ), self.normal)
+        parallel_components = outer(sqrt( 1 - power(norm(perpendicular_comps, axis=1), 2.) ), self.normal)
         for m in range(len(rays)): # if this is throwing exceptions, probably total internal reflection        
             rays[m].wavevector_unit = parallel_components[m] + perpendicular_comps[m] 
             

@@ -1,4 +1,4 @@
-from numpy import pi, sqrt, dot, dtype, array
+from numpy import pi, sqrt, dot, dtype, array, power
 
 teo2_ac_vel = 612.8834
 default_power = 1
@@ -42,5 +42,5 @@ class AcousticDrive(object):
     
     def get_local_acoustics(self, time, ray_positions, base_ray_position, aod_direction):
         distances = dot(array(ray_positions)[:,0:2] - base_ray_position, aod_direction[0:2])
-        frequencies = self.const + self.linear * (time - distances/self.velocity) + self.quad * (time - distances/self.velocity)**2
+        frequencies = self.const + self.linear * (time - distances/self.velocity) + self.quad * power(time - distances/self.velocity, 2.)
         return [Acoustics(f, self.power, self.velocity) for f in frequencies] 

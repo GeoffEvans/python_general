@@ -1,4 +1,5 @@
-from teo2 import calc_refractive_indices, calc_polarisations, principal_refractive_indices
+from teo2 import calc_refractive_indices, principal_refractive_indices,\
+    calc_polarisations_slow
 from numpy import pi, arange, allclose, array
 
 def test_ord_less_than_ext():
@@ -35,7 +36,7 @@ def test_symmetry():
 
 def test_polarisation_extremes():
     angles = array([0,pi/2])
-    pols = calc_polarisations(angles)
+    pols = calc_polarisations_slow(angles)
     
     ext = pols[0]
     on_axis_is_circular = allclose(ext[0].real, 0.0, atol=1e-15) and allclose(ext[0].imag, 1.0, atol=1e-15) 
