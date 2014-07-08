@@ -1,5 +1,5 @@
 from vector_utils import normalise_list
-from numpy import dot, sin, sqrt, array, zeros, outer, allclose
+from numpy import dot, sin, sqrt, array, zeros, outer, allclose, exp, power
 from numpy.linalg import norm
 from scipy.optimize import fsolve
 from scipy.constants import c, pi
@@ -34,7 +34,7 @@ def diffract_acousto_optically(aod, rays, local_acoustics, order, ext_to_ord=Tru
         efficiencies = get_efficiency(aod, wavevector_mismatches_mag, wavevecs_in_mag, wavevecs_in_unit, wavevecs_out_mag, wavevecs_out_unit, local_acoustics, rev_ref_inds)
         
         for m in range(len(rays)):
-            rays[m].energy -= rays[m].energy * efficiencies[m]
+            rays[m].energy -= rays[m].energy * efficiencies[m] * 0.6 # experimental fudge factor
             rays[m].wavevector_unit = wavevecs_in_unit[m] # we don't want to change the wavevectors again
             rays[m].wavevector_vac_mag = wavevecs_in_mag[m]
 
@@ -76,18 +76,19 @@ def diffract_by_wavevector_triangle(aod, rays, local_acoustics, order, ref_inds)
 
 def get_efficiency(aod, wavevector_mismatches_mag, wavevecs_in_mag, wavevecs_in_unit, wavevecs_out_mag, wavevecs_out_unit, acoustics, ref_inds):
     
-    amp = [a.amplitude(aod) for a in acoustics]
+    def transducer_efficiency_func(freqs): return exp(- power(array(freqs) - 40e6, 2.) / (2 * power(30e6, 2.)))
+    amp = [a.amplitude(aod) for a in acoustics] * transducer_efficiency_func([a.frequency for a in acoustics])
     
     n_in = aod.calc_refractive_indices_vectors(wavevecs_in_unit)[ref_inds[0]]
     n_out = aod.calc_refractive_indices_vectors(wavevecs_out_unit)[ref_inds[1]] 
     p = -0.12  # for P66' (see appendix p583)
     
-    delta_n0 = -0.5 * n_in**2 * n_out * p * amp # Xu&St (2.128)
-    delta_n1 = -0.5 * n_out**2 * n_in * p * amp
+    delta_n0 = -0.5 * power(n_in, 2.) * n_out * p * amp # Xu&St (2.128)
+    delta_n1 = -0.5 * power(n_out, 2.) * n_in * p * amp
     v0 = - array(wavevecs_out_mag) * delta_n0 * aod.transducer_width / dot(wavevecs_out_unit, aod.normal)
     v1 = - array(wavevecs_in_mag)  * delta_n1 * aod.transducer_width / dot(wavevecs_in_unit , aod.normal) 
     
     zeta = -0.5 * wavevector_mismatches_mag * aod.transducer_width 
-    sigma = sqrt(zeta**2 + v0*v1/4) # Xu&St (2.132)
+    sigma = sqrt(power(zeta, 2.) + v0*v1/4) # Xu&St (2.132)
     
-    return v0*v1/4 * (sin(sigma) / sigma)**2 # Xu&St (2.134)
+    return v0*v1/4 * power((sin(sigma) / sigma), 2.) # Xu&St (2.134)
