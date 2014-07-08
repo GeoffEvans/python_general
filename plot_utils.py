@@ -43,7 +43,7 @@ def generic_plot_vals(x, y, labels, limits=0):
 def generic_plot(x, y_func, labels, limits=0):
     y_func_vec = vectorize(y_func)
     y = y_func_vec(x) 
-    generic_plot_vals(x, y, labels, limits=0)
+    generic_plot_vals(x, y, labels, limits)
     
 def multi_line_plot(x, y_func_many, labels, lgnd, limits=0):
     fig = plt.figure()

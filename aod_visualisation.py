@@ -1,7 +1,7 @@
 from aod import Aod
 from ray import Ray
 from acoustics import Acoustics
-from numpy import linspace, pi, sin, cos, abs, sqrt, arcsin
+from numpy import linspace, pi, sin, cos, abs, sqrt, arcsin, max
 from plot_utils import generic_plot_surface, generic_plot
 from xu_stroud_model import diffract_by_wavevector_triangle
 from vector_utils import normalise
@@ -9,7 +9,7 @@ from vector_utils import normalise
 normal = normalise([0,0,100])
 sound_direction = [1,0,0]
 transducer_height = 16e-3
-transducer_width = 3.5e-3
+transducer_width = 1.2e-3
 crystal_thickness = 8e-3
 order = -1
 op_wavelength_vac = 800e-9
@@ -18,7 +18,7 @@ pwr = 1.5
 
 aod = Aod(normal, sound_direction, transducer_height, transducer_width, crystal_thickness)
 
-mhz_range = linspace(10, 60, resolution)
+mhz_range = linspace(20, 50, resolution)
 degrees_range =  linspace(-1, 6, resolution) 
 
 def plot_mismatch_angle_freq():
@@ -107,6 +107,20 @@ def plot_efficiency_freq():
     labels = ["frequency / MHz","efficiency"]
     generic_plot(mhz_range, func, labels)
     
+def plot_efficiency_freq_max():
+     
+    def func(mhz):
+        deg_range =  linspace(2, 3, 10) 
+        rad_range = deg_range * pi / 180
+        rays = [Ray([0,0,0], [sin(ang), 0, cos(ang)], op_wavelength_vac) for ang in rad_range]
+        acoustics = Acoustics(mhz*1e6, pwr)
+        
+        aod.propagate_ray(rays, [acoustics]*len(rays), order)
+        return max([r.energy for r in rays])
+    
+    labels = ["frequency / MHz","efficiency"]
+    generic_plot(mhz_range, func, labels, (20,50,0,1))
+    
 def plot_efficiency_xangle():
     
     def func(deg):
@@ -120,6 +134,20 @@ def plot_efficiency_xangle():
     
     labels = ["incidence angle / deg","efficiency"]
     generic_plot(degrees_range, func, labels)
+
+def plot_efficiency_power():
+    
+    def func(pwr):
+        ang = 2.16 * pi/180
+        wavevector_unit = [sin(ang), 0, cos(ang)]
+        ray = Ray([0,0,0], wavevector_unit, op_wavelength_vac)
+        acoustics = Acoustics(40e6, pwr)
+        
+        aod.propagate_ray([ray], [acoustics], order)
+        return ray.energy
+    
+    labels = ["acoustic power / Watts","efficiency"]
+    generic_plot(linspace(0,2.5,20), func, labels)
     
 if __name__ == '__main__':
-    plot_efficiency_xangle_freq()
+    plot_efficiency_freq_max()
