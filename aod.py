@@ -9,12 +9,13 @@ from scipy.optimize import fsolve
 
 class Aod(object):
        
-    def __init__(self, normal, relative_ac_dir, transducer_height, transducer_width, crystal_thickness):
+    def __init__(self, normal, relative_ac_dir, transducer_height, transducer_width, crystal_thickness, transducer_efficiency_func=lambda x: 1):
         self.normal = array(normal, dtype=dtype(float))
         self.relative_acoustic_direction = array(relative_ac_dir, dtype=dtype(float))
         self.transducer_height = transducer_height
         self.crystal_thickness = crystal_thickness
         self.transducer_width = transducer_width    
+        self.transducer_efficiency_func = transducer_efficiency_func 
         
         check_is_unit_vector(normal)
         check_is_unit_vector(relative_ac_dir)

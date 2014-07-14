@@ -75,9 +75,7 @@ def diffract_by_wavevector_triangle(aod, rays, local_acoustics, order, ref_inds)
     return wavevector_mismatches_mag
 
 def get_efficiency(aod, wavevector_mismatches_mag, wavevecs_in_mag, wavevecs_in_unit, wavevecs_out_mag, wavevecs_out_unit, acoustics, ref_inds):
-    
-    def transducer_efficiency_func(freqs): return exp(- power(array(freqs) - 40e6, 2.) / (2 * power(30e6, 2.)))
-    amp = [a.amplitude(aod) for a in acoustics] * transducer_efficiency_func([a.frequency for a in acoustics])
+    amp = [a.amplitude(aod) for a in acoustics] * aod.transducer_efficiency_func([a.frequency for a in acoustics])
     
     n_in = aod.calc_refractive_indices_vectors(wavevecs_in_unit)[ref_inds[0]]
     n_out = aod.calc_refractive_indices_vectors(wavevecs_out_unit)[ref_inds[1]] 
