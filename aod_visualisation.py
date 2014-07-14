@@ -5,7 +5,8 @@ from numpy import linspace, pi, sin, cos, abs, sqrt, arcsin, max
 from plot_utils import generic_plot_surface, generic_plot
 from xu_stroud_model import diffract_by_wavevector_triangle
 from vector_utils import normalise
-from set_up_utils import transducer_efficiency_narrow
+from set_up_utils import transducer_efficiency_narrow,\
+    transducer_efficiency_wide
 
 normal = normalise([0,0,100])
 sound_direction = [1,0,0]

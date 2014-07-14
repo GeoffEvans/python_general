@@ -4,7 +4,7 @@ from acoustics import Acoustics
 from xu_stroud_model import diffract_acousto_optically,diffract_by_wavevector_triangle,get_efficiency
 from vector_utils import normalise
 import pytest
-from numpy import allclose, all, array
+from numpy import allclose, all, array, pi
 from random import random
 from scipy import less_equal, greater_equal
 
@@ -38,14 +38,13 @@ def test_order_sym():
     assert allclose(r1.energy, r2.energy) and opposite_xcomps  
 
 def test_wavevector_triangle():
-    wavevec = array([0,0,1])
-    ray = Ray([0,0,0], wavevec, 800e-9)
-    original_ray = Ray([0,0,0], wavevec, 800e-9)
-    wavevector_mismatch_mag = diffract_by_wavevector_triangle(aod, [ray], [acoustics], order, (0,1))
-    k_i = original_ray.wavevector_vac * aod.calc_refractive_indices_vectors([wavevec])[0][0]
-    k_d = ray.wavevector_vac * aod.calc_refractive_indices_rays([ray])[1]
+    wavevec_unit = array([0,0,1])
+    wavevec_mag = 2 * pi / 800e-9  
+    (wavevector_mismatch_mag, wavevectors_out_unit, wavevectors_vac_mag_out) = diffract_by_wavevector_triangle(aod, array([wavevec_unit]), [wavevec_mag], [acoustics], order, (0,1))
+    k_i = wavevec_unit * wavevec_mag * aod.calc_refractive_indices_vectors([wavevec_unit])[0][0]
+    k_d = wavevectors_out_unit * wavevectors_vac_mag_out * aod.calc_refractive_indices_vectors(wavevectors_out_unit)[1] # get ord branch, the first of
     K = acoustics.wavevector(aod) * order
-    zero_sum = k_i + order * K + aod.normal * wavevector_mismatch_mag - k_d
+    zero_sum = k_i + order * K + aod.normal * wavevector_mismatch_mag - k_d[0]
     assert allclose(zero_sum, 0)
 
 def test_setting_invalid_mode():

@@ -7,3 +7,6 @@ def test_ray_bundle_and_aol():
     aol = set_up_aol(1, op_wavelength, 40e6, [1e-3,2e-3,1], [1e3,5e2,0], 0.2, [2,2,2,2])
     aol.propagate_to_distance_past_aol(rays, 0, 10)
     # ok as long as no exception 
+
+if __name__ == '__main__':
+    test_ray_bundle_and_aol()
