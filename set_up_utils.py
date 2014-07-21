@@ -4,27 +4,25 @@ from ray import Ray
 from numpy import array, arange, exp, power
 from vector_utils import normalise_list
 
-def set_up_aol(order=-1, op_wavelength=800e-9, base_freq=35e6, \
-               focus_position=[0,0,1e21], focus_velocity=[0,0,0], \
-               pair_deflection_ratio=1, ac_power=[1,1,3,3]):
+def set_up_aol( order=-1, \
+                op_wavelength=800e-9, \
+                base_freq=35e6, \
+                focus_position=[0,0,1e21], \
+                focus_velocity=[0,0,0], \
+                pair_deflection_ratio=1, \
+                ac_power=[1,1,3,3]):
+                   
     orientations_flat = normalise_list(array([ [ -3.92662040e-02, -0., 9.99228785e-01], \
                                           [ -0.04613158, -0.03934167,  0.99816036], \
                                           [ -0.01187817, -0.04380776,  0.99896936], \
                                           [ 0, -1.17766548e-02,  9.99930653e-01] ]))
-    orientations = normalise_list(array([ [ -3.92662040e-02, -0., 9.99228785e-01], \
-                                          [ -0.04613158, -0.03934167,  0.99816036], \
-                                          [ 0.03665191,  0.14506655,  0.9887428], \
-                                          [ -0.16216751,  0.02197,     0.98651864] ]))
-
-    trans_eff_fun_thin = lambda x: exp(- power(array(x) - 40e6, 2.) / (2 * power(30e6, 2.)))
-    trans_eff_fun_wide = lambda x: exp(- power(array(x) - 40e6, 2.) / (2 * power(14e6, 2.)))
 
     aod_spacing = array([5e-2] * 3)
     aods = [0]*4
-    aods[0] = Aod(orientations_flat[0], [ 1, 0,0], 16e-3, 3.6e-3, 8e-3, trans_eff_fun_wide)
-    aods[1] = Aod(orientations_flat[1], [ 0, 1,0], 16e-3, 3.6e-3, 8e-3, trans_eff_fun_wide)
-    aods[2] = Aod(orientations_flat[2], [-1, 0,0], 16e-3, 1.2e-3, 8e-3, trans_eff_fun_thin)
-    aods[3] = Aod(orientations_flat[3], [ 0,-1,0], 16e-3, 1.2e-3, 8e-3, trans_eff_fun_thin)
+    aods[0] = make_aod_wide(orientations_flat[0], [1,0,0])
+    aods[1] = make_aod_wide(orientations_flat[1], [0,1,0])
+    aods[2] = make_aod_narrow(orientations_flat[2], [-1,0,0])
+    aods[3] = make_aod_narrow(orientations_flat[3], [0,-1,0])
 
     return AolFull.create_aol(aods, aod_spacing, order, op_wavelength, base_freq, pair_deflection_ratio, focus_position, focus_velocity, ac_power=ac_power)
 
@@ -43,3 +41,8 @@ def transducer_efficiency_narrow(x):
     return exp(- power(array(x) - 40e6, 2.) / (2 * power(30e6, 2.)))
 def transducer_efficiency_wide(x):
     return exp(- power(array(x) - 40e6, 2.) / (2 * power(14e6, 2.)))
+    
+def make_aod_wide(orientation, ac_dir):
+    return Aod(orientation, ac_dir, 16e-3, 3.6e-3, 8e-3, transducer_efficiency_wide)
+def make_aod_narrow(orientation, ac_dir):
+    return Aod(orientation, ac_dir, 16e-3, 1.2e-3, 8e-3, transducer_efficiency_narrow)
