@@ -7,8 +7,6 @@ class Acoustics(object):
     
     def __init__(self, frequency, power=default_power, velocity=teo2_ac_vel):
         #assert frequency >= 0 and frequency < 100e6 # working outside these limits is absurd
-        if not (frequency >= 0 and frequency < 100e6):
-            power = 0
         self.frequency = frequency
         self.power = power
         self.velocity = velocity
