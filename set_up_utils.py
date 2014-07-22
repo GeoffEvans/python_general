@@ -40,7 +40,7 @@ def get_ray_bundle(op_wavelength=800e-9, spacing=5e-3):
 def transducer_efficiency_narrow(x):
     return exp(- power(array(x) - 40e6, 2.) / (2 * power(30e6, 2.)))
 def transducer_efficiency_wide(x):
-    return exp(- power(array(x) - 40e6, 2.) / (2 * power(14e6, 2.)))
+    return exp(- power(array(x) - 40e6, 2.) / (2 * power(13e6, 2.)))
     
 def make_aod_wide(orientation, ac_dir):
     return Aod(orientation, ac_dir, 16e-3, 3.6e-3, 8e-3, transducer_efficiency_wide)
