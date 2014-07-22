@@ -1,7 +1,7 @@
 from ray import Ray
 from acoustics import Acoustics
-from numpy import linspace, pi, sin, cos, abs, sqrt, arcsin, max
-from plot_utils import generic_plot_surface, generic_plot
+from numpy import linspace, pi, sin, cos, abs, sqrt, arcsin, max, array
+from plot_utils import generic_plot_surface, generic_plot, multi_line_plot
 from xu_stroud_model import diffract_by_wavevector_triangle
 from set_up_utils import make_aod_narrow, make_aod_wide
 
@@ -125,7 +125,28 @@ class AodVisualisation(object):
         
         labels = ["frequency / MHz","efficiency"]
         generic_plot(self.mhz_range, func, labels, (min(self.mhz_range),max(self.mhz_range),0,1))
+    
+    def plot_efficiency_freq_max_pwr(self, deg=1.95, power_wavelen=[(1.5, 800e-9), (1.5, 920e-9), (1.5, 1030e-9), (2.2, 920e-9)]):
         
+        def create_efficiency_function_closure(ac_power, wavelen):
+            def func(mhz):
+                deg_range =  array([deg])
+                rad_range = deg_range * pi / 180
+                rays = [Ray([0,0,0], [sin(ang), 0, cos(ang)], wavelen) for ang in rad_range]
+                acoustics = Acoustics(mhz*1e6, ac_power)
+                
+                self.aod.propagate_ray(rays, [acoustics]*len(rays), self.order)
+                return max([r.energy for r in rays])  
+            return func
+    
+        funcs = []
+        for elem in power_wavelen:
+            funcs.append(create_efficiency_function_closure(elem[0], elem[1]))
+        
+        labels = ["frequency / MHz","efficiency"]
+        lgnd = power_wavelen
+        multi_line_plot(self.mhz_range, funcs, labels, lgnd, (min(self.mhz_range),max(self.mhz_range),0,1))
+    
     def plot_efficiency_xangle(self, ac_power=1.5, ac_mhz=35):
         
         def func(deg):
