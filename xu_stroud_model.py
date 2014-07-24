@@ -1,8 +1,7 @@
-from vector_utils import normalise_list
-from numpy import dot, sin, sqrt, array, zeros, outer, allclose, power
+from numpy import dot, sin, sqrt, array, outer, allclose, power
 from numpy.linalg import norm
-from scipy.optimize import fsolve
 from scipy.constants import c, pi
+from wavevector_triangle_solver import original
 
 def diffract_acousto_optically(aod, rays, local_acoustics, order, ext_to_ord=True, rescattering=True):
     if not abs(order) == 1:
@@ -39,27 +38,9 @@ def diffract_by_wavevector_triangle(aod, wavevec_unit_in, wavevec_vac_mag_in, lo
     wavevectors_vac_mag_out = wavevec_vac_mag_in + (2 * pi / c) * array([a.frequency for a in local_acoustics]) # from w_out = w_in + w_ac
     resultants = get_resultant_wavevectors(aod, wavevec_unit_in, wavevec_vac_mag_in, local_acoustics, order, ref_inds)
 
-    def zero_func(mismatches):
-        wavevector_mismatches = outer(mismatches * 1e6, aod.normal)
-        wavevectors_out = resultants + wavevector_mismatches
-        wavevectors_out_mag1 = norm(wavevectors_out, axis=1)
-          
-        n_out = aod.calc_refractive_indices_vectors(wavevectors_out)[ref_inds[1]]
-        wavevectors_out_mag2 = n_out * wavevectors_vac_mag_out # n_out pretty much constant
-        
-        return wavevectors_out_mag2 - wavevectors_out_mag1 
+    f = lambda k: aod.calc_refractive_indices_vectors(k)[ref_inds[1]]
+    return original(resultants, wavevectors_vac_mag_out, aod.normal, f)
     
-    initial_guess = zeros(len(wavevec_vac_mag_in))
-    wavevector_mismatches_mag = fsolve(zero_func, initial_guess, band=(0,0)) * 1e6
-    
-    wavevector_mismatches = outer(wavevector_mismatches_mag, aod.normal)
-    wavevectors_out = resultants + wavevector_mismatches
-    
-    check_matching(aod, wavevectors_out, wavevectors_vac_mag_out, ref_inds)
-
-    wavevectors_out_unit = normalise_list(wavevectors_out)
-    return (wavevector_mismatches_mag, wavevectors_out_unit, wavevectors_vac_mag_out)
-
 def get_resultant_wavevectors(aod, wavevec_unit_in, wavevec_vac_mag_in, local_acoustics, order, ref_inds):
     n_in = aod.calc_refractive_indices_vectors(wavevec_unit_in)[ref_inds[0]]
     wavevectors_in = (n_in * wavevec_vac_mag_in * wavevec_unit_in.T).T
