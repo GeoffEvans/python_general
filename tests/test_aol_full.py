@@ -82,4 +82,4 @@ def test_efficiency_low_at_angle():
     assert ray.energy < 1e-9
     
 if __name__ == '__main__':
-    test_angles_on_aods()
+    test_plot()

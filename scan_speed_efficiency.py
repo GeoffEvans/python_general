@@ -5,7 +5,7 @@ from set_up_utils import get_ray_bundle, set_up_aol
 from vector_utils import normalise
 
 op_wavelength = 800e-9
-scan_range_mrad = linspace(-9, 9, 18)
+scan_range_mrad = linspace(-9, 9, 19)
 scan_deg = scan_range_mrad * 180/pi * 1e-3
 
 def plot_lines(focal_length, vel_many):
