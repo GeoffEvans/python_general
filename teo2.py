@@ -1,82 +1,51 @@
-from numpy import array, diag, transpose, dot, atleast_1d, sqrt, arange, pi, abs,\
-    power
 from scipy.interpolate import splrep, splev 
+from scipy.constants import h, c, e, pi
+import optically_uniaxial as oua
+from numpy import power, arange, array, sqrt
 
-# Follow the calculation in Xu&St Section 1.3
-# z axis is taken as direction of the optical wavevector
+wavelength = 800e-9
 
-principal_refractive_indices = array([2.2597 , 2.2597, 2.4119]) 
-relative_impermeability_eigenvals = power(principal_refractive_indices, -2.)
-activity_vector = 2.65e-05; #See Warner White Bonner, 87deg/mm
+# See Uchida 1971 for constants and formulas
 
-def get_imperm_properties(angles):
-    angles = atleast_1d(angles)
-    transverse_imperm_eigvals = find_transverse_imperm_eigvals(angles)
-    eigenval1 = transverse_imperm_eigvals[:,0]
-    eigenval2 = transverse_imperm_eigvals[:,1]     
+F1 = array([220.6, 241.0])
+F2 = array([25.55, 34.20])
+E1_F = array([9.24, 9.24])
+E2_F = array([4.70, 4.71])
+
+G1 = 0.8838
+G2 = 0.08754
+E1_G = 9.31
+E2_G = 4.69
+
+def get_ref_ind(wavelength_vac):
+    E = h*c/e/wavelength_vac
+    n_sqr = 1 + F1 / (power(E1_F, 2.) - power(E, 2.)) + F2 / (power(E2_F, 2.) - power(E, 2.)) # Uchida 1971 (4)
+    return sqrt(n_sqr)
     
-    sqrt_term = sqrt( power(eigenval1 - eigenval2, 2.) + 4 * activity_vector**2)
-    eigensum = eigenval1 + eigenval2
-    eigendiff = eigenval2 - eigenval1
-    
-    return (sqrt_term,eigensum,eigendiff)
+def get_relative_impermeability_eigenvals(wavelength_vac):
+    n = get_ref_ind(wavelength_vac)
+    return power([n[0], n[0], n[1]], -2.)
 
-def find_transverse_imperm_eigvals(angles):
-    relative_impermeability_matrix = find_relative_impermeability_matrix(angles) # Xu&St (1.59)
-    return array([[x[0,0],x[1,1]] for x in relative_impermeability_matrix]) # eigenvals for transverse components
-   
-def find_relative_impermeability_matrix(angles):
-    principal_imperm = diag(relative_impermeability_eigenvals)    
-    rotation_matrix = get_yz_rotation_matrix(angles)
-    return array([dot(dot(rot,principal_imperm),rot.T) for rot in rotation_matrix])
-
-def get_yz_rotation_matrix(angles):
-    from numpy import cos, sin
-    num_angles = angles.size
-    one = array([1] * num_angles)
-    zero = array([0] * num_angles)
-    elems = array([[one,    zero,          zero           ], \
-             [zero,    cos(angles), -sin(angles) ], \
-             [zero,    sin(angles), cos(angles)  ]])
-    return transpose(elems, (2,0,1)); # permute indices to get [angle, row, col]
-
-def calc_refractive_indices_slow(angles):
-    (sqrt_term,eigensum,_) = get_imperm_properties(atleast_1d(angles))
-    
-    ext_recip_sqr = 0.5 * ( eigensum - sqrt_term ) # Xu&St (1.62)
-    ord_recip_sqr = 0.5 * ( eigensum + sqrt_term )
-
-    n_e = power(ext_recip_sqr, -0.5)
-    n_o = power(ord_recip_sqr, -0.5)
-    
-    return (n_e,n_o)
-
-def calc_polarisations_slow(angles):
-    (sqrt_term,_,eigendiff) = get_imperm_properties(angles)
-    
-    p_e =  0.5j / activity_vector * ( sqrt_term - eigendiff ) # Xu&St (1.62)
-    p_o = -0.5j / activity_vector * ( sqrt_term + eigendiff )
-    
-    return (p_e,p_o)
+def get_activity_vector(wavelength_vac):
+    E = h*c/e/wavelength_vac 
+    rotary_power = G1 * power(E, 2.) * power((power(E1_G, 2.) - power(E, 2.)), -2.) +  G2 * power(E, 2.) * power((power(E2_G, 2.) - power(E, 2.)), -2.) # Uchida 1971 (7)
+    return rotary_power * 1e6 * wavelength_vac / pi / power(get_ref_ind(wavelength_vac)[0], 3.) # Xu & St (1.78)
 
 angles = arange(0, pi/2+1e-4, 1e-4)
-n_e_spl = splrep(angles, calc_refractive_indices_slow(angles)[0])
-n_o_spl = splrep(angles, calc_refractive_indices_slow(angles)[1])
-
+n_e_fixed_wavelength = splrep(angles, oua.calc_refractive_indices(angles, get_relative_impermeability_eigenvals(wavelength), get_activity_vector(wavelength))[0])
+n_o_fixed_wavelength = splrep(angles, oua.calc_refractive_indices(angles, get_relative_impermeability_eigenvals(wavelength), get_activity_vector(wavelength))[1])
+   
 def calc_refractive_indices(angles):  
-    return (splev(abs(angles),n_e_spl),splev(abs(angles),n_o_spl))
-    
+   return (splev(abs(angles),n_e_fixed_wavelength),splev(abs(angles),n_o_fixed_wavelength))
+   
 def plot_refractive_index(): 
     from pylab import plot,xlabel,ylabel,title,grid,show
     
     angles = arange(-pi/2, pi/2, pi/360)
-    n = calc_refractive_indices_slow(angles)
-    m = calc_refractive_indices(angles)
+    n = calc_refractive_indices(angles)
     
     plot(angles, n[0])
     plot(angles, n[1])
-    plot(angles, m[0])
-    plot(angles, m[1])
     
     xlabel('angle / rad')
     ylabel('refractive index')
@@ -85,4 +54,5 @@ def plot_refractive_index():
     show()
 
 if __name__ == '__main__':
+    oua.calc_refractive_indices(angles, get_relative_impermeability_eigenvals(wavelength), get_activity_vector(wavelength))[0]
     plot_refractive_index()
