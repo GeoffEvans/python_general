@@ -115,7 +115,7 @@ class AodVisualisation(object):
     def plot_efficiency_freq_max(self, ac_power=1.5):
          
         def func(mhz):
-            deg_range =  linspace(1.9, 3.1, 60) 
+            deg_range =  linspace(0.9, 3, 60) 
             rad_range = deg_range * pi / 180
             rays = [Ray([0,0,0], [sin(ang), 0, cos(ang)], self.op_wavelength_vac) for ang in rad_range]
             acoustics = Acoustics(mhz*1e6, ac_power)
@@ -177,4 +177,4 @@ class AodVisualisation(object):
         
 if __name__ == '__main__':
     av = AodVisualisation(is_wide=False)
-    av.plot_efficiency_xangle_freq(3)
+    av.plot_efficiency_xangle_yangle(1.5)
