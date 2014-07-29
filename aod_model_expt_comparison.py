@@ -33,5 +33,9 @@ def plot_eff_ang_narrow():
     av_narrow.plot_efficiency_xangle()
     
 if __name__ == '__main__':
-    plot_eff_freq_narrow()
-    plot_eff_freq_wide()
+    #plot_eff_freq_narrow()
+    #plot_eff_freq_wide()
+    #plot_eff_ang_narrow()
+    #plot_eff_ang_wide()
+    plot_eff_pwr_narrow()    
+    #plot_eff_pwr_wide()

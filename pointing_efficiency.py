@@ -1,13 +1,13 @@
 from plot_utils import generic_plot_surface_vals, multi_line_plot_vals
 from numpy import linspace, pi, array, meshgrid, arange, prod, transpose, outer
 from set_up_utils import get_ray_bundle, set_up_aol
-from test_aol_full import focal_length
 
 op_wavelength = 800e-9
 
+x_rad = linspace(-18, 18, 19) * 1e-3
+x_deg = x_rad * 180/pi
+
 def plot_fov_lines(focal_lengths):
-    x_rad = linspace(-18, 18, 18) * 1e-3
-    x_deg = x_rad * 180/pi
     focus_position_many = []
     for f in focal_lengths:
         x = f * x_rad
@@ -18,8 +18,6 @@ def plot_fov_lines(focal_lengths):
     multi_line_plot_vals(x_deg, array(effs), labels, focal_lengths, (min(x_deg),max(x_deg),0,1))
         
 def plot_fov_surf(focal_length):
-    x_rad = linspace(-10, 10, 10) * 1e-3
-    x_deg = x_rad * 180/pi
     (x_deg_m, y_deg_m) = meshgrid(x_deg, x_deg) 
 
     x_array = x_rad * focal_length
@@ -52,4 +50,5 @@ def calculate_efficiency(aol):
     return energy / ray_count
 
 if __name__ == '__main__':
-    plot_fov_lines([1e0, 2, 3e0, 1e1, 1e6, 1e12])
+    #plot_fov_lines(1 * array([1e0, 2, 3e0, 1e1, 1e6, 1e12]))
+    plot_fov_surf(1)

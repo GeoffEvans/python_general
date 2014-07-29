@@ -3,7 +3,7 @@ from scipy.constants import h, c, e, pi
 import optically_uniaxial as oua
 from numpy import power, arange, array, sqrt
 
-wavelength = 800e-9
+wavelength_vac = 800e-9
 
 # See Uchida 1971 for constants and formulas
 
@@ -32,8 +32,8 @@ def get_activity_vector(wavelength_vac):
     return rotary_power * 1e6 * wavelength_vac / pi / power(get_ref_ind(wavelength_vac)[0], 3.) # Xu & St (1.78)
 
 angles = arange(0, pi/2+1e-4, 1e-4)
-n_e_fixed_wavelength = splrep(angles, oua.calc_refractive_indices(angles, get_relative_impermeability_eigenvals(wavelength), get_activity_vector(wavelength))[0])
-n_o_fixed_wavelength = splrep(angles, oua.calc_refractive_indices(angles, get_relative_impermeability_eigenvals(wavelength), get_activity_vector(wavelength))[1])
+n_e_fixed_wavelength = splrep(angles, oua.calc_refractive_indices(angles, get_relative_impermeability_eigenvals(wavelength_vac), get_activity_vector(wavelength_vac))[0])
+n_o_fixed_wavelength = splrep(angles, oua.calc_refractive_indices(angles, get_relative_impermeability_eigenvals(wavelength_vac), get_activity_vector(wavelength_vac))[1])
    
 def calc_refractive_indices(angles):  
    return (splev(abs(angles),n_e_fixed_wavelength),splev(abs(angles),n_o_fixed_wavelength))
@@ -54,5 +54,5 @@ def plot_refractive_index():
     show()
 
 if __name__ == '__main__':
-    oua.calc_refractive_indices(angles, get_relative_impermeability_eigenvals(wavelength), get_activity_vector(wavelength))[0]
+    oua.calc_refractive_indices(angles, get_relative_impermeability_eigenvals(wavelength_vac), get_activity_vector(wavelength_vac))[0]
     plot_refractive_index()

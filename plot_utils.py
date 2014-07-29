@@ -11,7 +11,7 @@ def generic_plot_surface(x_array, y_array, z_func, labels):
 def generic_plot_surface_vals(x, y, z, labels):
     fig = plt.figure()
     ax = fig.gca()               
-    cs = ax.pcolor(x, y, z)   
+    cs = ax.pcolor(x, y, z, cmap='gray')   
     
     def onclick(event):
         print 'button=%d, x=%d, y=%d, xdata=%f, ydata=%f'%(
@@ -52,7 +52,7 @@ def multi_line_plot_vals(x, y_many, labels, lgnd, limits=0):
     for y in y_many:
         plt.plot(x, y)   
     
-    plt.legend(lgnd, loc='upper left')
+    plt.legend(lgnd, loc=8)
     plt.xlabel(labels[0])
     plt.ylabel(labels[1])
     if not limits == 0:

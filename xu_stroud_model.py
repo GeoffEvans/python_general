@@ -22,7 +22,7 @@ def diffract_acousto_optically(aod, rays, local_acoustics, order, ext_to_ord=Tru
         same_ref_inds = [ref_inds[1]]*2
         (efficiencies_r1,_,_) = get_diffracted_wavevectors_and_efficiency(aod, wavevecs_out_unit, wavevecs_out_mag, local_acoustics, order, rev_ref_inds)
         (efficiencies_r2,_,_) = get_diffracted_wavevectors_and_efficiency(aod, wavevecs_out_unit, wavevecs_out_mag, local_acoustics, order, same_ref_inds)
-        efficiencies *= (1 - 0.6*efficiencies_r1 - 0.6*efficiencies_r2 + 1.5*efficiencies_r1*efficiencies_r2)
+        efficiencies *= (1 - 0.8*efficiencies_r1 - 0.8*efficiencies_r2 + 1.6*efficiencies_r1*efficiencies_r2)
         
     for m in range(len(rays)):
         rays[m].wavevector_vac_mag = wavevecs_out_mag[m]

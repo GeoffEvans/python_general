@@ -159,7 +159,7 @@ class AodVisualisation(object):
             return ray.energy
         
         labels = ["incidence angle / deg","efficiency"]
-        generic_plot(self.degrees_range, func, labels)
+        generic_plot(self.degrees_range, func, labels, (min(self.degrees_range),max(self.degrees_range),0,1))
     
     def plot_efficiency_power(self, ac_mhz=40):
         
@@ -173,7 +173,8 @@ class AodVisualisation(object):
             return max([r.energy for r in rays])
         
         labels = ["acoustic power / Watts","efficiency"]
-        generic_plot(linspace(0,4,20), func, labels)
+        ac_power_range = linspace(0,2.5,20)
+        generic_plot(ac_power_range, func, labels, (min(ac_power_range),max(ac_power_range),0,1))
         
 if __name__ == '__main__':
     av = AodVisualisation(is_wide=False)
