@@ -4,7 +4,7 @@ from numpy.linalg import norm
 from set_up_utils import get_ray_bundle, set_up_aol
 
 op_wavelength = 800e-9
-scan_range_mrad = linspace(-18, 18, 19)
+scan_range_mrad = linspace(-34, 34, 29)
 scan_deg = scan_range_mrad * 180/pi * 1e-3
 
 def plot_lines(focal_length, vel_many):
@@ -13,7 +13,7 @@ def plot_lines(focal_length, vel_many):
         funcs.append(create_efficiency_function_closure([0,0,focal_length], vel))
                 
     labels = ["scan angle / deg", "efficiency"]
-    lgnd = vel_many
+    lgnd = vel_many[:,0]
     multi_line_plot(scan_deg, funcs, labels, lgnd, (min(scan_deg),max(scan_deg),0,1))
 
 def plot_fov_surf(focal_length, vel):
@@ -59,5 +59,5 @@ def calculate_efficiency(aol, time):
     return energy / ray_count
 
 if __name__ == '__main__':
-    #plot_lines(1e1, 1e0 * array([[-1e2,0,0],[-2e2,0,0],[-3e2,0,0],[-5e2,0,0],[-8e2,0,0],[-2e3,0,0]]))
-    plot_fov_surf(1e1, 600 * array([1,0,0]))
+    plot_lines(1e1, abs(array([[-1e2,0,0],[-2e2,0,0],[-3e2,0,0],[-5e2,0,0],[-8e2,0,0],[-2e3,0,0]])))
+    #plot_fov_surf(1e1, 600 * array([1,0,0]))

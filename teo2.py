@@ -3,7 +3,7 @@ from scipy.constants import h, c, e, pi
 import optically_uniaxial as oua
 from numpy import power, arange, array, sqrt
 
-wavelength_vac = 800e-9
+wavelength_vac = 785e-9
 
 # See Uchida 1971 for constants and formulas
 

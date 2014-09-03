@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
-from matplotlib import rc
 import numpy as np
+from matplotlib import rc
+rcParams.update({'font.size': 20})
+rcParams.update({'figure.autolayout': True})
+
 
 rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 ## for Palatino and other serif fonts use:
@@ -21,7 +24,7 @@ def get_freq_fun(period, a, b, c=0, d=0):
 freq1 = get_freq_fun(period, 40, 1)
 freq2 = get_freq_fun(period, 40, 1, 0.04)
 freq3 = get_freq_fun(period, 40, 1, 0, 0.005)
-plt.plot(t_range, freq3(t_range))
+plt.plot(t_range, freq2(t_range))
 plt.xlabel(r'time / $\mu$s')
 plt.ylabel('frequency / MHz')
 plt.axis([-50, 50, 20, 60])

@@ -1,6 +1,9 @@
 from numpy import meshgrid, vectorize
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
+from matplotlib import rcParams
+rcParams.update({'font.size': 20})
+rcParams.update({'figure.autolayout': True})
 
 def generic_plot_surface(x_array, y_array, z_func, labels):
     (x, y) = meshgrid(x_array, y_array)
@@ -22,6 +25,7 @@ def generic_plot_surface_vals(x, y, z, labels):
     ax.set_ylabel(labels[1])
     cb = plt.colorbar(cs, orientation = 'vertical') 
     cb.set_label(labels[2]) 
+    cs.set_clim(vmin=0,vmax=0.8)
 
     plt.grid() 
     plt.show()
@@ -52,7 +56,7 @@ def multi_line_plot_vals(x, y_many, labels, lgnd, limits=0):
     for y in y_many:
         plt.plot(x, y)   
     
-    plt.legend(lgnd, loc=8)
+    plt.legend(lgnd)
     plt.xlabel(labels[0])
     plt.ylabel(labels[1])
     if not limits == 0:
