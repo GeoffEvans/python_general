@@ -4,6 +4,7 @@ from numpy import linspace, pi, sin, cos, abs, sqrt, arcsin, max, array
 from plot_utils import generic_plot_surface, generic_plot, multi_line_plot
 from xu_stroud_model import diffract_by_wavevector_triangle
 from set_up_utils import make_aod_narrow, make_aod_wide
+from teo2 import wavelength_vac
 
 class AodVisualisation(object):
     
@@ -11,9 +12,9 @@ class AodVisualisation(object):
             ac_dir_rel=[1,0,0], \
             is_wide=True, \
             order=-1, \
-            op_wavelength_vac=800e-9, \
-            resolution=30, \
-            freq_bnds=(20,50), \
+            op_wavelength_vac=wavelength_vac, \
+            resolution=60, \
+            freq_bnds=(20,70), \
             deg_bnds=(0,5), \
             ): 
         normal = [0,0,1]
@@ -177,5 +178,5 @@ class AodVisualisation(object):
         generic_plot(ac_power_range, func, labels, (min(ac_power_range),max(ac_power_range),0,1))
         
 if __name__ == '__main__':
-    av = AodVisualisation(is_wide=False)
-    av.plot_efficiency_xangle_yangle(1.5)
+    av = AodVisualisation(is_wide=True)
+    av.plot_efficiency_xangle_freq()
