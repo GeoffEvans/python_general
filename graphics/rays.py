@@ -24,9 +24,26 @@ def get_freq_fun(period, a, b, c=0, d=0):
 freq1 = get_freq_fun(period, 40, 1)
 freq2 = get_freq_fun(period, 40, 3, 0)
 freq3 = get_freq_fun(period, 40, 1, 0, 0.01)
-plt.plot(t_range, freq1(t_range),'r')
-plt.plot(t_range, freq2(t_range),'b:')
-plt.plot(t_range, freq3(t_range),'g--')
-plt.xlabel(r'time / $\mu$s')
-plt.ylabel('frequency / MHz')
-plt.axis([-50, 50, 0, 80])
+
+for item in zip([freq1, freq2, freq3],['r', 'b', 'g']):
+    
+    figure()
+    x_range = np.linspace(-6,6,10) * 1e-3 #12mm
+    V = 613 
+    op_wav = 800e-3
+    f = item[0]
+    styl = item[1]    
+    
+    starts_x = x_range * 1000
+    starts_z = -0.1
+    
+    mid_x = x_range * 1000
+    mid_z = 0
+    
+    end_z = 0.5
+    end_x = (x_range + op_wav * f(-x_range/V * 1e6) / V * end_z) * 1000
+    
+    plt.plot([starts_z, mid_z], [starts_x, mid_x], styl)
+    plt.plot([mid_z, end_z], [mid_x, end_x], styl)
+    plt.xlabel('z / m')
+    plt.ylabel('x / mm')

@@ -4,7 +4,7 @@ from set_up_utils import get_ray_bundle, set_up_aol
 
 op_wavelength = 800e-9
 
-x_rad = linspace(-18, 18, 19) * 1e-3
+x_rad = linspace(-17, 17, 19) * 1e-3
 x_deg = x_rad * 180/pi
 
 def plot_fov_lines(focal_lengths):
@@ -50,5 +50,7 @@ def calculate_efficiency(aol):
     return energy / ray_count
 
 if __name__ == '__main__':
-    #plot_fov_lines(1 * array([1e0, 2, 3e0, 1e1, 1e6, 1e12]))
+    import numpy as np
+    a = array([1e0,-1, 2, -2, 3e0, -3, 1e1, -10, 1000, -1000])
+    #plot_fov_lines(a)
     plot_fov_surf(1)

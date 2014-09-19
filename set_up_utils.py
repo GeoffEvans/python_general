@@ -52,6 +52,6 @@ def transducer_efficiency_wide(x):
     return exp(- power(array(x) - 40e6, 2.) / (2 * power(300e6, 2.)))
     
 def make_aod_wide(orientation, ac_dir):
-    return Aod(orientation, ac_dir, 16e-3, 3.6e-3, 8e-3, transducer_efficiency_wide)
+    return Aod(orientation, ac_dir, 16e-3, 3.3e-3, 8e-3, transducer_efficiency_wide)
 def make_aod_narrow(orientation, ac_dir):
     return Aod(orientation, ac_dir, 16e-3, 1.2e-3, 8e-3, transducer_efficiency_narrow)
