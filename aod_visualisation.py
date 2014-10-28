@@ -13,8 +13,8 @@ class AodVisualisation(object):
             is_wide=True, \
             order=-1, \
             op_wavelength_vac=wavelength_vac, \
-            resolution=120, \
-            freq_bnds=(20,50), \
+            resolution=60, \
+            freq_bnds=(20,70), \
             deg_bnds=(0,5), \
             ): 
         normal = [0,0,1]
@@ -178,5 +178,5 @@ class AodVisualisation(object):
         generic_plot(ac_power_range, func, labels, (min(ac_power_range),max(ac_power_range),0,1))
         
 if __name__ == '__main__':
-    av = AodVisualisation(is_wide=False)
-    av.plot_efficiency_xangle_yangle(1.5)
+    av = AodVisualisation(is_wide=True)
+    av.plot_efficiency_xangle_freq()
