@@ -25,7 +25,7 @@ def set_up_aol( order=-1, \
         [ -0.01187817, -0.04380776,  0.99896936], \
         [ 0, -1.17766548e-02,  9.99930653e-01] ]))
 
-    aod_spacing = array([5e-2] * 3)
+    aod_spacing = array([2e-2] * 3)
     aods = [0]*4
     orientations = orient40
     aods[0] = make_aod_wide(orientations[0], [1,0,0])

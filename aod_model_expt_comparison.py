@@ -32,7 +32,7 @@ def plot_eff_ang_narrow():
     
 if __name__ == '__main__':
     plot_eff_freq_narrow()
-    #plot_eff_freq_wide()
+    plot_eff_freq_wide()
     #plot_eff_ang_narrow()
     #plot_eff_ang_wide()
     #plot_eff_pwr_narrow()    

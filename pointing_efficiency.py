@@ -4,7 +4,7 @@ from set_up_utils import get_ray_bundle, set_up_aol
 
 op_wavelength = 800e-9
 
-x_rad = linspace(-17, 17, 19) * 1e-3
+x_rad = linspace(-35, 35, 19) * 1e-3
 x_deg = x_rad * 180/pi
 
 def plot_fov_lines(focal_lengths):
@@ -15,7 +15,7 @@ def plot_fov_lines(focal_lengths):
     effs = get_effs(transpose(focus_position_many, [0,2,1]))
     
     labels = ["xangle / deg", "efficiency"]
-    multi_line_plot_vals(x_deg, array(effs), labels, focal_lengths, (min(x_deg),max(x_deg),0,1))
+    multi_line_plot_vals(x_deg, array(effs), labels, focal_lengths.astype(int), (min(x_deg),max(x_deg),0,1))
         
 def plot_fov_surf(focal_length):
     (x_deg_m, y_deg_m) = meshgrid(x_deg, x_deg) 
@@ -50,7 +50,6 @@ def calculate_efficiency(aol):
     return energy / ray_count
 
 if __name__ == '__main__':
-    import numpy as np
-    a = array([1e0,-1, 2, -2, 3e0, -3, 1e1, -10, 1000, -1000])
-    #plot_fov_lines(a)
-    plot_fov_surf(1)
+    a = array([1e0,-1, 2, -2, 3e0, -3, 1e1, -10])
+    plot_fov_lines(a)
+    #plot_fov_surf(1)
