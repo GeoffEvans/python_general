@@ -7,17 +7,18 @@ k = 20
 z = 2e3
 step = 1
 
-arr = np.arange(-200, 200, step)
+arr = np.arange(-200, 200, step, np.float)
 x_arr, y_arr = np.meshgrid(arr, arr)
 z_arr = np.linspace(z*0.5, z*2, 100)
+
+r2 = np.power(x_arr, 2) + np.power(y_arr, 2)
+r4 = np.power(r2, 2)
 
 circle = (np.power(x_arr, 2) + np.power(y_arr, 2) < 100) * 1
 gaussian = np.exp(- (np.power(x_arr, 2) + np.power(y_arr, 2)) \
     * 1. / (2 * 4000) )
-focusing = gaussian * np.exp(-1j * k/2/z * \
-    (np.power(x_arr, 2) + np.power(y_arr, 2)))
-sph_ab = focusing * np.exp(-1j * k * 5e-9 * \
-    np.power(np.power(x_arr, 2) + np.power(y_arr, 2), 2))
+focusing = gaussian * np.exp(-1j * k/2/z * r2)
+sph_ab = focusing * np.exp(-1j * k * 5e-9 * r4)
 
 def propagate_field(z_elem, k_xy_field, kz):
     new_k_xy_field = k_xy_field * np.exp(1j * kz * z_elem)
@@ -54,19 +55,25 @@ def get_resolution(correction, do_plot=False):
         plt.subplot(2, 2, (3,4))
         plt.pcolor(x, y, np.abs(new_xyz_fields[0]))
     
-    field_max = np.max(np.power(np.abs(new_xyz_fields), 4))
-    elem_filter = np.power(np.abs(new_xyz_fields), 4) >= field_max/2
-    r_arr = np.sqrt(np.power(x_arr, 2) + np.power(y_arr, 2))
+    field_max = np.power(np.max(np.abs(new_xyz_fields)), 4)
+    elem_filter = np.abs(new_xyz_fields) >= np.power(field_max/2, 0.25)
+    
+    sqr_arr = np.power(arr, 2)
+    x_sqr_arr, y_sqr_arr = np.meshgrid(sqr_arr, sqr_arr)
+    r_arr = np.sqrt(x_sqr_arr + y_sqr_arr)
     fwhm_x = 2 * np.max(np.abs(x_arr[np.any(elem_filter, 0)]))
     fwhm_r = 2 * np.max(r_arr[np.any(elem_filter, 0)])
     fwhm_z = 2 * np.max(np.abs(z_arr[np.any(np.any(elem_filter, 1), 1)] - z))
-    return (fwhm_x, fwhm_r, fwhm_z)
+    strehl = field_max
+    return (fwhm_x, fwhm_r, fwhm_z, strehl)
     
-correction = np.linspace(-20,-10,11)
-fwhm_x, fwhm_r, fwhm_z = zip(*[get_resolution(c) for c in correction])
-plt.hold(True)
-plt.plot(correction, fwhm_r)
-plt.plot(correction, map(lambda x: x/100, fwhm_z))
-plt.hold(False)
-plt.ylim((0,10))
-print np.min(fwhm_r), np.min(fwhm_z)
+get_resolution(0,True)
+#correction = np.linspace(-20,0,1)
+#fwhm_x, fwhm_r, fwhm_z, strehl = zip(*[get_resolution(c) for c in correction])
+#plt.hold(True)
+#plt.plot(correction, fwhm_r)
+#plt.plot(correction, np.array(fwhm_z)/100)
+#plt.plot(correction, np.array(strehl)/1e5)
+#plt.hold(False)
+#plt.ylim((0,10))
+#print np.min(fwhm_r), np.min(fwhm_z)
