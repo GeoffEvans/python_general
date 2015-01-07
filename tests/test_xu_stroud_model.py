@@ -11,13 +11,14 @@ from scipy import less_equal, greater_equal
 acoustics = Acoustics(40e6)
 aod = Aod([0,0,1], [1,0,0], 1e-3, 1e-3, 1e-3)
 order = 1
+wavelen = 800e-9
 
 def test_efficiency_range():
     
     def eff_fun():
         v = normalise([random(),random(),10])
-        rays_in = [Ray([0,0,0],v,800e-9,1)]
-        rays_out = [Ray([0,0,0],v,800e-9,1)]
+        rays_in = [Ray([0,0,0],v,wavelen,1)]
+        rays_out = [Ray([0,0,0],v,wavelen,1)]
         wavevecs_in_mag = [r.wavevector_vac_mag for r in rays_in]
         wavevecs_in_unit = [r.wavevector_unit for r in rays_in]   
         wavevecs_out_mag = [r.wavevector_vac_mag for r in rays_out]
@@ -28,8 +29,8 @@ def test_efficiency_range():
     assert all(less_equal(effs,1)) and all(greater_equal(effs,0))  
 
 def test_order_sym():
-    r1 = Ray([0,0,0],[-17./145,0,144./145],800e-9)
-    r2 = Ray([0,0,0],[ 17./145,0,144./145],800e-9)
+    r1 = Ray([0,0,0],[-17./145,0,144./145],wavelen)
+    r2 = Ray([0,0,0],[ 17./145,0,144./145],wavelen)
     
     diffract_acousto_optically(aod, [r1], [acoustics], -1)
     diffract_acousto_optically(aod, [r2], [acoustics], 1)
@@ -39,17 +40,17 @@ def test_order_sym():
 
 def test_wavevector_triangle():
     wavevec_unit = array([0,0,1])
-    wavevec_mag = 2 * pi / 800e-9  
+    wavevec_mag = 2 * pi / wavelen  
     (wavevector_mismatch_mag, wavevectors_out_unit, wavevectors_vac_mag_out) = diffract_by_wavevector_triangle(aod, array([wavevec_unit]), [wavevec_mag], [acoustics], order, (0,1))
-    k_i = wavevec_unit * wavevec_mag * aod.calc_refractive_indices_vectors([wavevec_unit])[0][0]
-    k_d = wavevectors_out_unit * wavevectors_vac_mag_out * aod.calc_refractive_indices_vectors(wavevectors_out_unit)[1] # get ord branch, the first of
+    k_i = wavevec_unit * wavevec_mag * aod.calc_refractive_indices_vectors([wavevec_unit], wavelen)[0][0]
+    k_d = wavevectors_out_unit * wavevectors_vac_mag_out * aod.calc_refractive_indices_vectors(wavevectors_out_unit, wavelen)[1] # get ord branch, the first of
     K = acoustics.wavevector(aod) * order
     zero_sum = k_i + order * K + aod.normal * wavevector_mismatch_mag - k_d[0]
     assert allclose(zero_sum, 0)
 
 def test_setting_invalid_mode():
     with pytest.raises(ValueError):
-        ray = Ray([0,0,0,], [0,0,1], 800e-9)
+        ray = Ray([0,0,0,], [0,0,1], wavelen)
         diffract_acousto_optically(aod, [ray], [acoustics], 2)
         
 if __name__ == '__main__':
