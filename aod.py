@@ -2,10 +2,10 @@ from teo2 import calc_refractive_indices
 from xu_stroud_model import diffract_acousto_optically
 from vector_utils import perpendicular_component_list, normalise_list, normalise, angle_between_unit_vectors
 from error_utils import check_is_unit_vector
-from numpy import array, sqrt, arcsin, sin, cos, cross, dot, dtype, allclose, outer,\
-    power
+from numpy import array, sqrt, arcsin, sin, cos, cross, dot, dtype, outer, power, allclose
 from numpy.linalg import norm
 from scipy.optimize import fsolve
+import teo2
 
 class Aod(object):
        
@@ -44,6 +44,8 @@ class Aod(object):
         return sound_vector 
     
     def propagate_ray(self, rays, local_acoustics, order):
+        tol = 0.5*10**-teo2.accuracy
+        #assert allclose([r.wavelength_vac for r in rays], rays[0].wavelength_vac, rtol=0, atol=tol) # can only handle single wavelength at a time
         self.refract_in(rays)
         diffract_acousto_optically(self, rays, local_acoustics, order)
         self.move_ray_through_aod(rays)
@@ -59,7 +61,7 @@ class Aod(object):
         
         def n_ord_vectors(unit_dirs):
             angles = angle_between_unit_vectors(unit_dirs, self.optic_axis)
-            return (unit_dirs.T * calc_refractive_indices(angles)[1]).T
+            return (unit_dirs.T * calc_refractive_indices(angles, rays[0].wavelength_vac)[1]).T
             
         w0 = array([r.wavevector_unit.copy() for r in rays])
         w1 = array([r.wavevector_unit.copy() for r in rays])
@@ -74,16 +76,17 @@ class Aod(object):
         
         return normalise_list(cross(d1,d2))
 
-    def calc_refractive_indices_vectors(self, vectors):
+    def calc_refractive_indices_vectors(self, vectors, wavelength):
         angles_to_axis = angle_between_unit_vectors(normalise_list(vectors), self.optic_axis)
-        return calc_refractive_indices(angles_to_axis)
+        return calc_refractive_indices(angles_to_axis, wavelength)
     
     def calc_refractive_indices_rays(self, rays):
         wavevecs = [r.wavevector_unit for r in rays]
-        return self.calc_refractive_indices_vectors(wavevecs)
+        return self.calc_refractive_indices_vectors(wavevecs, rays[0].wavelength_vac)
     
     def refract_in(self, rays):
         # get vectors perpendicular and parallel to normal
+        wavelength = rays[0].wavelength_vac        
         wavevecs = [r.wavevector_unit for r in rays]
         perpendicular_comps = perpendicular_component_list(wavevecs, self.normal) 
         
@@ -94,7 +97,7 @@ class Aod(object):
         
         def zero_func(angles_out):
             wavevector_unit = outer(cos(angles_out), self.normal) + (sin(angles_out) * unit_perpendiculars.T).T
-            n_ext = self.calc_refractive_indices_vectors(wavevector_unit)[0]
+            n_ext = self.calc_refractive_indices_vectors(wavevector_unit, wavelength)[0]
             return (n_ext * sin(angles_out)) - sin_angles_in 
         
         angles = fsolve(zero_func, angle_guesses, band=(0,0))

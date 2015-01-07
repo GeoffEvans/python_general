@@ -38,17 +38,17 @@ def diffract_by_wavevector_triangle(aod, wavevec_unit_in, wavevec_vac_mag_in, lo
     wavevectors_vac_mag_out = wavevec_vac_mag_in + (2 * pi / c) * array([a.frequency for a in local_acoustics]) # from w_out = w_in + w_ac
     resultants = get_resultant_wavevectors(aod, wavevec_unit_in, wavevec_vac_mag_in, local_acoustics, order, ref_inds)
 
-    f = lambda k: aod.calc_refractive_indices_vectors(k)[ref_inds[1]]
+    f = lambda k: ref_ind_ext_ord(aod, k, wavevec_vac_mag_in)[ref_inds[1]] # pass this function to be used recursively
     return original(resultants, wavevectors_vac_mag_out, aod.normal, f)
     
-def get_resultant_wavevectors(aod, wavevec_unit_in, wavevec_vac_mag_in, local_acoustics, order, ref_inds):
-    n_in = aod.calc_refractive_indices_vectors(wavevec_unit_in)[ref_inds[0]]
+def get_resultant_wavevectors(aod, wavevec_unit_in, wavevec_vac_mag_in, local_acoustics, order, ref_inds):    
+    n_in = ref_ind_ext_ord(aod, wavevec_unit_in, wavevec_vac_mag_in)[ref_inds[0]]
     wavevectors_in = (n_in * wavevec_vac_mag_in * wavevec_unit_in.T).T
     wavevectors_ac = outer(array([a.wavevector_mag for a in local_acoustics]), aod.acoustic_direction)
     return wavevectors_in + order * wavevectors_ac 
 
 def check_matching(aod, wavevectors_out, wavevectors_vac_mag_out, ref_inds):
-    n_out = aod.calc_refractive_indices_vectors(wavevectors_out)[ref_inds[1]]
+    n_out = ref_ind_ext_ord(aod, wavevectors_out, wavevectors_vac_mag_out)[ref_inds[1]]
     wavevectors_out_mag2 = n_out * wavevectors_vac_mag_out
     wavevectors_out_mag1 = norm(wavevectors_out, axis=1)
     assert allclose(wavevectors_out_mag1, wavevectors_out_mag2)
@@ -56,8 +56,8 @@ def check_matching(aod, wavevectors_out, wavevectors_vac_mag_out, ref_inds):
 def get_efficiency(aod, wavevector_mismatches_mag, wavevecs_in_mag, wavevecs_in_unit, wavevecs_out_mag, wavevecs_out_unit, acoustics, ref_inds):
     amp = [a.amplitude(aod) for a in acoustics] * aod.transducer_efficiency_func([a.frequency for a in acoustics])
     
-    n_in = aod.calc_refractive_indices_vectors(wavevecs_in_unit)[ref_inds[0]]
-    n_out = aod.calc_refractive_indices_vectors(wavevecs_out_unit)[ref_inds[1]] 
+    n_in = ref_ind_ext_ord(aod, wavevecs_in_unit, wavevecs_in_mag)[ref_inds[0]]
+    n_out = ref_ind_ext_ord(aod, wavevecs_out_unit, wavevecs_out_mag)[ref_inds[1]] 
     p = -0.12  # for P66' (see appendix p583)
     
     delta_n0 = -0.5 * power(n_in, 2.) * n_out * p * amp # Xu&St (2.128)
@@ -69,3 +69,6 @@ def get_efficiency(aod, wavevector_mismatches_mag, wavevecs_in_mag, wavevecs_in_
     sigma = sqrt(power(zeta, 2.) + v0*v1/4) # Xu&St (2.132)
     
     return v0*v1/4 * power((sin(sigma) / sigma), 2.) # Xu&St (2.134)
+
+def ref_ind_ext_ord(aod, unit_vector, wavevector_vac):
+    return aod.calc_refractive_indices_vectors(unit_vector, 2*pi/wavevector_vac[0])

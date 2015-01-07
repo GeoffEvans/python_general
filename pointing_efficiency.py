@@ -4,7 +4,7 @@ from set_up_utils import get_ray_bundle, set_up_aol
 import teo2 
 import matplotlib.pyplot as plt
 
-op_wavelength = teo2.wavelength_vac
+op_wavelength = 920e-9
 pdr = 0
 base_freq = 39e6
 

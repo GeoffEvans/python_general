@@ -2,11 +2,14 @@ from scipy.interpolate import splrep, splev
 from scipy.constants import h, c, e, pi
 import optically_uniaxial as oua
 from numpy import power, arange, array, sqrt
+import numpy as np
 from memoize import memoized
 
+accuracy = 7
+
 def calc_refractive_indices(angles, wavelength_vac):
-    wavelength_vac_rounded = round(wavelength_vac, 8) # to nearest 10nm
-    (n_e, n_o) = ref_ind_lookup(wavelength_vac_rounded)
+    wavelength_vac_rounded = np.round(wavelength_vac, accuracy) # to nearest 10nm
+    (n_e, n_o) = ref_ind_lookup(800e-9)
     return (splev(abs(angles),n_e),splev(abs(angles),n_o))       
 
 @memoized

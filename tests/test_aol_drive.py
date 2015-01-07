@@ -88,4 +88,4 @@ def test_focus_scans_correctly():
     assert allclose(ray1.position, expected_position1, atol=tol, rtol=0) and allclose(ray2.position, expected_position2, atol=tol, rtol=0) 
 
 if __name__ == '__main__':
-    test_focus_scans_correctly()
+    test_constant_freq_for_pair_def_ratio_zero()

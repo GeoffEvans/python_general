@@ -23,14 +23,14 @@ def find_constant(order, op_wavelength, ac_velocity, spacing, base_freq, pair_de
     
     multiplier = ac_velocity / (op_wavelength * order)
 
-    #dfx = multiplier * xy_deflection[0] / (pair_deflection_ratio * spacing[0:4].sum() + spacing[2:4].sum()) # new neat code
-    #dfy = multiplier * xy_deflection[1] / (pair_deflection_ratio * spacing[1:4].sum() + spacing[3:4].sum())
+    dfx = multiplier * xy_deflection[0] / (pair_deflection_ratio * spacing[0:4].sum() + spacing[2:4].sum()) # new neat code
+    dfy = multiplier * xy_deflection[1] / (pair_deflection_ratio * spacing[1:4].sum() + spacing[3:4].sum())
 
     # old matlab driver code
-    dfx = ( multiplier * xy_deflection[0] - base_freq * spacing[0:4].sum() + base_freq * spacing[2:4].sum() ) \
-        / (pair_deflection_ratio * spacing[0:4].sum() + spacing[2:4].sum())
-    dfy = ( multiplier * xy_deflection[1] - base_freq * spacing[1:4].sum() + base_freq * spacing[3:4].sum() ) \
-        / (pair_deflection_ratio * spacing[0:4].sum() + spacing[2:4].sum())
+    #dfx = ( multiplier * xy_deflection[0] - base_freq * spacing[0:4].sum() + base_freq * spacing[2:4].sum() ) \
+        #/ (pair_deflection_ratio * spacing[0:4].sum() + spacing[2:4].sum())
+    #dfy = ( multiplier * xy_deflection[1] - base_freq * spacing[1:4].sum() + base_freq * spacing[3:4].sum() ) \
+        #/ (pair_deflection_ratio * spacing[0:4].sum() + spacing[2:4].sum())
     
     return array([base_freq + pair_deflection_ratio * dfx, \
                   base_freq + pair_deflection_ratio * dfy, \

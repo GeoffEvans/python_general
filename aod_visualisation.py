@@ -4,15 +4,13 @@ from numpy import linspace, pi, sin, cos, abs, sqrt, arcsin, max, array
 from plot_utils import generic_plot_surface, generic_plot, multi_line_plot
 from xu_stroud_model import diffract_by_wavevector_triangle
 from set_up_utils import make_aod_narrow, make_aod_wide
-from teo2 import wavelength_vac
 
 class AodVisualisation(object):
     
-    def __init__(self, \
+    def __init__(self, op_wavelength_vac, \
             ac_dir_rel=[1,0,0], \
             is_wide=True, \
             order=-1, \
-            op_wavelength_vac=wavelength_vac, \
             resolution=60, \
             freq_bnds=(20,70), \
             deg_bnds=(0,5), \

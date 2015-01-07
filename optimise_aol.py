@@ -3,9 +3,8 @@ from scipy import optimize
 from aod_visualisation import generic_plot_surface
 from optimisation_params import OptParams
 from set_up_utils import set_up_aol, get_ray_bundle
-import teo2
 
-op_wavelength = teo2.wavelength_vac
+op_wavelength = 800e-9
 base_freq = 39e6
 pdr = 1
 
