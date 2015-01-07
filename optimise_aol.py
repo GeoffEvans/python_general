@@ -3,9 +3,11 @@ from scipy import optimize
 from aod_visualisation import generic_plot_surface
 from optimisation_params import OptParams
 from set_up_utils import set_up_aol, get_ray_bundle
-import teo2 as t
+import teo2
 
-op_wavelength = t.wavelength
+op_wavelength = teo2.wavelength_vac
+base_freq = 39e6
+pdr = 1
 
 def optimise_nth_aod_by_hand(aod_num, aol):
     p = OptParams()
@@ -56,9 +58,9 @@ def calculate_efficiency(aol, after_nth_aod, op_wavelength=op_wavelength):
     return energy / ray_count
 
 if __name__ == '__main__':
-    aol = set_up_aol(op_wavelength=op_wavelength)
-    #plot_region(4, aol)
-    #optimise_nth_aod_by_hand(4, aol)
+    aol = set_up_aol(op_wavelength=op_wavelength, base_freq=base_freq, pair_deflection_ratio=pdr)
+    plot_region(1, aol)
+    optimise_nth_aod_by_hand(1, aol)
     print calculate_efficiency(aol, 1)
     print calculate_efficiency(aol, 2)
     print calculate_efficiency(aol, 3)
