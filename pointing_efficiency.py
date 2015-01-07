@@ -1,14 +1,12 @@
 from plot_utils import generic_plot_surface_vals, multi_line_plot_vals
-from numpy import linspace, pi, array, meshgrid, arange, prod, transpose, power
+from numpy import linspace, pi, array, meshgrid, arange, prod, transpose, power, max
 from set_up_utils import get_ray_bundle, set_up_aol
-import teo2 
 import matplotlib.pyplot as plt
 
 op_wavelength = 920e-9
-pdr = 0
 base_freq = 39e6
 
-x_rad = linspace(-34, 34, 19) * 1e-3
+x_rad = linspace(-68, 68, 19) * 1e-3
 x_deg = x_rad * 180/pi
 
 def plot_fov_lines(focal_lengths):
@@ -31,14 +29,16 @@ def plot_fov_surf(focal_length, pdr):
     effs = get_effs(focus_position_many, pdr)
     
     labels = ["xangle / deg", "yangle / deg", "efficiency"]
-    generic_plot_surface_vals(x_deg_m, y_deg_m, array(effs), labels)   
-    #cset = plt.contour(x_deg_m, y_deg_m, effs, arange(0,0.4,0.05),linewidths=1)
-    #plt.clabel(cset, inline=True, fmt='%1.1f', fontsize=10) 
+    #generic_plot_surface_vals(x_deg_m, y_deg_m, array(effs), labels)   
+    plt.figure()    
+    effs_norm = effs / max(effs)
+    cset = plt.contour(x_deg_m, y_deg_m, effs_norm, arange(0,1,0.1),linewidths=1)
+    plt.clabel(cset, inline=True, fmt='%1.2f', fontsize=10) 
 
 def get_effs(focus_position_many, pdr):
     #get eff for a 2d array for focus positions (so 3d array input)
     shp = focus_position_many.shape[0:2]
-    aols = [set_up_aol(focus_position=f, op_wavelength=op_wavelength, base_freq=base_freq, pair_deflection_ratio=pdr) for f in focus_position_many.reshape(prod(shp), 3)] 
+    aols = [set_up_aol(op_wavelength, focus_position=f, base_freq=base_freq, pair_deflection_ratio=pdr) for f in focus_position_many.reshape(prod(shp), 3)] 
     effs = [calculate_efficiency(a) for a in aols]
     return array(effs).reshape(shp)
     
@@ -58,4 +58,4 @@ def calculate_efficiency(aol):
 if __name__ == '__main__':
     a = array([1.3407, 2.2048, 4.4437, -287.3563, -4.2258, -1.8187, -1.1825])
     #plot_fov_lines(a)
-    plot_fov_surf(1e9, 1)
+    plot_fov_surf(1e9, 0)
