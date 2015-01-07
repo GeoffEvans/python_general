@@ -1,10 +1,14 @@
 from plot_utils import generic_plot_surface_vals, multi_line_plot_vals
-from numpy import linspace, pi, array, meshgrid, arange, prod, transpose, outer
+from numpy import linspace, pi, array, meshgrid, arange, prod, transpose, power
 from set_up_utils import get_ray_bundle, set_up_aol
+import teo2 
+import matplotlib.pyplot as plt
 
-op_wavelength = 800e-9
+op_wavelength = teo2.wavelength_vac
+pdr = 0
+base_freq = 39e6
 
-x_rad = linspace(-35, 35, 19) * 1e-3
+x_rad = linspace(-34, 34, 19) * 1e-3
 x_deg = x_rad * 180/pi
 
 def plot_fov_lines(focal_lengths):
@@ -17,22 +21,24 @@ def plot_fov_lines(focal_lengths):
     labels = ["xangle / deg", "efficiency"]
     multi_line_plot_vals(x_deg, array(effs), labels, focal_lengths.astype(int), (min(x_deg),max(x_deg),0,1))
         
-def plot_fov_surf(focal_length):
+def plot_fov_surf(focal_length, pdr):
     (x_deg_m, y_deg_m) = meshgrid(x_deg, x_deg) 
 
     x_array = x_rad * focal_length
     (x, y) = meshgrid(x_array, x_array)
     focus_position_many = transpose(array([x, y, focal_length+0*x]), [1,2,0])
     
-    effs = get_effs(focus_position_many)
+    effs = get_effs(focus_position_many, pdr)
     
     labels = ["xangle / deg", "yangle / deg", "efficiency"]
     generic_plot_surface_vals(x_deg_m, y_deg_m, array(effs), labels)   
+    #cset = plt.contour(x_deg_m, y_deg_m, effs, arange(0,0.4,0.05),linewidths=1)
+    #plt.clabel(cset, inline=True, fmt='%1.1f', fontsize=10) 
 
-def get_effs(focus_position_many):
+def get_effs(focus_position_many, pdr):
     #get eff for a 2d array for focus positions (so 3d array input)
     shp = focus_position_many.shape[0:2]
-    aols = [set_up_aol(focus_position=f, op_wavelength=op_wavelength) for f in focus_position_many.reshape(prod(shp), 3)] 
+    aols = [set_up_aol(focus_position=f, op_wavelength=op_wavelength, base_freq=base_freq, pair_deflection_ratio=pdr) for f in focus_position_many.reshape(prod(shp), 3)] 
     effs = [calculate_efficiency(a) for a in aols]
     return array(effs).reshape(shp)
     
@@ -47,9 +53,9 @@ def calculate_efficiency(aol):
         energy += sum(energies[:,-1])
         ray_count += len(rays)
                 
-    return energy / ray_count
-
+    return power(energy / ray_count, 2)
+    
 if __name__ == '__main__':
-    a = array([1e0,-1, 2, -2, 3e0, -3, 1e1, -10])
-    plot_fov_lines(a)
-    #plot_fov_surf(1)
+    a = array([1.3407, 2.2048, 4.4437, -287.3563, -4.2258, -1.8187, -1.1825])
+    #plot_fov_lines(a)
+    plot_fov_surf(1e9, 1)
