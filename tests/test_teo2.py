@@ -1,9 +1,11 @@
 from teo2 import calc_refractive_indices, get_relative_impermeability_eigenvals
 from numpy import pi, arange, allclose, array, power
 
+wavelen = 800e-9
+
 def test_ord_less_than_ext():
     angles = arange(0,pi/2,pi/10)
-    refractive_indices = calc_refractive_indices(angles)
+    refractive_indices = calc_refractive_indices(angles, wavelen)
 
     ord_less_than_ext = refractive_indices[1] < refractive_indices[0]
     assert ord_less_than_ext.all()
@@ -11,7 +13,7 @@ def test_ord_less_than_ext():
 def test_extreme_ref_vals():
     angles = array([0,pi/2])
     
-    refractive_indices = calc_refractive_indices(angles)
+    refractive_indices = calc_refractive_indices(angles, wavelen)
     
     n_e_vals = [2.226, 2.373]
     n_o_vals = [2.226, 2.226]
@@ -27,7 +29,7 @@ def test_symmetry():
         return allclose(lst, lst[0], atol=1e-15)
    
     angles = array([0.3,-0.3])
-    refractive_indices = calc_refractive_indices(angles)
+    refractive_indices = calc_refractive_indices(angles, wavelen)
     
     ext_same = all_elements_same(refractive_indices[0])
     ord_same = all_elements_same(refractive_indices[1])
@@ -36,7 +38,7 @@ def test_symmetry():
     
 def test_single_angle():
     angles = 0.1
-    calc_refractive_indices(angles) # don't want this to throw
+    calc_refractive_indices(angles, wavelen) # don't want this to throw
     
 def test_relative_impermeability_eigenvals():
     wavs = [0.4047e-6, 0.6328e-6, 1e06]
