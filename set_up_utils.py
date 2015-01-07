@@ -3,15 +3,14 @@ from aod import Aod
 from ray import Ray
 from numpy import array, arange, exp, power
 from vector_utils import normalise_list
-from teo2 import wavelength_vac
 
-def set_up_aol( order=-1, \
-                op_wavelength=wavelength_vac, \
+def set_up_aol( op_wavelength, \
+                order=-1, \
                 base_freq=40e6, \
-                focus_position=[0,0,1e21], \
+                focus_position=[0,0,1e12], \
                 focus_velocity=[0,0,0], \
                 pair_deflection_ratio=1, \
-                ac_power=[1,1,3,3]):
+                ac_power=[1,1,2,2]):
    
     orient40  = normalise_list(array([ \
         [ -3.60119805e-02,   1.20407784e-18,  9.99351358e-01], \
@@ -24,10 +23,16 @@ def set_up_aol( order=-1, \
         [ -0.04613158, -0.03934167,  0.99816036], \
         [ -0.01187817, -0.04380776,  0.99896936], \
         [ 0, -1.17766548e-02,  9.99930653e-01] ]))
+        
+    orient39 = normalise_list(array([ \
+        [-0.03634428, 0., 0.99933933], \
+        [-0.05410521, -0.03632524,  0.99787429], \
+        [-0.02185263, -0.04939282, 0.99854034], \
+        [ 0, -2.17538221e-02, 9.99763358e-01] ]))
 
     aod_spacing = array([2e-2] * 3)
     aods = [0]*4
-    orientations = orient40
+    orientations = orient39
     aods[0] = make_aod_wide(orientations[0], [1,0,0])
     aods[1] = make_aod_wide(orientations[1], [0,1,0])
     aods[2] = make_aod_narrow(orientations[2], [-1,0,0])
