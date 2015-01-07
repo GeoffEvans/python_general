@@ -20,9 +20,10 @@ def test_off_axis_ray_displacement():
     assert off_wavevector and direction_unchanged
 
 def test_refractive_indices_match():
+    wavelen = 800e-9    
     wavevec = [3./5,0,4./5]
-    rays = [Ray([0,0,0],wavevec,800e-9,1)]*5
-    n1 = aod.calc_refractive_indices_vectors([r.wavevector_unit for r in rays]) 
+    rays = [Ray([0,0,0],wavevec,wavelen,1)]*5
+    n1 = aod.calc_refractive_indices_vectors([r.wavevector_unit for r in rays], wavelen) 
     n2 = aod.calc_refractive_indices_rays(rays)
     assert allclose(n1,n2)
 
