@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 op_wavelength = 920e-9
 base_freq = 39e6
 
-x_rad = linspace(-68, 68, 19) * 1e-3
+x_rad = linspace(-68, 68, 21) * 1e-3
 x_deg = x_rad * 180/pi
 
 def plot_fov_lines(focal_lengths):
@@ -32,7 +32,7 @@ def plot_fov_surf(focal_length, pdr):
     #generic_plot_surface_vals(x_deg_m, y_deg_m, array(effs), labels)   
     plt.figure()    
     effs_norm = effs / max(effs)
-    cset = plt.contour(x_deg_m, y_deg_m, effs_norm, arange(0,1,0.1),linewidths=1)
+    cset = plt.contour(x_deg_m, y_deg_m, effs_norm, arange(0.2,1,0.1),linewidths=1)
     plt.clabel(cset, inline=True, fmt='%1.2f', fontsize=10) 
 
 def get_effs(focus_position_many, pdr):
