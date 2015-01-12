@@ -5,3 +5,4 @@ __pycache__
 *.lprof
 profile
 *kernprof.py
+*.tif
