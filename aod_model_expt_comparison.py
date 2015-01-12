@@ -3,8 +3,8 @@ from vector_utils import normalise
 import expt_data as d
 import matplotlib.pyplot as plt
 
-av_wide = AodVisualisation(ac_dir_rel=[1,0,0], is_wide=True, deg_bnds=(-1,4))
-av_narrow = AodVisualisation(ac_dir_rel=normalise([1,0,0]), is_wide=False, deg_bnds=(-1,6))
+av_wide = AodVisualisation(800e-9, ac_dir_rel=[1,0,0], is_wide=True, deg_bnds=(-1,4))
+av_narrow = AodVisualisation(800e-9, ac_dir_rel=normalise([1,0,0]), is_wide=False, deg_bnds=(-1,6))
 
 def plot_eff_pwr_wide():
     plt.plot(d.power, d.eff_power_wide, 'rx')

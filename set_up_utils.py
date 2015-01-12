@@ -30,9 +30,9 @@ def set_up_aol( op_wavelength, \
         [-0.02185263, -0.04939282, 0.99854034], \
         [ 0, -2.17538221e-02, 9.99763358e-01] ]))
 
-    aod_spacing = array([2e-2] * 3)
+    aod_spacing = array([5e-2] * 3)
     aods = [0]*4
-    orientations = orient39
+    orientations = orient40
     aods[0] = make_aod_wide(orientations[0], [1,0,0])
     aods[1] = make_aod_wide(orientations[1], [0,1,0])
     aods[2] = make_aod_narrow(orientations[2], [-1,0,0])
@@ -52,9 +52,9 @@ def get_ray_bundle(op_wavelength=800e-9, spacing=5e-3):
     return rays
 
 def transducer_efficiency_narrow(x):
-    return exp(- power(array(x) - 40e6, 2.) / (2 * power(300e6, 2.)))
+    return 1
 def transducer_efficiency_wide(x):
-    return exp(- power(array(x) - 40e6, 2.) / (2 * power(300e6, 2.)))
+    return transducer_efficiency_narrow(x)
     
 def make_aod_wide(orientation, ac_dir):
     return Aod(orientation, ac_dir, 16e-3, 3.3e-3, 8e-3, transducer_efficiency_wide)

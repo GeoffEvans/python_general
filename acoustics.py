@@ -1,4 +1,5 @@
-from numpy import pi, sqrt, dot, dtype, array, power
+from numpy import pi, sqrt, dot, dtype, array
+import numpy as np
 
 teo2_ac_vel = 612.8834
 default_power = 1
@@ -6,8 +7,8 @@ default_power = 1
 class Acoustics(object):
     
     def __init__(self, frequency, power=default_power, velocity=teo2_ac_vel):
-        #assert frequency >= 0 and frequency < 100e6 # working outside these limits is absurd
-        if not (frequency > 0 and frequency < 120e6):
+        # software cutoff
+        if not (frequency >= 20e6 and frequency < 60e6):
             power = 0
         self.frequency = frequency
         self.power = power
@@ -44,5 +45,5 @@ class AcousticDrive(object):
     
     def get_local_acoustics(self, time, ray_positions, base_ray_position, aod_direction):
         distances = dot(array(ray_positions)[:,0:2] - base_ray_position, aod_direction[0:2])
-        frequencies = self.const + self.linear * (time - distances/self.velocity) + self.quad * power(time - distances/self.velocity, 2.)
+        frequencies = self.const + self.linear * (time - distances/self.velocity) + self.quad * np.power(time - distances/self.velocity, 2.)
         return [Acoustics(f, self.power, self.velocity) for f in frequencies] 

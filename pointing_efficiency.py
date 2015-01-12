@@ -32,7 +32,8 @@ def plot_fov_surf(focal_length, pdr):
     #generic_plot_surface_vals(x_deg_m, y_deg_m, array(effs), labels)   
     plt.figure()    
     effs_norm = effs / max(effs)
-    cset = plt.contour(x_deg_m, y_deg_m, effs_norm, arange(0.2,1,0.1),linewidths=1)
+    plt.pcolormesh(x_deg_m, y_deg_m, effs, cmap=plt.cm.bone)
+    cset = plt.contour(x_deg_m, y_deg_m, effs_norm, arange(0.1,1,0.1),linewidths=1, cmap=plt.cm.coolwarm)
     plt.clabel(cset, inline=True, fmt='%1.2f', fontsize=10) 
 
 def get_effs(focus_position_many, pdr):
@@ -43,7 +44,7 @@ def get_effs(focus_position_many, pdr):
     return array(effs).reshape(shp)
     
 def calculate_efficiency(aol):
-    time_array = (arange(3)-1)*5e-5
+    time_array = (arange(3)-1)*2e-6
     energy = 0
     ray_count = 0
 
