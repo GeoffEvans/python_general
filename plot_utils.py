@@ -1,6 +1,7 @@
 from numpy import meshgrid, vectorize
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
+from mpl_toolkits.mplot3d import Axes3D
 
 rcParams.update({'font.size': 20})
 rcParams.update({'figure.autolayout': True})

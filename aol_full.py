@@ -30,6 +30,7 @@ class AolFull(object):
     
     def plot_ray_through_aol(self, rays, time, distance):
         import matplotlib.pyplot as plt
+        from mpl_toolkits.mplot3d import Axes3D
         from numpy import meshgrid, atleast_3d, mean
         
         num_rays = len(rays)
