@@ -1,4 +1,4 @@
-from numpy import array, diag, dot, atleast_1d, sqrt, arange, pi, power
+from numpy import array, diag, dot, atleast_1d, sqrt, power
 
 # Follow the calculation in Xu&St Section 1.3
 # z axis is taken as direction of the optical wavevector

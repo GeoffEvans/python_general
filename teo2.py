@@ -9,7 +9,7 @@ accuracy = 7
 
 def calc_refractive_indices(angles, wavelength_vac):
     wavelength_vac_rounded = np.round(wavelength_vac, accuracy) # to nearest 10nm
-    (n_e, n_o) = ref_ind_lookup(800e-9)
+    (n_e, n_o) = ref_ind_lookup(wavelength_vac_rounded)
     return (splev(abs(angles),n_e),splev(abs(angles),n_o))       
 
 @memoized
@@ -42,9 +42,11 @@ def get_activity_vector(wavelength_vac):
     E = h*c/e/wavelength_vac 
     rotary_power_rad_per_micrometer = G1 * power(E, 2.) * power((power(E1_G, 2.) - power(E, 2.)), -2.) \
                                     + G2 * power(E, 2.) * power((power(E2_G, 2.) - power(E, 2.)), -2.) # Uchida 1971 (7)
+    
     # Following two lines useful for overriding model above
     #rotary_power_deg_per_mm = 58.5
     #rotary_power_rad_per_micrometer = rotary_power_deg_per_mm / 1000 * pi / 180 
+    
     return rotary_power_rad_per_micrometer * 1e6 * wavelength_vac / pi / power(get_ref_ind(wavelength_vac)[0], 3.) # Xu & St (1.78)
       
 def plot_refractive_index(wavelength): 

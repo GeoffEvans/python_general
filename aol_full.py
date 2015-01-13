@@ -5,6 +5,7 @@ from numpy import append, array, dtype, concatenate, zeros, atleast_2d, dot,\
     isnan
 import copy
 
+# AOL model using AOD objects, incoroporating the Xu & Stroud diffraction theory.
 class AolFull(object):
        
     @staticmethod
@@ -28,8 +29,6 @@ class AolFull(object):
         self.base_ray_positions = simple.find_base_ray_positions(op_wavelength)
     
     def plot_ray_through_aol(self, rays, time, distance):
-        import matplotlib as mpl
-        from mpl_toolkits.mplot3d import Axes3D
         import matplotlib.pyplot as plt
         from numpy import meshgrid, atleast_3d, mean
         

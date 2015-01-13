@@ -1,4 +1,4 @@
-from plot_utils import generic_plot_surface_vals, multi_line_plot_vals
+from plot_utils import multi_line_plot_vals
 from numpy import linspace, pi, array, meshgrid, arange, prod, transpose, power, max
 from set_up_utils import get_ray_bundle, set_up_aol
 import matplotlib.pyplot as plt
@@ -29,10 +29,15 @@ def plot_fov_surf(focal_length, pdr):
     effs = get_effs(focus_position_many, pdr)
     
     labels = ["xangle / deg", "yangle / deg", "efficiency"]
-    #generic_plot_surface_vals(x_deg_m, y_deg_m, array(effs), labels)   
-    plt.figure()    
+ 
+    fig = plt.figure()    
     effs_norm = effs / max(effs)
     plt.pcolormesh(x_deg_m, y_deg_m, effs, cmap=plt.cm.bone)
+    
+    ax =fig.gca()       
+    ax.set_xlabel(labels[0])
+    ax.set_ylabel(labels[1])
+    
     cset = plt.contour(x_deg_m, y_deg_m, effs_norm, arange(0.1,1,0.1),linewidths=1, cmap=plt.cm.coolwarm)
     plt.clabel(cset, inline=True, fmt='%1.2f', fontsize=10) 
 
@@ -57,6 +62,4 @@ def calculate_efficiency(aol):
     return power(energy / ray_count, 2)
     
 if __name__ == '__main__':
-    a = array([1.3407, 2.2048, 4.4437, -287.3563, -4.2258, -1.8187, -1.1825])
-    #plot_fov_lines(a)
     plot_fov_surf(1e9, 0)

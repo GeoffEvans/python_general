@@ -45,7 +45,7 @@ class Aod(object):
     
     def propagate_ray(self, rays, local_acoustics, order):
         tol = 0.5*10**-teo2.accuracy
-        #assert allclose([r.wavelength_vac for r in rays], rays[0].wavelength_vac, rtol=0, atol=tol) # can only handle single wavelength at a time
+        assert allclose([r.wavelength_vac for r in rays], rays[0].wavelength_vac, rtol=0, atol=tol) # can only handle small range of wavelengths at a time
         self.refract_in(rays)
         diffract_acousto_optically(self, rays, local_acoustics, order)
         self.move_ray_through_aod(rays)

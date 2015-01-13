@@ -24,7 +24,7 @@ def original(sum_vector, base_length, normal, multiplier_func):
     wavevectors_out_unit = normalise_list(wavevectors_out)
     return (wavevector_mismatches_mag, wavevectors_out_unit, base_length)
 
-def method1(sum_vector, base_length, normal, multiplier_func):
+def faster_method(sum_vector, base_length, normal, multiplier_func):
 
     def tail_rec_solve(sv):        
         multiplier = multiplier_func(sv)

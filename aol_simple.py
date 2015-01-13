@@ -1,11 +1,12 @@
-from numpy import array, dtype, pi, atleast_2d, concatenate, zeros, append
+from numpy import array, dtype, pi, concatenate, zeros, append
 from acoustics import AcousticDrive
 from aol_drive import get_reduced_spacings, calculate_drive_freq_4
 from error_utils import check_is_unit_vector, check_is_of_length, check_is_singleton
 import copy
 
-class AolSimple(object):
+# Simplified AOL that treats AODs as thin and uses lambda*F/V to calculate deflection angles. 
 # Can work with ray or ray_paraxial
+class AolSimple(object):
 
     @staticmethod
     def create_aol(order, op_wavelength, ac_velocity, aod_spacing, base_freq, pair_deflection_ratio, focus_position, focus_velocity, crystal_thickness=[0]*4):

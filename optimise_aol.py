@@ -4,7 +4,7 @@ from aod_visualisation import generic_plot_surface
 from optimisation_params import OptParams
 from set_up_utils import set_up_aol, get_ray_bundle
 
-op_wavelength = 800e-9
+op_wavelength = 920e-9
 base_freq = 39e6
 pdr = 1
 
@@ -57,7 +57,7 @@ def calculate_efficiency(aol, after_nth_aod, op_wavelength=op_wavelength):
     return energy / ray_count
 
 if __name__ == '__main__':
-    aol = set_up_aol(op_wavelength=op_wavelength, base_freq=base_freq, pair_deflection_ratio=pdr)
+    aol = set_up_aol(op_wavelength, base_freq=base_freq, pair_deflection_ratio=pdr)
     plot_region(1, aol)
     optimise_nth_aod_by_hand(1, aol)
     print calculate_efficiency(aol, 1)
