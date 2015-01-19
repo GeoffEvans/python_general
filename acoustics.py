@@ -8,7 +8,7 @@ class Acoustics(object):
     
     def __init__(self, frequency, power=default_power, velocity=teo2_ac_vel):
         # software cutoff
-        if not (frequency >= 20e6 and frequency < 60e6):
+        if not (frequency >= 20e6 and frequency < 100e6):
             power = 0
         self.frequency = frequency
         self.power = power

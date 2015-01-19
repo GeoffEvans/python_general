@@ -32,8 +32,8 @@ def plot_fov_surf(focal_length, pdr):
  
     fig = plt.figure()    
     effs_norm = effs / max(effs)
-    plt.pcolormesh(x_deg_m, y_deg_m, effs, cmap=plt.cm.bone)
-    
+    cs = plt.pcolormesh(x_deg_m, y_deg_m, effs_norm, cmap=plt.cm.bone)
+    cs.set_clim(vmin=0,vmax=1.1)
     ax =fig.gca()       
     ax.set_xlabel(labels[0])
     ax.set_ylabel(labels[1])
@@ -62,4 +62,4 @@ def calculate_efficiency(aol):
     return power(energy / ray_count, 2)
     
 if __name__ == '__main__':
-    plot_fov_surf(1e9, 0)
+    plot_fov_surf(1e9, -0.25)

@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import rc
-rcParams.update({'font.size': 20})
-rcParams.update({'figure.autolayout': True})
-
+from matplotlib import rcParams as r
+r.update({'font.size': 30})
+r.update({'figure.autolayout': True})
+r.update({'lines.linewidth': 3})
 
 rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 ## for Palatino and other serif fonts use:
@@ -23,6 +24,7 @@ def get_freq_fun(a, b, c=0, d=0):
     return freq
 
 linesty = ['b:', 'r', 'g--', 'k-.']
+lbl = ['AOD 1', 'AOD 2', 'AOD 3', 'AOD 4']
 
 a_x0_z1 = [ 40000000.,  40000000.,  40000000.,  40000000.]
 b_x0_z1 = [ -2.16134196e+11,  -2.25588528e+11,  -2.25588528e+11, -2.35907816e+11]
@@ -33,11 +35,15 @@ b_x0o01_z1_pdr1 = [ -2.16134196e+11,  -2.25588528e+11,  -2.25588528e+11, -2.3590
 a_x0o01_z1_pdr0 = [ 40000000. ,  40000000. , 47360147.73635266, 40000000.]
 b_x0o01_z1_pdr0 = [ -2.16134196e+11, -2.25588528e+11, -2.25588528e+11, -2.35907816e+11]
 
-freqs = map(get_freq_fun, a_x0o01_z1_pdr0, b_x0o01_z1_pdr0)
+freqs = map(get_freq_fun, a_x0o01_z1_pdr1, b_x0o01_z1_pdr1)
 
 plt.figure()
-for pair in zip(freqs, linesty):
-    plt.plot(t_range, pair[0](t_range/1e6), pair[1])
+ax = plt.subplot(111)   
+
+for params in zip(freqs, linesty, lbl):
+    ax.plot(t_range, params[0](t_range/1e6), params[1], label=params[2])
+
+#ax.legend(bbox_to_anchor=(1.1, 1.05))
 
 plt.xlabel(r'time / $\mu$s')
 plt.ylabel('frequency / MHz')

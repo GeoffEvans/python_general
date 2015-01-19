@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import rc
-rcParams.update({'font.size': 20})
-rcParams.update({'figure.autolayout': True})
-
+from matplotlib import rcParams as r
+r.update({'font.size': 30})
+r.update({'figure.autolayout': True})
+r.update({'lines.linewidth': 3})
 
 rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 ## for Palatino and other serif fonts use:
@@ -27,7 +28,7 @@ freq3 = get_freq_fun(period, 40, 1, 0, 0.01)
 
 for item in zip([freq1, freq2, freq3],['r', 'b', 'g']):
     
-    figure()
+    plt.figure()
     x_range = np.linspace(-6,6,10) * 1e-3 #12mm
     V = 613 
     op_wav = 800e-3
