@@ -35,17 +35,20 @@ b_x0o01_z1_pdr1 = [ -2.16134196e+11,  -2.25588528e+11,  -2.25588528e+11, -2.3590
 a_x0o01_z1_pdr0 = [ 40000000. ,  40000000. , 47360147.73635266, 40000000.]
 b_x0o01_z1_pdr0 = [ -2.16134196e+11, -2.25588528e+11, -2.25588528e+11, -2.35907816e+11]
 
-freqs = map(get_freq_fun, a_x0o01_z1_pdr1, b_x0o01_z1_pdr1)
+ab_list = zip([a_x0_z1, a_x0o01_z1_pdr0, a_x0o01_z1_pdr1], [b_x0_z1, b_x0o01_z1_pdr0, b_x0o01_z1_pdr1])
 
-plt.figure()
-ax = plt.subplot(111)   
-
-for params in zip(freqs, linesty, lbl):
-    ax.plot(t_range, params[0](t_range/1e6), params[1], label=params[2])
-
-#ax.legend(bbox_to_anchor=(1.1, 1.05))
-
-plt.xlabel(r'time / $\mu$s')
-plt.ylabel('frequency / MHz')
-plt.axis([-50, 50, 30, 50])
-plt.show()
+for ab in ab_list:
+    freqs = map(get_freq_fun, ab[0], ab[1])
+    
+    plt.figure()
+    ax = plt.subplot(111)   
+    
+    for params in zip(freqs, linesty, lbl):
+        ax.plot(t_range, params[0](t_range/1e6), params[1], label=params[2])
+    
+    #ax.legend(bbox_to_anchor=(1.1, 1.05))
+    
+    plt.xlabel(r'time / $\mu$s')
+    plt.ylabel('frequency / MHz')
+    plt.axis([-50, 50, 30, 50])
+    plt.show()

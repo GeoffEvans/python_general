@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 op_wavelength = 920e-9
 base_freq = 39e6
 
-x_rad = linspace(-68, 68, 21) * 1e-3
+x_rad = linspace(-34, 34, 21) * 1e-3
 x_deg = x_rad * 180/pi
 
 def plot_fov_lines(focal_lengths):
@@ -62,4 +62,4 @@ def calculate_efficiency(aol):
     return power(energy / ray_count, 2)
     
 if __name__ == '__main__':
-    plot_fov_surf(1e9, -0.25)
+    plot_fov_surf(1e9, 0.2)
