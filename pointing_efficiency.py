@@ -1,12 +1,12 @@
 from plot_utils import multi_line_plot_vals
-from numpy import linspace, pi, array, meshgrid, arange, prod, transpose, power, max
+from numpy import linspace, shape, pi, array, meshgrid, arange, prod, transpose, power, max
 from set_up_utils import get_ray_bundle, set_up_aol
 import matplotlib.pyplot as plt
 
 op_wavelength = 920e-9
 base_freq = 39e6
 
-x_rad = linspace(-34, 34, 21) * 1e-3
+x_rad = linspace(-36, 36, 21) * 1e-3
 x_deg = x_rad * 180/pi
 
 def plot_fov_lines(focal_lengths):
@@ -19,7 +19,7 @@ def plot_fov_lines(focal_lengths):
     labels = ["xangle / deg", "efficiency"]
     multi_line_plot_vals(x_deg, array(effs), labels, focal_lengths.astype(int), (min(x_deg),max(x_deg),0,1))
         
-def plot_fov_surf(focal_length, pdr):
+def plot_fov_surf(focal_length, pdr):    
     (x_deg_m, y_deg_m) = meshgrid(x_deg, x_deg) 
 
     x_array = x_rad * focal_length
@@ -27,19 +27,25 @@ def plot_fov_surf(focal_length, pdr):
     focus_position_many = transpose(array([x, y, focal_length+0*x]), [1,2,0])
     
     effs = get_effs(focus_position_many, pdr)
+    effs_norm = effs / max(effs)
+    
+    description = 'Model for PDR %s' % pdr
+    generate_plot(effs, effs_norm, description)
+    
+def generate_plot(orig_img, normalised_img, description):
+    fig = plt.figure()
+    angles = linspace(-36, 36, shape(orig_img)[0]) * 1e-3 * 180/pi
+        
+    plt.pcolormesh(angles, angles, orig_img, cmap=plt.cm.bone)
+    
+    cset = plt.contour(angles, angles, normalised_img, arange(0.1,1,0.1),linewidths=1, cmap=plt.cm.coolwarm)    
+    plt.clabel(cset, inline=True, fmt='%1.1f', fontsize=10)    
     
     labels = ["xangle / deg", "yangle / deg", "efficiency"]
- 
-    fig = plt.figure()    
-    effs_norm = effs / max(effs)
-    cs = plt.pcolormesh(x_deg_m, y_deg_m, effs_norm, cmap=plt.cm.bone)
-    cs.set_clim(vmin=0,vmax=1.1)
-    ax =fig.gca()       
+    ax = fig.gca()       
     ax.set_xlabel(labels[0])
     ax.set_ylabel(labels[1])
-    
-    cset = plt.contour(x_deg_m, y_deg_m, effs_norm, arange(0.1,1,0.1),linewidths=1, cmap=plt.cm.coolwarm)
-    plt.clabel(cset, inline=True, fmt='%1.2f', fontsize=10) 
+    ax.text(0.1, 0.9, description, transform=ax.transAxes, color='w', fontsize=15)
 
 def get_effs(focus_position_many, pdr):
     #get eff for a 2d array for focus positions (so 3d array input)
