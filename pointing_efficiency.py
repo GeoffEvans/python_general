@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 op_wavelength = 920e-9
 base_freq = 39e6
 
-x_rad = linspace(-36, 36, 21) * 1e-3
+x_rad = linspace(-36, 36, 51) * 1e-3
 x_deg = x_rad * 180/pi
 
 def plot_fov_lines(focal_lengths):
@@ -46,6 +46,7 @@ def generate_plot(orig_img, normalised_img, description):
     ax.set_xlabel(labels[0])
     ax.set_ylabel(labels[1])
     ax.text(0.1, 0.9, description, transform=ax.transAxes, color='w', fontsize=15)
+    ax.set_aspect('equal', adjustable='box')
 
 def get_effs(focus_position_many, pdr):
     #get eff for a 2d array for focus positions (so 3d array input)
@@ -68,4 +69,4 @@ def calculate_efficiency(aol):
     return power(energy / ray_count, 2)
     
 if __name__ == '__main__':
-    plot_fov_surf(1e9, 0.2)
+    plot_fov_surf(1e9, 0)
