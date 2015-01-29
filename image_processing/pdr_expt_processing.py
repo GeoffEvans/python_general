@@ -7,10 +7,18 @@ import pointing_efficiency as p
 
 def process_pdr_list():
     for pdr in [0, 0.1, 0.2, 0.5, 1, 2, 5, -0.1, -0.2, -0.5, -2, -5]:
-        #get_pdr_expt_images(pdr)
-        #plt.savefig(('.\\images\\pdr%s_exp.tif' % pdr).replace('-', 'n'), bbox_inches='tight')
-        p.plot_fov_surf(1e9, pdr)
+        expt = get_pdr_expt_images(pdr)
+        np.save('.\\images\\pdr%s_expt.npy' % pdr, expt)        
+        #p.plt.savefig(('.\\images\\pdr%s_exp_smooth.tif' % pdr).replace('-', 'n'), bbox_inches='tight')
+        thry = p.plot_fov_surf(1e9, pdr)
+        np.save('.\\images\\pdr%s_model.npy' % pdr, thry)
+        scale = expt.shape[0] / thry.shape[0]
+        thry_large = ndimage.gaussian_filter(np.kron(thry, np.ones((scale,scale))), 2)
         p.plt.savefig(('.\\images\\pdr%s_model.tif' % pdr).replace('-', 'n'), bbox_inches='tight')        
+        description = 'Difference for PDR %s' % pdr 
+        p.generate_plot(expt-thry_large, expt*0, description, colmap=p.plt.cm.cool)
+        p.plt.savefig(('.\\images\\pdr%s_diff.tif' % pdr).replace('-', 'n'), bbox_inches='tight')     
+        p.plt.close('all')
 
 def get_pdr_expt_images(pdr):
     pdrn = str(pdr).replace('-', 'n')
@@ -24,7 +32,8 @@ def get_pdr_expt_images(pdr):
     img_blur_norm = img_blur * 1. / np.max(img_blur)           
 
     description = 'Experiment for PDR %s' % pdr
-    p.generate_plot(img, img_blur_norm, description)
+    p.generate_plot(img_blur, img_blur_norm, description)
+    return img_blur_norm
 
 def create_line_of_expt_images():
     pdr_list = [-5, -2, -0.5, -0.2, -0.1, 0, 0.1, 0.2, 0.5, 1, 2, 5]
