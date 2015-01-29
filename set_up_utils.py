@@ -30,12 +30,18 @@ def set_up_aol( op_wavelength, \
     orient39 = normalise_list(array([ \
         [-0.03634428, 0., 0.99933933], \
         [-0.05410521, -0.03632524,  0.99787429], \
-        [-0.02185263, -0.04939282, 0.99854034], \
-        [ 0, -2.17538221e-02, 9.99763358e-01] ]))
+        [-0.022247121509960638, -0.054595032101442259, 0.9982607114648776], \
+        [0.010005291640563912, -0.022117399101740584, 0.9997053139781551] ]))
 
+    orient = normalise_list(array([ \
+        [-0.036, 0., 1], \
+        [-0.054, -0.036,  1], \
+        [-0.0215, -0.054,  1], \
+        [0.0, -0.0225, 1] ]))
+   
     aod_spacing = array([5e-2] * 3)
     aods = [0]*4
-    orientations = orient40
+    orientations = orient
     aods[0] = make_aod_wide(orientations[0], [1,0,0])
     aods[1] = make_aod_wide(orientations[1], [0,1,0])
     aods[2] = make_aod_narrow(orientations[2], [-1,0,0])
@@ -68,11 +74,11 @@ def r(x, lower, lower_width, upper, upper_width): # 11.13 Priestley, Introductio
     return q(upper - x, upper_width) * q(x - lower, lower_width)
 
 def transducer_efficiency_narrow(freq): 
-    return r(array(freq), 12e6, 10e6, 95e6, 70e6)
+    return r(array(freq), 13e6, 10e6, 105e6, 70e6)
 def transducer_efficiency_narrow2(freq):
-    return r(array(freq), 12e6, 10e6, 70e6, 35e6)
+    return r(array(freq), 13e6, 10e6, 75e6, 35e6)
 def transducer_efficiency_wide(freq):
-    return transducer_efficiency_narrow(freq)
+    return transducer_efficiency_narrow2(freq)
     
 def make_aod_wide(orientation, ac_dir):
     return Aod(orientation, ac_dir, 16e-3, 3.3e-3, 8e-3, transducer_efficiency_wide)

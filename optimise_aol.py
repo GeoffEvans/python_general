@@ -3,19 +3,22 @@ from scipy import optimize
 from aod_visualisation import generic_plot_surface
 from optimisation_params import OptParams
 from set_up_utils import set_up_aol, get_ray_bundle
+import matplotlib.pyplot as plt
 
 op_wavelength = 920e-9
 base_freq = 39e6
 pdr = 1
 
 def optimise_nth_aod_by_hand(aod_num, aol):
-    p = OptParams()
-    p.configure_traits()
+    print 'enter start/stop'    
+    start = input()
+    stop = input()
+    p = OptParams(start, stop)
     
     result = optimize.fminbound(min_fun, p.min_val(), p.max_val(), (p, aod_num, aol), full_output=True)
     new_optimal_normal = p.get_normal(result[0])
     aol.change_orientation(aod_num, new_optimal_normal)
-    print new_optimal_normal
+    print [i for i in new_optimal_normal]
 
 def plot_region(aod_num, aol):
     
@@ -34,8 +37,9 @@ def plot_region(aod_num, aol):
         temp = x_ax
         x_ax = y_ax
         y_ax = temp
-    generic_plot_surface(x_ax, y_ax, func, labels)
-
+    
+    generic_plot_surface(x_ax, y_ax, func, labels)    
+    
 def min_fun(variable, params, aod_num, aol):
     new_normal = params.get_normal(variable)
     aol.change_orientation(aod_num, new_normal)
@@ -58,10 +62,9 @@ def calculate_efficiency(aol, after_nth_aod, op_wavelength=op_wavelength):
 
 if __name__ == '__main__':
     aol = set_up_aol(op_wavelength, base_freq=base_freq, pair_deflection_ratio=pdr)
-    plot_region(1, aol)
-    optimise_nth_aod_by_hand(1, aol)
+    #optimise_nth_aod_by_hand(4, aol)
     print calculate_efficiency(aol, 1)
-    print calculate_efficiency(aol, 2)
-    print calculate_efficiency(aol, 3)
-    print calculate_efficiency(aol, 4)
-
+    print calculate_efficiency(aol, 2)/calculate_efficiency(aol, 1)
+    print calculate_efficiency(aol, 3)/calculate_efficiency(aol, 2)
+    print calculate_efficiency(aol, 4)/calculate_efficiency(aol, 3)
+    #plot_region(4, aol)

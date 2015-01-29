@@ -19,15 +19,15 @@ def plot_eff_ang_wide():
     av_wide.plot_efficiency_xangle()
 
 def plot_eff_pwr_narrow():
-    plt.plot(d.power, d.eff_power_narrow, 'rx')
+    plt.plot(d.power, d.eff_power_narrow, 'kx')
     av_narrow.plot_efficiency_power() 
 
 def plot_eff_freq_narrow():
-    plt.plot(d.freq_narrow, d.eff_freq_narrow, 'rx')
+    plt.plot(d.freq_narrow, d.eff_freq_narrow, 'kx')
     av_narrow.plot_efficiency_freq_max()
     
 def plot_eff_ang_narrow():
-    plt.plot(d.angle_narrow, d.eff_angle_narrow, 'rx')
+    plt.plot(d.angle_narrow, d.eff_angle_narrow, 'kx')
     av_narrow.plot_efficiency_xangle()
     
 if __name__ == '__main__':

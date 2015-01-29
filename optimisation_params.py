@@ -1,10 +1,11 @@
-from traits.api import HasTraits, Tuple, Float
 from numpy.linalg import norm
 from numpy import arctan2, array, pi, cos, sin, sqrt, append
 
-class OptParams(HasTraits):
-    xy_start_deg = Tuple(Float(), Float())
-    xy_end_deg = Tuple(Float(), Float())
+class OptParams(object):
+    
+    def __init__(self, start, stop):        
+        self.xy_start_deg = start
+        self.xy_end_deg = stop
     
     def create_line(self):
         start = array(self.xy_start_deg) * pi/180

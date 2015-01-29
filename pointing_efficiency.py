@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 op_wavelength = 920e-9
 base_freq = 39e6
 
-x_rad = linspace(-36, 36, 51) * 1e-3
+x_rad = linspace(-36, 36, 100) * 1e-3
 x_deg = x_rad * 180/pi
 
 def plot_fov_lines(focal_lengths):
@@ -31,12 +31,13 @@ def plot_fov_surf(focal_length, pdr):
     
     description = 'Model for PDR %s' % pdr
     generate_plot(effs, effs_norm, description)
+    return effs_norm
     
-def generate_plot(orig_img, normalised_img, description):
+def generate_plot(orig_img, normalised_img, description, colmap=plt.cm.bone):
     fig = plt.figure()
     angles = linspace(-36, 36, shape(orig_img)[0]) * 1e-3 * 180/pi
         
-    plt.pcolormesh(angles, angles, orig_img, cmap=plt.cm.bone)
+    plt.pcolormesh(angles, angles, orig_img, cmap=colmap)
     
     cset = plt.contour(angles, angles, normalised_img, arange(0.1,1,0.1),linewidths=1, cmap=plt.cm.coolwarm)    
     plt.clabel(cset, inline=True, fmt='%1.1f', fontsize=10)    

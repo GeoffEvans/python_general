@@ -18,8 +18,7 @@ def generic_plot_surface_vals(x, y, z, labels):
     cs = ax.pcolor(x, y, z)#, cmap='gray')   
     
     def onclick(event):
-        print 'button=%d, x=%d, y=%d, xdata=%f, ydata=%f'%(
-            event.button, event.x, event.y, event.xdata, event.ydata)
+        print '[%f, %f]' % (event.xdata, event.ydata)
     fig.canvas.mpl_connect('button_press_event', onclick)
     
     ax.set_xlabel(labels[0])
