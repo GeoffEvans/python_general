@@ -2,7 +2,7 @@ from numpy import pi, sqrt, dot, dtype, array
 import numpy as np
 
 teo2_ac_vel = 612.8834
-pointing_ramp_time = 30e-6
+pointing_ramp_time = 60e-6
 default_power = 1
 
 class Acoustics(object):

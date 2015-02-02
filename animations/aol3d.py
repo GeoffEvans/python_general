@@ -14,11 +14,11 @@ def update_lines(num, line_data, lines) :
     
 wavelength = 800e-9    
 distance = 0.5
-num_times = 151
+num_times = 61
 aol = s.set_up_aol(wavelength, focus_position=[0,0,0.5] )    
 line_data = []
 
-for time in np.linspace(-15e-6, 15e-6, num_times)[:-1]:
+for time in np.linspace(0e-6, 60e-6, num_times)[:-1]:
     rays = s.get_ray_bundle(wavelength)
     
     start = np.atleast_3d([r.position for r in rays]).transpose((0,2,1))
@@ -42,9 +42,7 @@ ax.set_ylabel('Y')
 ax.set_zlim3d([0.0, 1.0])
 ax.set_zlabel('Z')
 
-ax.set_title('3D Test')
-
-line_ani = animation.FuncAnimation(fig, update_lines, num_times, fargs=(line_data, lines),
+line_ani = animation.FuncAnimation(fig, update_lines, num_times-1, fargs=(line_data, lines),
                               interval=50, blit=False)
 
 plt.show()
