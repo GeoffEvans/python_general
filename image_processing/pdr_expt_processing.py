@@ -47,16 +47,20 @@ def create_line_of_expt_images():
     result.save('C:\\Users\\Geoff\\Desktop\\PDR expts\\26 Jan 15\\line_expt.tif')
     
 def create_line_of_e_vs_t_images():
-    pdr_list = [0.5, 2, 5]
+    pdr_groups = [[5, 2, 1, 0.5], [0, -0.5, -2, -5]]
     
-    images = []    
-    for pdr in pdr_list:
-        image1 = Image.open(('C:\\Users\\Geoff\\Desktop\\PDR expts\\26 Jan 15\\pdr%slambda920acc18.tif' % pdr).replace('-', 'n'))
-        image2 = Image.open(('C:\\Users\\Geoff\\Desktop\\PDR expts\\26 Jan 15\\pdrn%slambda920acc18.tif' % pdr).replace('-', 'n'))
-        images.append(cc.join_vertically([image1, image2], image1.mode))
-        assert false # need to fix image1 and image2 paths
-    result = cc.join_horizontally(images, image1.mode)
-    result.save('C:\\Users\\Geoff\\Desktop\\PDR expts\\26 Jan 15\\line_expt_vs_theory.tif')
+    vimg= []
+    for pdr_list in pdr_groups:
+        images = []    
+        for pdr in pdr_list:
+            image1 = Image.open(('C:\\Users\\Geoff\\eclipse\\python_aol_model\\image_processing\\images\\pdr%s_exp_smooth.tif' % pdr).replace('-', 'n'))
+            image2 = Image.open(('C:\\Users\\Geoff\\eclipse\\python_aol_model\\image_processing\\images\\pdr%s_model.tif' % pdr).replace('-', 'n'))
+            images.append(cc.join_vertically([image1, image2], image1.mode))
+    
+        vimg.append(cc.join_horizontally(images, image1.mode))
+    result = cc.join_vertically(vimg, image1.mode)
+    result.save('C:\\Users\\Geoff\\eclipse\\python_aol_model\\image_processing\\images\\line_expt_vs_theory.tif')
     
 if __name__ == '__main__':
-    process_pdr_list()
+    #process_pdr_list()
+    create_line_of_e_vs_t_images()

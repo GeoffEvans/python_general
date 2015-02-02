@@ -4,7 +4,7 @@ def join_horizontally(image_list, mode):
     width = sum(i.size[0] for i in image_list)
     height = max(i.size[1] for i in image_list)
     
-    img = Image.new("I", (width, height))
+    img = Image.new(mode, (width, height))
     
     position_from_left = 0
     for i in image_list:
@@ -18,7 +18,7 @@ def join_vertically(image_list, mode):
     width = max(i.size[0] for i in image_list)
     height = sum(i.size[1] for i in image_list)
     
-    img = Image.new("I", (width, height))
+    img = Image.new(mode, (width, height))
     
     position_from_bottom = 0
     for i in image_list:

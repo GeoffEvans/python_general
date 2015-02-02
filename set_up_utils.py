@@ -1,7 +1,7 @@
 from aol_full import AolFull
 from aod import Aod
 from ray import Ray
-from numpy import array, arange, exp, power
+from numpy import array, linspace, exp, power
 from vector_utils import normalise_list
 
 def set_up_aol( op_wavelength, \
@@ -36,8 +36,8 @@ def set_up_aol( op_wavelength, \
     orient = normalise_list(array([ \
         [-0.036, 0., 1], \
         [-0.054, -0.036,  1], \
-        [-0.0215, -0.054,  1], \
-        [0.0, -0.0225, 1] ]))
+        [-0.022, -0.054,  1], \
+        [0.0, -0.022, 1] ]))
    
     aod_spacing = array([5e-2] * 3)
     aods = [0]*4
@@ -49,8 +49,8 @@ def set_up_aol( op_wavelength, \
 
     return AolFull.create_aol(aods, aod_spacing, order, op_wavelength, base_freq, pair_deflection_ratio, focus_position, focus_velocity, ac_power=ac_power)
 
-def get_ray_bundle(op_wavelength=800e-9, spacing=5e-3):
-    x_array = (arange(3)-1)*spacing
+def get_ray_bundle(op_wavelength, width=15e-3):
+    x_array = linspace(-width/2, width/2, 5)
     y_array = x_array
     
     rays = [0] * len(x_array) * len(y_array)
@@ -74,11 +74,11 @@ def r(x, lower, lower_width, upper, upper_width): # 11.13 Priestley, Introductio
     return q(upper - x, upper_width) * q(x - lower, lower_width)
 
 def transducer_efficiency_narrow(freq): 
-    return r(array(freq), 13e6, 10e6, 105e6, 70e6)
+    return r(array(freq), 13e6, 10e6, 70e6, 10e6)
 def transducer_efficiency_narrow2(freq):
-    return r(array(freq), 13e6, 10e6, 75e6, 35e6)
+    return transducer_efficiency_narrow(freq)
 def transducer_efficiency_wide(freq):
-    return transducer_efficiency_narrow2(freq)
+    return r(array(freq), 15e6, 10e6, 65e6, 10e6)
     
 def make_aod_wide(orientation, ac_dir):
     return Aod(orientation, ac_dir, 16e-3, 3.3e-3, 8e-3, transducer_efficiency_wide)

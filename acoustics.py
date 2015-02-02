@@ -2,6 +2,7 @@ from numpy import pi, sqrt, dot, dtype, array
 import numpy as np
 
 teo2_ac_vel = 612.8834
+pointing_ramp_time = 30e-6
 default_power = 1
 
 class Acoustics(object):
@@ -27,20 +28,23 @@ class Acoustics(object):
 class AcousticDrive(object):
 
     @staticmethod
-    def make_acoustic_drives(const, linear, quad=[0]*4, power=[default_power]*4, velocity=teo2_ac_vel):
+    def make_acoustic_drives(const, linear, quad=[0]*4, power=[default_power]*4, velocity=teo2_ac_vel, ramp_time=pointing_ramp_time):
         acoustic_drives = [0]*4
         for k in range(4):
-            acoustic_drives[k] = AcousticDrive(const[k], linear[k], quad[k], power[k], velocity)
+            acoustic_drives[k] = AcousticDrive(const[k], linear[k], quad[k], power[k], velocity, ramp_time)
         return array(acoustic_drives)
     
-    def __init__(self, const, linear, quad=0, power=default_power, velocity=teo2_ac_vel):
+    def __init__(self, const, linear, quad=0, power=default_power, velocity=teo2_ac_vel, ramp_time=pointing_ramp_time):
         self.const = array(const, dtype=dtype(float))
         self.linear = array(linear, dtype=dtype(float))
         self.quad = array(quad, dtype=dtype(float))
         self.power = array(power, dtype=dtype(float))
         self.velocity = velocity
+        self.ramp_time = ramp_time
     
     def get_local_acoustics(self, time, ray_positions, base_ray_position, aod_direction):
         distances = dot(array(ray_positions)[:,0:2] - base_ray_position, aod_direction[0:2])
-        frequencies = self.const + self.linear * (time - distances/self.velocity) + self.quad * np.power(time - distances/self.velocity, 2.)
+        effective_time = time - distances/self.velocity        
+        t = effective_time - np.floor(effective_time/self.ramp_time + 0.5) * self.ramp_time
+        frequencies = self.const + self.linear * t + self.quad * np.power(t, 2.)
         return [Acoustics(f, self.power, self.velocity) for f in frequencies] 

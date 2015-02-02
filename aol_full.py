@@ -36,15 +36,14 @@ class AolFull(object):
         num_rays = len(rays)
         new_rays = [0]*num_rays
         for m in range(num_rays): 
-            new_rays[m] = copy.deepcopy(rays[m])
+            new_rays[m] = copy.deepcopy(rays[m]) # don't want to alter the ray state
             new_rays[m].propagate_free_space_z(self.aod_spacing.sum())
 
         (paths, _) = self.propagate_to_distance_past_aol(new_rays, time, distance)
         start = atleast_3d([r.position for r in rays]).transpose((0,2,1))
         paths_extended = concatenate((start, paths), axis=1)
         
-        fig = plt.figure()
-        ax = fig.gca(projection='3d')
+        ax = plt.gca(projection='3d')
         for m in range(num_rays):
             ax.plot(paths_extended[m,:,0], paths_extended[m,:,1], paths_extended[m,:,2])
         ax.set_xlabel('x')
@@ -60,7 +59,7 @@ class AolFull(object):
                 xpts += pts[m][0]
                 ypts += pts[m][1]
                 zpts = axis_z - (xpts * normal[0] + ypts * normal[1]) / normal[2]
-                ax.plot_surface(xpts, ypts, zpts, color='blue', alpha=.1, linewidth=0, zorder=3)
+                ax.plot_surface(xpts, ypts, zpts, color='blue', alpha=.3, linewidth=0, zorder=3)
 
         add_planes()             
         plt.show()

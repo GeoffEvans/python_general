@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 op_wavelength = 920e-9
 base_freq = 39e6
 
-x_rad = linspace(-36, 36, 100) * 1e-3
+x_rad = linspace(-36, 36, 20) * 1e-3
 x_deg = x_rad * 180/pi
 
 def plot_fov_lines(focal_lengths):

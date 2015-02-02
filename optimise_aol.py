@@ -62,9 +62,9 @@ def calculate_efficiency(aol, after_nth_aod, op_wavelength=op_wavelength):
 
 if __name__ == '__main__':
     aol = set_up_aol(op_wavelength, base_freq=base_freq, pair_deflection_ratio=pdr)
-    #optimise_nth_aod_by_hand(4, aol)
+    optimise_nth_aod_by_hand(3, aol)
     print calculate_efficiency(aol, 1)
     print calculate_efficiency(aol, 2)/calculate_efficiency(aol, 1)
     print calculate_efficiency(aol, 3)/calculate_efficiency(aol, 2)
     print calculate_efficiency(aol, 4)/calculate_efficiency(aol, 3)
-    #plot_region(4, aol)
+    plot_region(4, aol)
