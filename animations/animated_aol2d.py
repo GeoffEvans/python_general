@@ -37,7 +37,7 @@ for time in np.linspace(0, 60e-6, num_times)[:-1]:
 fig = plt.figure()
 plt.subplot(1, 2, 1)
 ax = fig.gca()
-lines = [ax.plot(data[:,0], data[:,1])[0] for data in line_data[0]]
+lines = [ax.plot(data[:,0], data[:,2])[0] for data in line_data[0]]
 
 ax.set_xlim([-0.02, 0.02])
 ax.set_xlabel('x / m')

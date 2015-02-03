@@ -47,6 +47,7 @@ class Ray(object):
         z_displacement_from_point_to_origin = dot(point_on_first_plane[0:2], normal_to_first[0:2]) / normal_to_first[2] 
         displacement_from_point_to_origin = concatenate( (-point_on_first_plane[0:2], [z_displacement_from_point_to_origin]) )
         
+        # assumes all AODs are rotated about (x,y)=(0,0), in future would be faster and more realistic to use an AOD centre property
         point_on_second_plane = point_on_first_plane + displacement_from_point_to_origin + [0,0,plane_z_separation]
         self.propagate_to_plane(point_on_second_plane, normal_to_second)
         
