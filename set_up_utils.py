@@ -74,11 +74,11 @@ def r(x, lower, lower_width, upper, upper_width): # 11.13 Priestley, Introductio
     return q(upper - x, upper_width) * q(x - lower, lower_width)
 
 def transducer_efficiency_narrow(freq): 
-    return r(array(freq), 13e6, 10e6, 70e6, 10e6)
+    return 1#r(array(freq), 13e6, 10e6, 90e6, 10e6)
 def transducer_efficiency_narrow2(freq):
     return transducer_efficiency_narrow(freq)
 def transducer_efficiency_wide(freq):
-    return r(array(freq), 15e6, 10e6, 65e6, 10e6)
+    return 1#r(array(freq), 15e6, 10e6, 85e6, 10e6)
     
 def make_aod_wide(orientation, ac_dir):
     return Aod(orientation, ac_dir, 16e-3, 3.3e-3, 8e-3, transducer_efficiency_wide)

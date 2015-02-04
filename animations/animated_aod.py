@@ -5,17 +5,17 @@ import set_up_utils as s
 import acoustics as a
 from acoustics import pointing_ramp_time
 
-def update_lines(num, line_data, lines, freq, linef):
+def update_lines(num, line_data, lines, freq, linef, r1):
     for line, data in zip(lines, line_data[num]):
         # set xy then z stupid api        
         line.set_xdata(data[:,2])
         line.set_ydata(data[:,0])
     linef.set_ydata(freq[num])
-    return lines, linef
+    return lines, linef, r1
     
 wavelength = 800e-9    
 distance = 0.5
-num_times = 601
+num_times = 61
 aod = s.make_aod_wide([0,0,1], [1,0,0])
 line_data = []
 freq = []
@@ -23,12 +23,20 @@ freq = []
 x_list = np.linspace(-1, 1) * 7e-3
 
 def chirp(t):
-    n = np.floor(t/pointing_ramp_time + 0.5)
-    return n * 1e11
+    n = t/pointing_ramp_time
+    if n > 5:
+        return (10 - n) * 2e11
+    return n * 2e11
 
-for time in np.linspace(0, pointing_ramp_time*10, num_times)[:-1]:
+def centre(t):
+    n = t/pointing_ramp_time
+    if n > 5:
+        return (10 - n) * 12e6 + 10e6
+    return n * 12e6 + 10e6
+
+for time in np.linspace(-0/2, pointing_ramp_time/2, num_times)[:-1]:
     rays = s.get_ray_bundle(wavelength)
-    drive = a.AcousticDrive(40e6, chirp(time))
+    drive = a.AcousticDrive(40e6, 0)
     
     start = np.array([r.position for r in rays]).copy()
     [r.propagate_free_space(10e-2) for r in rays]
@@ -55,13 +63,21 @@ ax.set_ylabel('x / m')
 ax.set_xlim([0.0, .8])
 ax.set_xlabel('z / m')
 
+r1 = plt.Rectangle((0.1, -0.01), 0.008, 0.02, fc='y')
+ax.add_patch(r1)
+
 af = plt.subplot(2, 1, 2)
 linef = af.plot(x_list, freq[0])[0]
 af.set_xlabel('x / m')
 af.set_ylabel('frequency / Hz')
 af.set_ylim([0e6, 70e6])
 
-line_ani = animation.FuncAnimation(fig, update_lines, num_times-1, \
-    fargs=(line_data, lines, freq, linef), interval=50, blit=False)
+#line_ani = animation.FuncAnimation(fig, update_lines, num_times-1, \
+#    fargs=(line_data, lines, freq, linef, r1), interval=50, blit=False)
+
+#plt.rcParams['animation.ffmpeg_path'] ='C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe'
+#mywriter = animation.FFMpegWriter(fps=80)
+#plt.rcParams['animation.convert_path'] ='C:\\Program Files\\ImageMagick-6.9.0-Q8\\convert.exe'
+#line_ani.save('ani.gif', writer='imagemagick', fps=20)
 
 plt.show()

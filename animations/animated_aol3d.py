@@ -44,5 +44,7 @@ ax.set_zlabel('Z')
 
 line_ani = animation.FuncAnimation(fig, update_lines, num_times-1, fargs=(line_data, lines),
                               interval=50, blit=False)
-
+                              
+plt.rcParams['animation.convert_path'] ='C:\\Program Files\\ImageMagick-6.9.0-Q8\\convert.exe'
+line_ani.save('aol3d.gif', writer='imagemagick', fps=20)
 plt.show()

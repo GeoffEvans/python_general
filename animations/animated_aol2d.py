@@ -3,14 +3,14 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import set_up_utils as s
 
-def update_lines(num, line_data, lines, f1, line1, f2, line2) :
+def update_lines(num, line_data, lines, f1, line1, f2, line2, r1, r2):
     for line, data in zip(lines, line_data[num]) :
         # set xy then z stupid api        
         line.set_xdata(data[:,0])
         line.set_ydata(data[:,2])
     line1.set_ydata(f1[num])
     line2.set_ydata(f2[num])
-    return lines, line1, line2
+    return lines, line1, line2, r1, r2
     
 wavelength = 800e-9    
 distance = 0.5
@@ -44,6 +44,11 @@ ax.set_xlabel('x / m')
 ax.set_ylim([0.0, .8])
 ax.set_ylabel('z / m')
 
+r1 = plt.Rectangle((-0.01, 0.1), 0.02, 0.008, fc='y')
+r2 = plt.Rectangle((-0.015, 0.2), 0.02, 0.008, fc='y')
+ax.add_patch(r1)
+ax.add_patch(r2)
+
 a1 = plt.subplot(2, 2, 4)
 line1 = a1.plot(x, f1[0])[0]
 a1.set_xlabel('ray position at AOD2 / m')
@@ -56,7 +61,13 @@ a2.set_xlabel('ray position at AOD1 / m')
 a2.set_ylabel('frequency / Hz')
 a2.set_ylim([25e6, 55e6])
 
-line_ani = animation.FuncAnimation(fig, update_lines, num_times-1, fargs=(line_data, lines, f1, line1, f2, line2),
-                              interval=50, blit=False)
+figManager = plt.get_current_fig_manager()
+figManager.window.showMaximized()
 
+line_ani = animation.FuncAnimation(fig, update_lines, num_times-1, fargs=(line_data, lines, f1, line1, f2, line2, r1, r2),
+                              interval=50, blit=False)
+                              
+plt.rcParams['animation.convert_path'] ='C:\\Program Files\\ImageMagick-6.9.0-Q8\\convert.exe'
+line_ani.save('aol2d.gif', writer='imagemagick', fps=20)
+                              
 plt.show()

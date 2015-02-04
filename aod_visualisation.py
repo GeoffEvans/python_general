@@ -11,8 +11,8 @@ class AodVisualisation(object):
             ac_dir_rel=[1,0,0], \
             is_wide=True, \
             order=-1, \
-            resolution=60, \
-            freq_bnds=(20,50), \
+            resolution=90, \
+            freq_bnds=(10,70), \
             deg_bnds=(0,5), \
             ): 
         normal = [0,0,1]
@@ -53,20 +53,20 @@ class AodVisualisation(object):
         labels = ["incidence angle / deg","frequency / MHz","efficiency"]
         generic_plot_surface(self.degrees_range, self.mhz_range, func, labels)
     
-    def plot_efficiency_xangle_yangle(self, ac_power=1.5):
+    def plot_efficiency_xangle_yangle(self, freq, ac_power=1.5):
         
         def func(deg, deg_trans):
             ang = deg * pi/180
             ang_trans = deg_trans * pi/180
             wavevector_unit = [ang, ang_trans, sqrt(1 - ang**2 - ang_trans**2)]
             ray = Ray([0,0,0], wavevector_unit, self.op_wavelength_vac)
-            acoustics = Acoustics(35e6, ac_power)        
+            acoustics = Acoustics(freq, ac_power)        
             
             self.aod.propagate_ray([ray], [acoustics], self.order)
             return ray.energy
         
         labels = ["incidence angle / deg","transverse incidence angle / deg","efficiency"]
-        generic_plot_surface(linspace(0.00, 0.1, 20)/pi*180, linspace(-0.3, 0.3, 60)/pi*180, func, labels)
+        generic_plot_surface(linspace(0.03, 0.1, 30)/pi*180, linspace(-0.3, 0.3, 60)/pi*180, func, labels)
     
     def plot_xangleout_xangle_freq(self, ac_power=1.5):
         
@@ -176,5 +176,5 @@ class AodVisualisation(object):
         generic_plot(ac_power_range, func, labels, (min(ac_power_range),max(ac_power_range),0,1))
         
 if __name__ == '__main__':
-    av = AodVisualisation(800e-9, is_wide=False)
+    av = AodVisualisation(920e-9, is_wide=True)
     av.plot_efficiency_xangle_freq()

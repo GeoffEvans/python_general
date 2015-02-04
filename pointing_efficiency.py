@@ -70,4 +70,5 @@ def calculate_efficiency(aol):
     return power(energy / ray_count, 2)
     
 if __name__ == '__main__':
-    plot_fov_surf(1e9, 0)
+    plot_fov_surf(1e9, 0.4)
+    
