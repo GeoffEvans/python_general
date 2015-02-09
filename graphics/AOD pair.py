@@ -40,6 +40,9 @@ aod1_z = -0.1
 aod2_z = 0
 end_z = 1
 
+def shift_x(x):
+    return map(lambda q: q*1e3 + 5.2, x)  
+
 for ab in zip([ab3, ab2, ab1], ['g', 'b', 'r']):
     
     freq1 = lambda t: ab[0][0][0] + ab[0][1][0] * t
@@ -49,15 +52,16 @@ for ab in zip([ab3, ab2, ab1], ['g', 'b', 'r']):
     aod1_x = starts_x 
     k, aod2_x = propagate_from_aod(freq1, 1, 0, aod1_x, 0, aod2_z-aod1_z)
     k2, end_x = propagate_from_aod(freq2, -1, k, aod2_x, aod2_x[2], end_z-aod2_z)
-    
+
     sty = ab[1] + ':'
     sty2 = ab[1]
-    plt.plot([starts_z, aod1_z], [starts_x*1e3, aod1_x*1e3], sty)
-    plt.plot([aod1_z, aod2_z], [aod1_x*1e3, aod2_x*1e3], sty)
-    plt.plot([aod2_z, end_z], [aod2_x*1e3, end_x*1e3], sty)
-    plt.plot([starts_z, aod1_z], [starts_x[2]*1e3, aod1_x[2]*1e3], sty2)
-    plt.plot([aod1_z, aod2_z], [aod1_x[2]*1e3, aod2_x[2]*1e3], sty2)
-    plt.plot([aod2_z, end_z], [aod2_x[2]*1e3, end_x[2]*1e3], sty2)
+    plt.plot([starts_z, aod1_z], shift_x([starts_x, aod1_x]), sty)
+    plt.plot([aod1_z, aod2_z], shift_x([aod1_x, aod2_x]), sty)
+    plt.plot([aod2_z, end_z], shift_x([aod2_x, end_x]), sty)
+    plt.plot([starts_z, aod1_z], shift_x([starts_x[2], aod1_x[2]]), sty2)
+    plt.plot([aod1_z, aod2_z], shift_x([aod1_x[2], aod2_x[2]]), sty2)
+    plt.plot([aod2_z, end_z], shift_x([aod2_x[2], end_x[2]]), sty2)
     
 plt.xlabel('z / m')
 plt.ylabel('x / mm')
+plt.grid()

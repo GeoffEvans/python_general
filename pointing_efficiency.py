@@ -2,6 +2,8 @@ from plot_utils import multi_line_plot_vals
 from numpy import linspace, shape, pi, array, meshgrid, arange, prod, transpose, power, max
 from set_up_utils import get_ray_bundle, set_up_aol
 import matplotlib.pyplot as plt
+from matplotlib import rcParams as r
+r.update({'font.size': 30})
 
 op_wavelength = 920e-9
 base_freq = 39e6
@@ -39,14 +41,14 @@ def generate_plot(orig_img, normalised_img, description, colmap=plt.cm.bone):
         
     plt.pcolormesh(angles, angles, orig_img, cmap=colmap)
     
-    cset = plt.contour(angles, angles, normalised_img, arange(0.1,1,0.1),linewidths=1, cmap=plt.cm.coolwarm)    
-    plt.clabel(cset, inline=True, fmt='%1.1f', fontsize=10)    
+    cset = plt.contour(angles, angles, normalised_img, arange(0.1,1,0.1),linewidths=0, cmap=plt.cm.coolwarm)    
+    plt.clabel(cset, inline=True, fmt='%1.1f', fontsize=20)    
     
-    labels = ["xangle / deg", "yangle / deg", "efficiency"]
+    labels = ["x angle / deg", "y angle / deg", "efficiency"]
     ax = fig.gca()       
     ax.set_xlabel(labels[0])
     ax.set_ylabel(labels[1])
-    ax.text(0.1, 0.9, description, transform=ax.transAxes, color='w', fontsize=15)
+    ax.text(0.1, 0.9, description, transform=ax.transAxes, color='w', fontsize=30)
     ax.set_aspect('equal', adjustable='box')
 
 def get_effs(focus_position_many, pdr):
