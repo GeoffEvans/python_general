@@ -101,7 +101,6 @@ class AolSimple(object):
 
         add_planes()             
         plt.show()
-        return plt
     
     def propagate_to_distance_past_aol(self, ray, time, distance=0):
         spacings = append(self.aod_spacing, distance) 

@@ -1,4 +1,4 @@
-from teo2 import calc_refractive_indices, get_relative_impermeability_eigenvals
+from aol_model.teo2 import calc_refractive_indices, get_relative_impermeability_eigenvals
 from numpy import pi, arange, allclose, array, power
 
 wavelen = 800e-9

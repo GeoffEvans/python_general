@@ -1,6 +1,7 @@
 from aol_simple import AolSimple
 from acoustics import AcousticDrive, default_power, teo2_ac_vel
 from aol_drive import calculate_drive_freq_4
+from acoustics import pointing_ramp_time
 from numpy import append, array, dtype, concatenate, zeros, atleast_2d, dot,\
     isnan
 import copy
@@ -9,14 +10,14 @@ import copy
 class AolFull(object):
        
     @staticmethod
-    def create_aol(aods, aod_spacing, order, op_wavelength, base_freq, pair_deflection_ratio,\
-                   focus_position, focus_velocity, ac_power=[default_power]*4, ac_velocity=teo2_ac_vel):
+    def create_aol(aods, aod_spacing, order, op_wavelength, base_freq, pair_deflection_ratio, focus_position, \
+            focus_velocity, ac_power=[default_power]*4, ac_velocity=teo2_ac_vel, ramp_time=pointing_ramp_time):
 
         crystal_thickness = array([a.crystal_thickness for a in aods], dtype=dtype(float))
         (const, linear, quad) = calculate_drive_freq_4(order, op_wavelength, ac_velocity, aod_spacing, crystal_thickness, \
                                 base_freq, pair_deflection_ratio, focus_position, focus_velocity)
        
-        acoustic_drives = AcousticDrive.make_acoustic_drives(const, linear, quad, ac_power, ac_velocity)
+        acoustic_drives = AcousticDrive.make_acoustic_drives(const, linear, quad, ac_power, ac_velocity, ramp_time)
         return AolFull(aods, aod_spacing, acoustic_drives, order, op_wavelength)
        
     def __init__(self, aods, aod_spacing, acoustic_drives, order, op_wavelength): 

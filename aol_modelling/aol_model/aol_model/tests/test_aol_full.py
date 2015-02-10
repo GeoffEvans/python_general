@@ -1,12 +1,12 @@
-from aol_full import AolFull
-from aod import Aod
-from ray import Ray
+from aol_model.aol_full import AolFull
+from aol_model.aod import Aod
+from aol_model.ray import Ray
+from aol_model.vector_utils import normalise
+from aol_model.aol_simple import AolSimple
+from aol_model.acoustics import teo2_ac_vel
 from numpy import allclose, array, arange, outer, linspace, meshgrid, dot,\
     concatenate, mean, std
 from random import random as r
-from vector_utils import normalise
-from aol_simple import AolSimple
-from acoustics import teo2_ac_vel
 
 order = 1
 op_wavelength = 800e-9
@@ -39,10 +39,13 @@ def test_aol_drives_same():
     assert allclose(const_full, const_simple) and allclose(linear_full, linear_simple) and allclose(quad_full, quad_simple)
 
 def test_plot():
+    import matplotlib.pyplot as plt
     x,y = meshgrid(linspace(-1,1,5)*1e-2, linspace(-1,1,5)*1e-2)
     list_of_positions = zip(x.ravel(), y.ravel()) 
     rays = [Ray([xy[0], xy[1], 0], [0,0,1], op_wavelength) for xy in list_of_positions]
+    plt.ion()
     aol.plot_ray_through_aol(rays, 0, focus_position[2])
+    plt.close()
 
 def test_angles_on_aods():
     x,y = meshgrid(linspace(-1,1,5)*1e-2, linspace(-1,1,5)*1e-2)
@@ -83,3 +86,4 @@ def test_efficiency_low_at_angle():
     
 if __name__ == '__main__':
     test_ray_passes_through_focus()
+    test_ray_scans_correctly()

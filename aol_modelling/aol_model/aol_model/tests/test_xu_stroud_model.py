@@ -1,8 +1,8 @@
-from aod import Aod
-from ray import Ray
-from acoustics import Acoustics
-from xu_stroud_model import diffract_acousto_optically,diffract_by_wavevector_triangle,get_efficiency
-from vector_utils import normalise
+from aol_model.aod import Aod
+from aol_model.ray import Ray
+from aol_model.acoustics import Acoustics
+from aol_model.xu_stroud_model import diffract_acousto_optically,diffract_by_wavevector_triangle,get_efficiency
+from aol_model.vector_utils import normalise
 import pytest
 from numpy import allclose, all, array, pi
 from random import random

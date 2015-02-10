@@ -1,9 +1,8 @@
-from aol_drive import find_constant, find_linear
-from acoustics import teo2_ac_vel
-from aol_simple import AolSimple
-from ray_paraxial import RayParaxial
+from aol_model.aol_drive import find_constant, find_linear
+from aol_model.acoustics import teo2_ac_vel
+from aol_model.aol_simple import AolSimple
+from aol_model.ray_paraxial import RayParaxial
 from numpy import array, dtype, allclose
-from test_aol_full import test_ray_scans_correctly
 
 order = -1
 op_wavelength = 900e-9
@@ -48,7 +47,9 @@ def test_ray_passes_through_base_point():
     aol.propagate_to_distance_past_aol(ray3, 0, focus_position[2]) # t = 0
         
     expected_position = focus_position + offset
-    assert allclose(ray1.position, expected_position, atol=tol, rtol=0) and allclose(ray2.position, expected_position, atol=tol, rtol=0) and allclose(ray3.position, expected_position, atol=tol, rtol=0)
+    assert allclose(ray1.position, expected_position, atol=tol, rtol=0) and \
+            allclose(ray2.position, expected_position, atol=tol, rtol=0) and \
+            allclose(ray3.position, expected_position, atol=tol, rtol=0)
 
 def test_ray_passes_through_focus():
     
@@ -88,4 +89,4 @@ def test_focus_scans_correctly():
     assert allclose(ray1.position, expected_position1, atol=tol, rtol=0) and allclose(ray2.position, expected_position2, atol=tol, rtol=0) 
 
 if __name__ == '__main__':
-    test_constant_freq_for_pair_def_ratio_zero()
+    test_ray_passes_through_base_point()

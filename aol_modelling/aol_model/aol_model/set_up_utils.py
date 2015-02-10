@@ -1,8 +1,8 @@
-from aol_full import AolFull
-from aod import Aod
-from ray import Ray
+from aol_model.aol_full import AolFull
+from aol_model.aod import Aod
+from aol_model.ray import Ray
 from numpy import array, linspace, exp, power
-from vector_utils import normalise_list
+from aol_model.vector_utils import normalise_list
 
 def set_up_aol( op_wavelength, \
                 order=-1, \

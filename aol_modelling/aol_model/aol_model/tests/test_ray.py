@@ -1,7 +1,7 @@
-from ray import Ray
+from aol_model.ray import Ray
 from numpy import allclose, array
 import pytest
-from vector_utils import normalise
+from aol_model.vector_utils import normalise
 
 position = [0,0,2]
 wavevector_unit = [1,0,0]

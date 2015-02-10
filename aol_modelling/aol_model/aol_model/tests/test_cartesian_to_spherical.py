@@ -1,7 +1,6 @@
 from numpy import allclose, pi, array, vstack
 from scipy import rand
-from cartesian_to_spherical import cartesian_to_spherical,\
-    spherical_to_cartesian
+from aol_model.cartesian_to_spherical import cartesian_to_spherical, spherical_to_cartesian
 
 def test_cart_to_sph_and_back():
     xyz = rand(3,100)

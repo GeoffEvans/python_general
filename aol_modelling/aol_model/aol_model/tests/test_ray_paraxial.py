@@ -1,4 +1,4 @@
-from ray_paraxial import RayParaxial
+from aol_model.ray_paraxial import RayParaxial
 from numpy import allclose, array
 import pytest
 

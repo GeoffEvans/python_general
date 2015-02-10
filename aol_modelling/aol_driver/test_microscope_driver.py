@@ -1,9 +1,7 @@
-from microscope_driver import get_drive, convert_normalised_to_cartesian, compensate_freq_for_transducer_location, \
+from microscope_driver import convert_normalised_to_cartesian, compensate_freq_for_transducer_location, \
     mode_structural, mode_miniscan, mode_pointing, mode_raster
-from driver_wrapper import FocusInfo
-from numpy import array, allclose, dtype, outer, zeros
-from test_aol_full import focal_length
-from aol_simple import AolSimple
+from numpy import array, allclose, dtype, zeros
+from aol_model.aol_simple import AolSimple
 
 reference_shift = [0,0,0]
 order = -1

@@ -1,7 +1,7 @@
-from plot_utils import multi_line_plot, generic_plot_surface_vals
 from numpy import linspace, pi, sin, cos, array, arctan2, meshgrid
 from numpy.linalg import norm
-from set_up_utils import get_ray_bundle, set_up_aol
+from aol_model.set_up_utils import get_ray_bundle, set_up_aol
+from aol_model.plot_utils import multi_line_plot, generic_plot_surface_vals
 
 op_wavelength = 800e-9
 scan_range_mrad = linspace(-35, 35, 29)

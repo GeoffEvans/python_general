@@ -1,5 +1,5 @@
-from aol_simple import AolSimple
-from ray import Ray
+from aol_model.aol_simple import AolSimple
+from aol_model.ray import Ray
 import pytest
 from numpy import allclose, array
 
@@ -12,10 +12,12 @@ def test_non_unit_direction():
         AolSimple(1, [1,1,1], [0]*4, [0]*4, aod_directions=[[1,0,0.1],[0,1,0],[-1,0,0],[0,-1,0]])
         
 def test_plot():
+    import matplotlib.pyplot as plt
     aol = AolSimple.create_aol_from_drive(order, spacing, array([1]*4)*1e6, [1]*4, wavelength)
     wavevec = [0,3./5,4./5]
     ray = Ray([0,0,0], wavevec, wavelength)
-    plt = aol.plot_ray_through_aol(ray, 1, aol.aod_spacing.sum())
+    plt.ion()
+    aol.plot_ray_through_aol(ray, 1, aol.aod_spacing.sum())
     plt.close()
     assert allclose(ray.position, [0,0,0], atol=0) and allclose(ray.wavevector_unit, wavevec, atol=0)
 

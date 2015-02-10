@@ -1,4 +1,4 @@
-from optimise_aol import set_up_aol
+from aol_model.optimise_aol import set_up_aol
 from scan_speed_efficiency import calculate_efficiency
 
 op_wavelength = 800e-9

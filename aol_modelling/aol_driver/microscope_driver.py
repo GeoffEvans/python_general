@@ -1,6 +1,6 @@
 from numpy import array, linspace, outer, concatenate, zeros, tile, ceil, allclose, arange,\
     atleast_2d, dot, mean
-from aol_simple import AolSimple
+from aol_model.aol_simple import AolSimple
 from numpy.linalg.linalg import norm
 
 mode_structural = 0
