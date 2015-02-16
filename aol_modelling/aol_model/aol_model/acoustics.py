@@ -1,10 +1,10 @@
-from numpy import pi, sqrt, dot, dtype, array
+from numpy import pi, dot, dtype, array, sqrt
 import numpy as np
 
 teo2_ac_vel = 612.8834
 pointing_ramp_time = 30e6
 default_power = 1
-
+    
 class Acoustics(object):
     
     def __init__(self, frequency, power=default_power, velocity=teo2_ac_vel):
@@ -23,7 +23,7 @@ class Acoustics(object):
         teo2_density = 5990;
         numerator = 2 * self.power
         denominator = teo2_density * self.velocity**3 * aod.transducer_width * aod.transducer_height # use of aperture width assumes square aperture 
-        return sqrt(numerator / denominator) # Xu & Stroud (2.143)
+        return sqrt(numerator / denominator) # Xu & Stroud (2.143)        
     
 class AcousticDrive(object):
 

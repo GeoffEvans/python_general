@@ -11,15 +11,15 @@ base_freq = 39e6
 x_rad = linspace(-36, 36, 20) * 1e-3
 x_deg = x_rad * 180/pi
 
-def plot_fov_lines(focal_lengths):
+def plot_fov_lines(focal_lengths, pdr):
     focus_position_many = []
     for f in focal_lengths:
         x = f * x_rad
         focus_position_many.append( array([x, 0*x, f+0*x]) )
-    effs = get_effs(transpose(focus_position_many, [0,2,1]))
+    effs = get_effs(transpose(focus_position_many, [0,2,1]), pdr)
     
     labels = ["xangle / deg", "efficiency"]
-    multi_line_plot_vals(x_deg, array(effs), labels, focal_lengths.astype(int), (min(x_deg),max(x_deg),0,1))
+    multi_line_plot_vals(x_deg, array(effs), labels, array(focal_lengths).astype(int), (min(x_deg),max(x_deg),0,1))
         
 def plot_fov_surf(focal_length, pdr):    
     (x_deg_m, y_deg_m) = meshgrid(x_deg, x_deg) 
@@ -41,7 +41,7 @@ def generate_plot(orig_img, normalised_img, description, colmap=plt.cm.bone):
         
     plt.pcolormesh(angles, angles, orig_img, cmap=colmap)
     
-    cset = plt.contour(angles, angles, normalised_img, arange(0.1,1,0.1),linewidths=0, cmap=plt.cm.coolwarm)    
+    cset = plt.contour(angles, angles, normalised_img, arange(0.1,1,0.1),linewidths=1, cmap=plt.cm.coolwarm)    
     plt.clabel(cset, inline=True, fmt='%1.1f', fontsize=20)    
     
     labels = ["x angle / deg", "y angle / deg", "efficiency"]
@@ -72,5 +72,5 @@ def calculate_efficiency(aol):
     return power(energy / ray_count, 2)
     
 if __name__ == '__main__':
-    plot_fov_surf(1e9, 0.4)
+    plot_fov_surf(1e9, 0)
     

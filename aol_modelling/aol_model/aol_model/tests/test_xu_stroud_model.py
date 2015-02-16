@@ -46,7 +46,7 @@ def test_wavevector_triangle():
     k_d = wavevectors_out_unit * wavevectors_vac_mag_out * aod.calc_refractive_indices_vectors(wavevectors_out_unit, wavelen)[1] # get ord branch, the first of
     K = acoustics.wavevector(aod) * order
     zero_sum = k_i + order * K + aod.normal * wavevector_mismatch_mag - k_d[0]
-    assert allclose(zero_sum, 0)
+    assert allclose(zero_sum, 0, atol=0.2, rtol=0)
 
 def test_setting_invalid_mode():
     with pytest.raises(ValueError):

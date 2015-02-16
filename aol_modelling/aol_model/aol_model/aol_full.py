@@ -107,3 +107,9 @@ class AolFull(object):
     def change_orientation(self, aod_num, new_normal):
         assert not any(isnan(new_normal))
         self.aods[aod_num-1].normal = array(new_normal)
+        
+if __name__ == "__main__":
+    import aol_model.set_up_utils as s
+    rays = s.get_ray_bundle(800e-9)
+    aol = s.set_up_aol(800e-9)    
+    aol.plot_ray_through_aol(rays, 0, 1)

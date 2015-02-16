@@ -1,6 +1,7 @@
 from aol_model.aod import Aod
 from aol_model.ray import Ray
 from numpy import sqrt, allclose, cross, dot
+from aol_model.vector_utils import normalise
 
 aod = Aod([0,0,1], [1,0,0], 1, 1, 1)
 
@@ -36,6 +37,15 @@ def test_refracting_in_towards_normal():
     towards_normal = abs(cosine_outside) < abs(cosine_inside)
     not_reflected = cosine_outside * cosine_inside >= 0
     assert towards_normal.all() and not_reflected.all()
+
+def test_walkoff_towards_axis():
+    wavevec = normalise([0.01,0,1])
+    rays = [Ray([0,0,0],wavevec,800e-9,1)]*2
+    directions = aod.get_ray_direction_ord(rays)
+    cosine_wavevec = dot(wavevec, aod.optic_axis) 
+    cosine_dir =  dot(directions[0], aod.optic_axis)
+    walkoff_to_axis = cosine_wavevec < cosine_dir
+    assert walkoff_to_axis
 
 def test_refracting_in_at_normal():
     wavevec = [0,0,1]
@@ -75,4 +85,6 @@ def test_acoustic_sound_direction():
     direc = aod_new.acoustic_direction
     assert allclose(direc, [1,0,-1]/sqrt(2))
 
+if __name__ == "__main__":
+    test_walkoff_towards_axis()
     

@@ -65,7 +65,8 @@ def test_ray_passes_through_focus():
         location[t] = ray.position
     
     focus_theory = focus_position + concatenate( (aol_simple.base_ray_positions[3], [aod_spacing.sum()]) ) 
-    assert allclose(mean(location, axis=0), focus_theory, rtol=0, atol=1e-3) and all(std(location, axis=0) < 5e-5)
+    assert allclose(mean(location, axis=0), focus_theory, rtol=0, atol=1e-3) \
+            and all(std(location, axis=0) < 5e-5)
 
 def test_ray_scans_correctly():
     t_step = 1e-6
@@ -85,5 +86,5 @@ def test_efficiency_low_at_angle():
     assert ray.energy < 1e-9
     
 if __name__ == '__main__':
-    test_ray_passes_through_focus()
-    test_ray_scans_correctly()
+    #test_ray_passes_through_focus()
+    test_angles_on_aods()

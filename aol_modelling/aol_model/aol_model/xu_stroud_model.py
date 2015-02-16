@@ -1,7 +1,8 @@
 from numpy import dot, sin, sqrt, array, outer, allclose, power
 from numpy.linalg import norm
 from scipy.constants import c, pi
-from wavevector_triangle_solver import original
+from wavevector_triangle_solver import faster_method
+from vector_utils import normalise_list
 
 def diffract_acousto_optically(aod, rays, local_acoustics, order, ext_to_ord=True, rescattering=True):
     if not abs(order) == 1:
@@ -24,10 +25,10 @@ def diffract_acousto_optically(aod, rays, local_acoustics, order, ext_to_ord=Tru
         (efficiencies_r2,_,_) = get_diffracted_wavevectors_and_efficiency(aod, wavevecs_out_unit, wavevecs_out_mag, local_acoustics, order, same_ref_inds)
         efficiencies *= (1 - 0.8*efficiencies_r1 - 0.8*efficiencies_r2 + 1.6*efficiencies_r1*efficiencies_r2)
         
-    for m in range(len(rays)):
-        rays[m].wavevector_vac_mag = wavevecs_out_mag[m]
-        rays[m].wavevector_unit = wavevecs_out_unit[m]
-        rays[m].energy *= efficiencies[m]
+    for r, m, u, e in zip(rays, wavevecs_out_mag, wavevecs_out_unit, efficiencies):
+        r.wavevector_vac_mag = m
+        r.wavevector_unit = u
+        r.energy *= e
 
 def get_diffracted_wavevectors_and_efficiency(aod, wavevecs_in_unit, wavevecs_in_mag, local_acoustics, order, ref_inds):
     (wavevector_mismatches_mag, wavevecs_out_unit, wavevecs_out_mag) = diffract_by_wavevector_triangle(aod, wavevecs_in_unit, wavevecs_in_mag, local_acoustics, order, ref_inds)
@@ -38,8 +39,8 @@ def diffract_by_wavevector_triangle(aod, wavevec_unit_in, wavevec_vac_mag_in, lo
     wavevectors_vac_mag_out = wavevec_vac_mag_in + (2 * pi / c) * array([a.frequency for a in local_acoustics]) # from w_out = w_in + w_ac
     resultants = get_resultant_wavevectors(aod, wavevec_unit_in, wavevec_vac_mag_in, local_acoustics, order, ref_inds)
 
-    f = lambda k: ref_ind_ext_ord(aod, k, wavevec_vac_mag_in)[ref_inds[1]] # pass this function to be used recursively
-    return original(resultants, wavevectors_vac_mag_out, aod.normal, f)
+    f = lambda k: ref_ind_ext_ord(aod, normalise_list(k), wavevec_vac_mag_in)[ref_inds[1]] # pass this function to be used recursively
+    return faster_method(resultants, wavevectors_vac_mag_out, aod.normal, f)
     
 def get_resultant_wavevectors(aod, wavevec_unit_in, wavevec_vac_mag_in, local_acoustics, order, ref_inds):    
     n_in = ref_ind_ext_ord(aod, wavevec_unit_in, wavevec_vac_mag_in)[ref_inds[0]]
@@ -60,12 +61,15 @@ def get_efficiency(aod, wavevector_mismatches_mag, wavevecs_in_mag, wavevecs_in_
     n_out = ref_ind_ext_ord(aod, wavevecs_out_unit, wavevecs_out_mag)[ref_inds[1]] 
     p = -0.12  # for P66' (see appendix p583)
     
-    delta_n0 = -0.5 * power(n_in, 2.) * n_out * p * amp # Xu&St (2.128)
+    delta_n0 = -0.5 * power(n_in, 2.) * n_out * p * amp # Xu & St (2.128)
     delta_n1 = -0.5 * power(n_out, 2.) * n_in * p * amp
     v0 = - array(wavevecs_out_mag) * delta_n0 * aod.transducer_width / dot(wavevecs_out_unit, aod.normal)
     v1 = - array(wavevecs_in_mag)  * delta_n1 * aod.transducer_width / dot(wavevecs_in_unit , aod.normal) 
     
     zeta = -0.5 * wavevector_mismatches_mag * aod.transducer_width 
+    non_neg = power(zeta, 2.) + v0*v1/4
+    if any(non_neg < 0):
+        y = 2
     sigma = sqrt(power(zeta, 2.) + v0*v1/4) # Xu&St (2.132)
     
     return v0*v1/4 * power((sin(sigma) / sigma), 2.) # Xu&St (2.134)

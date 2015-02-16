@@ -1,5 +1,5 @@
 from aod_visualisation import AodVisualisation
-from utils.vector_utils import normalise
+from aol_model.vector_utils import normalise
 import expt_data as d
 import matplotlib.pyplot as plt
 

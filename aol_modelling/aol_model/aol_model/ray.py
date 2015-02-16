@@ -1,5 +1,4 @@
 from error_utils import check_is_unit_vector
-from vector_utils import normalise
 from numpy import pi, array, dot, dtype, concatenate
 from numpy.linalg import norm
 
@@ -31,8 +30,8 @@ class Ray(object):
         return self.wavevector_vac_mag * self.wavevector_unit
     @wavevector_vac.setter
     def wavevector_vac(self, v):
-        self.wavevector_unit = array(normalise(v), dtype=dtype(float))
-        self.wavevector_vac_mag = norm(v)
+        self.wavevector_vac_mag = norm(v)        
+        self.wavevector_unit = array(v, dtype=dtype(float)) / self.wavevector_vac_mag
     
     def propagate_free_space(self, distance):
         self.position += self.wavevector_unit * distance
