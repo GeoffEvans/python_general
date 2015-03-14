@@ -10,7 +10,7 @@ def test(sorting_func):
         sorting_func(numbers)
         assert numbers == numbers_copy
         
-def time_range(sorting_func):
+def time_range(sorting_func, string):
     times = []    
     for length in [10*m for m in range(1,21)]:
         def time_func():
@@ -18,13 +18,18 @@ def time_range(sorting_func):
             sorting_func(numbers)
         new_time = timeit.timeit(time_func, number=100)
         times.append(new_time)
-    plt.plot(times)
+    plt.plot(times, string)
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     
     import bubble_sort
-    time_range(bubble_sort.sort)
-    
+    time_range(bubble_sort.sort, 'r')
+    import insertion_sort
+    time_range(insertion_sort.sort, 'b')
+    import selection_sort
+    time_range(selection_sort.sort, 'g')
+    import heap_sort
+    time_range(heap_sort.sort, 'k')
     import quick_sort
-    time_range(quick_sort.sort)
+    time_range(quick_sort.sort, 'y')
