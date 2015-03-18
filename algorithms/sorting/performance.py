@@ -31,5 +31,7 @@ if __name__ == "__main__":
     time_range(selection_sort.sort, 'g')
     import heap_sort
     time_range(heap_sort.sort, 'k')
+    import merge_sort
+    time_range(merge_sort.sort, 'c')    
     import quick_sort
     time_range(quick_sort.sort, 'y')
