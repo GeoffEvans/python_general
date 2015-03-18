@@ -5,6 +5,7 @@ from scipy import ndimage
 import concat_images as cc
 from PIL import Image
 import aol_model.pointing_efficiency as p
+from scipy.constants import pi
 
 pdr_list = [-5, -2, -0.5, -0.2, -0.1, 0, 0.1, 0.2, 0.5, 1, 2, 5]
 
@@ -17,17 +18,17 @@ def calc_and_save_data_for_pdr_list():
         np.save(file_name % (pdr, 'model', 'npy'), thry)
 
 def plot_and_save_images_for_pdr_list():
-    for pdr in [0]:#pdr_list:
+    for pdr in pdr_list:
         expt = np.load('.\\images\\pdr%s_expt.npy' % pdr)
         description = 'Expt for PDR %s' % pdr
-        p.generate_plot(expt, description)
+        p.generate_plot(expt, description, pdr)
         plt.savefig(('.\\images\\pdr%s_exp_smooth.tif' % pdr).replace('-', 'n'), bbox_inches='tight')
 
         thry = np.load('.\\images\\pdr%s_model.npy' % pdr)
         thry = ndimage.gaussian_filter(thry, 2 )
         thry = thry / np.max(thry)
         description = 'Model for PDR %s' % pdr
-        p.generate_plot(thry, description)
+        p.generate_plot(thry, description, pdr)
         plt.savefig(('.\\images\\pdr%s_model.tif' % pdr).replace('-', 'n'), bbox_inches='tight')
 
         #plt.close('all')
