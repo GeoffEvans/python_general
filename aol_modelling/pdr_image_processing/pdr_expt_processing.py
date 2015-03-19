@@ -21,12 +21,12 @@ def plot_and_save_images_for_pdr_list():
     for pdr in pdr_list:
         expt = np.load('.\\images\\pdr%s_expt.npy' % pdr)
         description = 'Expt for PDR %s' % pdr
-        p.generate_plot(expt, description, pdr)
+        p.generate_plot(expt, description, pdr=pdr)
         plt.savefig(('.\\images\\pdr%s_exp_smooth.tif' % pdr).replace('-', 'n'), bbox_inches='tight')
 
         thry = np.load('.\\images\\pdr%s_model.npy' % pdr)
         description = 'Model for PDR %s' % pdr
-        p.generate_plot(thry, description, pdr)
+        p.generate_plot(thry, description, pdr=pdr)
         plt.savefig(('.\\images\\pdr%s_model.tif' % pdr).replace('-', 'n'), bbox_inches='tight')
 
         #plt.close('all')
@@ -70,5 +70,5 @@ def create_line_of_e_vs_t_images():
 
 if __name__ == '__main__':
     #calc_and_save_data_for_pdr_list()
-    plot_and_save_images_for_pdr_list()
-    #create_line_of_e_vs_t_images()
+    #plot_and_save_images_for_pdr_list()
+    create_line_of_e_vs_t_images()
