@@ -25,8 +25,6 @@ def plot_and_save_images_for_pdr_list():
         plt.savefig(('.\\images\\pdr%s_exp_smooth.tif' % pdr).replace('-', 'n'), bbox_inches='tight')
 
         thry = np.load('.\\images\\pdr%s_model.npy' % pdr)
-        thry = ndimage.gaussian_filter(thry, 2 )
-        thry = thry / np.max(thry)
         description = 'Model for PDR %s' % pdr
         p.generate_plot(thry, description, pdr)
         plt.savefig(('.\\images\\pdr%s_model.tif' % pdr).replace('-', 'n'), bbox_inches='tight')
