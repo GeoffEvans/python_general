@@ -32,25 +32,30 @@ def plot_eff_ang_narrow():
     plt.plot(d.angle_narrow, d.eff_angle_narrow, 'ro')
     av_narrow.plot_efficiency_xangle()
 
-def plot_eff_freq_narrow_920():
-    #plt.plot(d.freq_narrow_920, d.eff_freq_narrow_920_12, 'go')
-    plt.plot(d.freq_narrow_new, d.eff_freq_narrow_920_1, 'bo')
-    plt.plot(d.freq_narrow_new, d.eff_freq_narrow_920_2, 'ro')
+def plot_eff_freq_narrow_model():
     av_narrow_920.plot_efficiency_freq_max()
-
-def plot_eff_freq_narrow_800():
-    #plt.plot(d.freq_narrow_920, d.eff_freq_narrow_800_12, 'yo')
-    plt.plot(d.freq_narrow_new, d.eff_freq_narrow_800_1, 'co')
-    plt.plot(d.freq_narrow_new, d.eff_freq_narrow_800_23, 'mo')
     av_narrow_800.plot_efficiency_freq_max()
 
+def plot_eff_freq_narrow_expt():
+    plt.plot(d.freq_narrow_new, d.eff_freq_narrow_920_1, 'bo')
+    plt.plot(d.freq_narrow_new, d.eff_freq_narrow_800_1, 'go')
+    plt.plot(d.freq_narrow_new, d.eff_freq_narrow_920_2, 'ro')
+    plt.plot(d.freq_narrow_new, d.eff_freq_narrow_800_23, 'co')
+
+def add_legend():
+    label_list = ['920nm -1 mode expt', '800nm -1 mode expt', '920nm -2 mode expt', '800nm -2 mode expt', \
+                  '920nm -1 mode model', '800nm -1 mode model', '920nm -2 mode model', '800nm -2 mode model', \
+                  'RF to acoustic']
+    plt.legend(label_list, loc=0, borderaxespad=0.8)
+
 if __name__ == '__main__':
-    plot_eff_freq_narrow_920()
-    plot_eff_freq_narrow_800()
+    #plot_eff_freq_narrow_expt()
+    #plot_eff_freq_narrow_model()
+    #add_legend()
     #plt.figure()
-    #plot_eff_freq_narrow()
+    plot_eff_freq_narrow()
     #plt.figure()
-    #plot_eff_freq_wide()
+    plot_eff_freq_wide()
     #plt.figure()
     #plot_eff_ang_narrow()
     #plt.figure()
