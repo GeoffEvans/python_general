@@ -54,20 +54,20 @@ def plot_eff_freq_narrow_expt_model():
     label_list = ['920nm -1 mode expt', '800nm -1 mode expt', '920nm -2 mode expt', '800nm -2 mode expt', \
                   '920nm -1 mode model', '800nm -1 mode model', '920nm -2 mode model', '800nm -2 mode model', \
                   'RF to acoustic inferred', 'RF to acoustic spline']
-    plt.legend(label_list, loc=0, borderaxespad=1.2, fontsize=16)
+    plt.legend(label_list, loc=0, borderaxespad=1.6, fontsize=16)
 
 if __name__ == '__main__':
-    #plt.figure()
-    #plot_eff_freq_narrow_expt_model()
+    plt.figure()
+    plot_eff_freq_narrow_expt_model()
 
     #plt.figure()
     #plot_eff_freq_narrow()
     #plt.figure()
     #plot_eff_freq_wide()
-    plt.figure()
-    plot_eff_ang_narrow()
     #plt.figure()
-    plot_eff_ang_wide()
+    #plot_eff_ang_narrow()
+    #plt.figure()
+    #plot_eff_ang_wide()
     #plt.figure()
     #plot_eff_pwr_narrow()
     #plt.figure()
