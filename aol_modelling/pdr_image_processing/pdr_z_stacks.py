@@ -33,7 +33,7 @@ def plot_z_stack_thry(pdr):
     plt.show()
 
 def plot_z_stack_expt(pdr):
-    file_name = 'C:\\Users\\Geoff\\Desktop\\PDR expts\\25 Feb 2015\\%s_%s\\Zstack Images\\GreenChannel_00%s.tif'
+    file_name = 'C:\\Users\\Geoff\\Dropbox\\Expts\\PDR expts\\25 Feb 2015\\%s_%s\\Zstack Images\\GreenChannel_00%s.tif'
 
     fig = plt.figure()
     ax = fig.gca(projection='3d')
@@ -82,7 +82,7 @@ def plot_z_stack_expt(pdr):
     print np.max(np.array(array3d))
 
 def plot_multiple_z_eff():
-    file_name = 'C:\\Users\\Geoff\\Desktop\\PDR expts\\25 Feb 2015\\%s_%s\\Zstack Images\\GreenChannel_00%s.tif'
+    file_name = 'C:\\Users\\Geoff\\Dropbox\\Expts\\PDR expts\\25 Feb 2015\\%s_%s\\Zstack Images\\GreenChannel_00%s.tif'
     id_list = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15']
     normalised_zs = [-0.96, -0.8176,-0.7,-0.5231,-0.4,-0.2462,-0.1176,0,0.1173,0.2341,0.3563,0.4765,0.58,0.6941,0.795]
     pdr = 0
@@ -90,13 +90,13 @@ def plot_multiple_z_eff():
     pdr = 1
     plot_z_eff(file_name, pdr, id_list, normalised_zs)
 
-    file_name = 'C:\\Users\\Geoff\\Desktop\\PDR expts\\25 Feb 2015\\%s_%s\\Zstack Images\\GreenChannel_00%s.tif'
+    file_name = 'C:\\Users\\Geoff\\Dropbox\\Expts\\PDR expts\\25 Feb 2015\\%s_%s\\Zstack Images\\GreenChannel_00%s.tif'
     id_list = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21']
     normalised_zs = [-0.3231,-0.2846,-0.2462,-0.2077,-0.1765,-0.1471,-0.1176,-0.0882,-0.0588,-0.0294,0,0.0294,0.0588,0.0882,0.1173,0.1462,0.1751,0.2042,0.2341,0.2641,0.294]
     pdr = '00'
     plot_z_eff(file_name, pdr, id_list, normalised_zs)
 
-    file_name = 'C:\\Users\\Geoff\\Desktop\\PDR expts\\25 Feb 2015\\%s_%s\\Zstack Images\\GreenChannel_00%s.tif'
+    file_name = 'C:\\Users\\Geoff\\Dropbox\\Expts\\PDR expts\\25 Feb 2015\\%s_%s\\Zstack Images\\GreenChannel_00%s.tif'
     id_list = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21']
     normalised_zs = [-0.0588,-0.0529,-0.0471,-0.0412,-0.0353,-0.0294,-0.0235,-0.0176,-0.0118,-0.0059,0,0.0059,0.0118,0.0176,0.0235,0.0294,0.0353,0.0412,0.0471,0.0529,0.0588]
     pdr = '000'
