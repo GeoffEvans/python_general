@@ -10,9 +10,9 @@ matplotlib.rcParams.update({'font.size': 20})
 av_wide = AodVisualisation(785e-9, ac_dir_rel=[1,0,0], is_wide=True, deg_bnds=(0,4))
 av_narrow = AodVisualisation(785e-9, ac_dir_rel=normalise([1,0,0]), is_wide=False, deg_bnds=(-2,6))
 av_narrow_800 = AodVisualisation(800e-9, ac_dir_rel=normalise([1,0,0]), is_wide=False, deg_bnds=(-1,6))
-av_narrow_920 = AodVisualisation(920e-9, ac_dir_rel=normalise([1,0,0]), is_wide=False, deg_bnds=(-1,6))
+av_narrow_909 = AodVisualisation(909e-9, ac_dir_rel=normalise([1,0,0]), is_wide=False, deg_bnds=(-1,6))
 av_wide_800 = AodVisualisation(800e-9, ac_dir_rel=normalise([1,0,0]), is_wide=True, deg_bnds=(-1,6))
-av_wide_920 = AodVisualisation(920e-9, ac_dir_rel=normalise([1,0,0]), is_wide=True, deg_bnds=(-1,6))
+av_wide_909 = AodVisualisation(909e-9, ac_dir_rel=normalise([1,0,0]), is_wide=True, deg_bnds=(-1,6))
 
 def plot_eff_pwr_wide():
     plt.plot(d.power, d.eff_power_wide, 'o')
@@ -43,36 +43,36 @@ def plot_eff_ang_narrow():
 
 
 def plot_eff_freq_narrow_expt_model():
-    plt.plot(d.freq_narrow_new, d.eff_freq_narrow_920_1, 'bo')
+    plt.plot(d.freq_narrow_new, d.eff_freq_narrow_909_1, 'bo')
     plt.plot(d.freq_narrow_new, d.eff_freq_narrow_800_1, 'go')
-    plt.plot(d.freq_narrow_new, d.eff_freq_narrow_920_2, 'ro')
+    plt.plot(d.freq_narrow_new, d.eff_freq_narrow_909_2, 'ro')
     plt.plot(d.freq_narrow_new, d.eff_freq_narrow_800_23, 'co')
 
-    av_narrow_920.plot_efficiency_freq_max()
+    av_narrow_909.plot_efficiency_freq_max()
     av_narrow_800.plot_efficiency_freq_max()
-    av_narrow_920.plot_efficiency_freq_max_second_order()
+    av_narrow_909.plot_efficiency_freq_max_second_order()
     av_narrow_800.plot_efficiency_freq_max_second_order()
 
     plot_narrow_transducer_eff()
-    label_list = ['920nm -1 mode expt', '800nm -1 mode expt', '920nm -2 mode expt', '800nm -2 mode expt', \
-                  '920nm -1 mode model', '800nm -1 mode model', '920nm -2 mode model', '800nm -2 mode model', \
+    label_list = ['909nm -1 mode expt', '800nm -1 mode expt', '909nm -2 mode expt', '800nm -2 mode expt', \
+                  '909nm -1 mode model', '800nm -1 mode model', '909nm -2 mode model', '800nm -2 mode model', \
                   'RF to acoustic inferred', 'RF to acoustic spline']
     plt.legend(label_list, loc=0, borderaxespad=1.6, fontsize=16)
 
 def plot_eff_freq_wide_expt_model():
-    plt.plot(d.freq_wide_new, d.eff_freq_wide_920_1, 'bo')
+    plt.plot(d.freq_wide_new, d.eff_freq_wide_909_1, 'bo')
     plt.plot(d.freq_wide_new, d.eff_freq_wide_800_1, 'go')
-    plt.plot(d.freq_wide_new, d.eff_freq_wide_920_2, 'ro')
+    plt.plot(d.freq_wide_new, d.eff_freq_wide_909_2, 'ro')
     plt.plot(d.freq_wide_new, d.eff_freq_wide_800_2, 'co')
 
-    av_wide_920.plot_efficiency_freq_max()
+    av_wide_909.plot_efficiency_freq_max()
     av_wide_800.plot_efficiency_freq_max()
-    av_wide_920.plot_efficiency_freq_max_second_order()
+    av_wide_909.plot_efficiency_freq_max_second_order()
     av_wide_800.plot_efficiency_freq_max_second_order()
 
     plot_wide_transducer_eff()
-    label_list = ['920nm -1 mode expt', '800nm -1 mode expt', '920nm -2 mode expt', '800nm -2 mode expt', \
-                  '920nm -1 mode model', '800nm -1 mode model', '920nm -2 mode model', '800nm -2 mode model', \
+    label_list = ['909nm -1 mode expt', '800nm -1 mode expt', '909nm -2 mode expt', '800nm -2 mode expt', \
+                  '909nm -1 mode model', '800nm -1 mode model', '909nm -2 mode model', '800nm -2 mode model', \
                   'RF to acoustic inferred', 'RF to acoustic spline']
     plt.legend(label_list, loc=0, borderaxespad=1.6, fontsize=16)
 
@@ -97,7 +97,7 @@ def plot_transducer_eff():
 if __name__ == '__main__':
     #plot_transducer_eff()
 
-    #plt.figure()
+    plt.figure()
     plot_eff_freq_narrow_expt_model()
     #plt.figure()
     #plot_eff_freq_wide_expt_model()
