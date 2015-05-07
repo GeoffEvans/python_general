@@ -10,7 +10,7 @@ acc_ang = 18e-3
 def save_figs_for_z_stack_model(pdr):
     save_name = '.\\above_below\\z%s_pdr%s_model.%s'
     norm_zs = [-0.4, 1e-9, 0.4]
-    abs_z = [-0.5, 0, 0.5]
+    abs_z = [-0.5, 'inf', 0.5]
     points = map(lambda z: round(aperture_width / (4 * acc_ang * z), 2), norm_zs)
     for fl, z in zip(points, abs_z):
 #        effs_norm = p.calc_fov_surf_data(fl, pdr)
@@ -19,13 +19,13 @@ def save_figs_for_z_stack_model(pdr):
         description = 'Model, PDR %s, z=%s' % (pdr_desc, z)
         p.generate_plot(effs_norm, description)
         np.save(save_name % (fl, pdr, 'npy'), effs_norm)
-        plt.savefig((save_name % (z, pdr, 'tif')).replace('-', 'n'), bbox_inches='tight')
+        plt.savefig((save_name % (z, pdr, 'pdf')).replace('-', 'n'), bbox_inches='tight')
 
 def save_figs_for_z_stack_expt(pdr):
     file_name = 'C:\\Users\\Geoff\\Dropbox\\Writing\\1) Model and PDR Paper\\images\\panel6 - above & below\\expt\\GreenChannel_00%s_%s.tif'
     save_name = '.\\above_below\\z%s_pdr%s_expt.%s'
     id_list = ['11', '17', '24']
-    abs_z = [-0.5, 0, 0.5]
+    abs_z = [-0.5, 'inf', 0.5]
 
     for id_str, z in zip(id_list, abs_z):
         img_1 = misc.imread(file_name % (id_str, 1))
@@ -43,11 +43,12 @@ def save_figs_for_z_stack_expt(pdr):
         pdr_desc = pdr if pdr is not None else 'min'
         description = 'Expt, PDR %s, z=%s' % (pdr_desc, z)
         p.generate_plot(img_blur_norm, description)
-        plt.savefig((save_name % (z, pdr, 'tif')).replace('-', 'n'), bbox_inches='tight')
+        plt.savefig((save_name % (z, pdr, 'pdf')).replace('-', 'n'), bbox_inches='tight')
 
 if __name__ == '__main__':
     save_figs_for_z_stack_expt(0.3)
     save_figs_for_z_stack_model(0.3)
+
 
     #focal_lengths = map(lambda z: round(15e-3 / (4 * 18e-3 * z), 2), [-0.4, 1e-9, 0.4])
     #print focal_lengths
