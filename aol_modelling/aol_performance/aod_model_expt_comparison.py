@@ -4,8 +4,12 @@ import expt_data as d
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib
-
-matplotlib.rcParams.update({'font.size': 20})
+rcParams.update({'lines.linewidth': 3})
+rcParams.update({'font.size': 20})
+rcParams['svg.fonttype'] = 'none' # No text as paths. Assume font installed.
+rcParams['font.serif'] = ['Times New Roman']
+rcParams['font.sans-serif'] = ['Arial']
+rcParams['font.family'] = 'sans-serif'
 
 av_wide = AodVisualisation(785e-9, ac_dir_rel=[1,0,0], is_wide=True, deg_bnds=(0,4))
 av_narrow = AodVisualisation(785e-9, ac_dir_rel=normalise([1,0,0]), is_wide=False, deg_bnds=(-2,6))
@@ -31,16 +35,19 @@ def plot_eff_freq_narrow():
     plt.plot(d.freq_narrow, d.eff_freq_narrow, 'o')
     av_narrow.plot_efficiency_freq_max()
 
-
 def plot_eff_ang_wide():
-    plt.plot(d.angle_wide_again, d.eff_angle_wide_again, 'o')
-    #plt.errorbar(d.angle_wide_again, d.eff_angle_wide_again, yerr=0.05*np.array(d.eff_angle_wide_again), xerr=0.06, ls='None', marker='o', ms=4)
+    #av_wide.aod.transducer_width -= 0.5e-3
     av_wide.plot_efficiency_xangle()
+    plt.plot(d.angle_wide_again, d.eff_angle_wide_again, 'ro', markersize=8)
+    plt.xticks([0,2,4])
+    plt.yticks([0,0.5,1])
 
 def plot_eff_ang_narrow():
-    plt.plot(d.angle_narrow_again, d.eff_angle_narrow_again, 'o')
+    #av_narrow.aod.transducer_width += 0.25e-3
     av_narrow.plot_efficiency_xangle()
-
+    plt.plot(d.angle_narrow_again, d.eff_angle_narrow_again, 'ro', markersize=8)
+    plt.xticks([-2,2,6])
+    plt.yticks([0,0.5,1])
 
 def plot_eff_freq_narrow_expt_model():
     plt.plot(d.freq_narrow_new, d.eff_freq_narrow_909_1, 'bo')
@@ -97,8 +104,8 @@ def plot_transducer_eff():
 if __name__ == '__main__':
     #plot_transducer_eff()
 
-    plt.figure()
-    plot_eff_freq_narrow_expt_model()
+    #plt.figure()
+    #plot_eff_freq_narrow_expt_model()
     #plt.figure()
     #plot_eff_freq_wide_expt_model()
 
@@ -106,9 +113,9 @@ if __name__ == '__main__':
     #plot_eff_freq_narrow()
     #plt.figure()
     #plot_eff_freq_wide()
-    #plt.figure()
-    #plot_eff_ang_wide()
-    #plt.figure()
+   # plt.figure()
+    plot_eff_ang_wide()
+   # plt.figure()
     #plot_eff_ang_narrow()
     #plt.figure()
     #plot_eff_pwr_narrow()

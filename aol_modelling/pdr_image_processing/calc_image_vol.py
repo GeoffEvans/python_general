@@ -39,8 +39,13 @@ if __name__ == '__main__':
     max_val = np.max(vals)
     plt.figure()
     for n in range(1):
-        plt.plot(pdr_list, vals[n]*1./max_val, 'ro', markersize=10)
-    plt.grid()
+        plt.plot(pdr_list, vals[n]*1./max_val, 'ro', markersize=12)
+
     plt.xlabel('PDR')
     plt.ylabel('Normalised Imaging Volume')
-    plt.grid()
+    plt.xlim([-3.15,5.15])
+    plt.ylim([0,1.03])
+    plt.xticks([-3,1,5])
+    plt.yticks([0.0,0.5,1.0])
+    plt.tick_params(direction='out')
+

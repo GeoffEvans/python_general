@@ -4,8 +4,15 @@ from scipy import misc
 from scipy import ndimage
 from mpl_toolkits.mplot3d import Axes3D
 from scipy.constants import pi
-from matplotlib import rcParams as r
-r.update({'font.size': 20})
+from matplotlib import rcParams
+
+rcParams.update({'lines.linewidth': 3})
+rcParams.update({'font.size': 20})
+rcParams['svg.fonttype'] = 'none' # No text as paths. Assume font installed.
+rcParams['font.serif'] = ['Times New Roman']
+rcParams['font.sans-serif'] = ['Arial']
+rcParams['font.family'] = 'sans-serif'
+rcParams.update({'figure.autolayout': True})
 
 def plot_z_stack_expt(pdr):
     file_name = 'C:\\Users\\Geoff\\Desktop\\pdr_data\\%s_%s\\Zstack Images\\GreenChannel_00%s.tif'
@@ -41,19 +48,19 @@ def plot_z_stack_expt(pdr):
     ax.set_xlim3d(-x_max, x_max)
     ax.set_ylim3d(-x_max, x_max)
     ax.set_zlim3d(-z_max, z_max)
-    ax.xaxis.set_ticks(np.linspace(-x_max, x_max, 3))
+    ax.xaxis.set_ticks([])
 
-    ax.yaxis.set_ticks(np.linspace(-x_max, x_max, 3))
+    ax.yaxis.set_ticks([])
     ax.set_yticklabels([-x_max, 0, x_max], verticalalignment='center', horizontalalignment='left')
-    ax.zaxis.set_ticks(np.linspace(-z_max, z_max, 3))
+    ax.zaxis.set_ticks([])
     ax.zaxis.set_ticklabels([-z_max, 0, z_max], verticalalignment='bottom', horizontalalignment='left')
 
     ax.view_init(elev=10.)
-    plt.xlabel('x / $\\mu$m')
-    ax.xaxis._axinfo['label']['space_factor'] = 2.
-    plt.ylabel('y / $\\mu$m')
-    ax.yaxis._axinfo['label']['space_factor'] = 2.
-    ax.set_zlabel('z / $\\mu$m')
+    #plt.xlabel('$x_M / \\mu$m')
+    #ax.xaxis._axinfo['label']['space_factor'] = 2.
+    #plt.ylabel('$y_M / \\mu$m')
+    #ax.yaxis._axinfo['label']['space_factor'] = 2.
+    #ax.set_zlabel('$z_M / \\mu$m')
     plt.show()
     print np.max(np.array(array3d))
 
