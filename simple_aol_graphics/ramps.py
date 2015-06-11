@@ -2,14 +2,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import rc
 from matplotlib import rcParams
-rcParams.update({'lines.linewidth': 3})
+rcParams.update({'lines.linewidth': 5})
 rcParams.update({'font.size': 20})
 rcParams['svg.fonttype'] = 'none' # No text as paths. Assume font installed.
 rcParams['font.serif'] = ['Times New Roman']
 rcParams['font.sans-serif'] = ['Arial']
 rcParams['font.family'] = 'sans-serif'
 
-t_range = np.linspace(-50.01,50,1000)
+t_range = np.linspace(-40.01,40,1000)
 
 def get_freq_fun(a, b, c=0, d=0):
     period = 20e-6
@@ -21,7 +21,7 @@ def get_freq_fun(a, b, c=0, d=0):
 
     return freq
 
-linesty = ['b:', 'r', 'g--', 'k-.']
+linesty = ['b--', 'r--', 'g--', 'k--']
 lbl = ['AOD 1', 'AOD 2', 'AOD 3', 'AOD 4']
 
 a_x0_z1 = [ 40000000.,  40000000.,  40000000.,  40000000.]
@@ -48,7 +48,7 @@ for ab in ab_list:
 
     plt.xlabel(r'time ($\mu$s)')
     plt.ylabel('frequency (MHz)')
-    plt.axis([-50, 50, 30, 50])
+    plt.axis([-40, 40, 30, 50])
     plt.xticks([-40,0,40])
     plt.tick_params(direction='out')
     plt.show()

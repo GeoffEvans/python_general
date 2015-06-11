@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import rcParams
-rcParams.update({'lines.linewidth': 3})
+rcParams.update({'lines.linewidth': 5})
 rcParams.update({'font.size': 20})
 rcParams['svg.fonttype'] = 'none' # No text as paths. Assume font installed.
 rcParams['font.serif'] = ['Times New Roman']

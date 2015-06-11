@@ -46,10 +46,7 @@ def save_figs_for_z_stack_expt(pdr):
         plt.savefig((save_name % (z, pdr, 'pdf')).replace('-', 'n'), bbox_inches='tight')
 
 if __name__ == '__main__':
-    save_figs_for_z_stack_expt(0.3)
-    save_figs_for_z_stack_model(0.3)
 
-
-    #focal_lengths = map(lambda z: round(15e-3 / (4 * 18e-3 * z), 2), [-0.4, 1e-9, 0.4])
-    #print focal_lengths
-    #p.plot_peak(focal_lengths)
+    focal_lengths = map(lambda z: round(15e-3 / (4 * 18e-3 * z), 2), [-0.4, 1e-9, 0.4])
+    print focal_lengths
+    p.plot_peak(focal_lengths)
