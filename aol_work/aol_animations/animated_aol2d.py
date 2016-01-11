@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import set_up_utils as s
+import aol_model.set_up_utils as s
 
 def update_lines(num, line_data, lines, f1, line1, f2, line2, r1, r2):
     for line, data in zip(lines, line_data[num]) :
