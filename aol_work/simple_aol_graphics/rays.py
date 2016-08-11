@@ -4,12 +4,7 @@ from matplotlib import rc
 from matplotlib import rcParams as r
 r.update({'font.size': 30})
 r.update({'figure.autolayout': True})
-r.update({'lines.linewidth': 3})
-
-rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-## for Palatino and other serif fonts use:
-#rc('font',**{'family':'serif','serif':['Palatino']})
-rc('text', usetex=True)
+r.update({'lines.linewidth': 1.5})
 
 t_range = np.linspace(-50.01,50,1000)
 
@@ -46,5 +41,7 @@ for item in zip([freq1, freq2, freq3],['r', 'b', 'g']):
     
     plt.plot([starts_z, mid_z], [starts_x, mid_x], styl)
     plt.plot([mid_z, end_z], [mid_x, end_x], styl)
+    plt.tick_params(direction='out')
     plt.xlabel('z / m')
     plt.ylabel('x / mm')
+    plt.axis([-0.1, 0.5, -10, 30])
